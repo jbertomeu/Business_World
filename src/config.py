@@ -90,6 +90,8 @@ class RunConfig:
     annual_reports_enabled: bool = False     # enables 10-K-style annual report generation at fqtr=4
     env_verification_enabled: bool = False   # enables anomaly check + LLM verifier on env output
     env_validator_enabled: bool = False      # Wave ν+11 E9: second-env reviews env-1 output, sends back with notes if inconsistent
+    debriefs_enabled: bool = True            # Wave ν+12: per-quarter debrief LLM calls (firm + env + intermediaries); adds N+5 LLM calls per Q
+    lt_memory_enabled: bool = False          # Wave ν+12: cross-run LT memory file (data/agent_memory/<role>.md). Default OFF per user direction.
     investor_voice_enabled: bool = False     # Wave ν+12: per-firm market analyst note delivered at start of each quarter
     restructuring_enabled: bool = False      # firm can take restructuring charges (severance, impairments)
     env_decision_overrides_enabled: bool = False  # env can override firm decisions if infeasible
@@ -261,6 +263,7 @@ class ModelRoster:
     data_broker: RoleConfig | None = None
     env_verifier: RoleConfig | None = None  # used when env_verification_enabled
     env_validator: RoleConfig | None = None # Wave ν+11 E9: second-env validator (used when env_validator_enabled)
+    debrief: RoleConfig | None = None       # Wave ν+12: per-quarter debrief writer (cheap model, shared across all agent types)
     investor_voice: RoleConfig | None = None # Wave ν+12: per-firm market-analyst commentary
     # Wave ν+10 item 7: optional second commercial / investment bank for
     # competitive bidding. When present, both banks quote and firms pick
@@ -331,6 +334,7 @@ class ModelRoster:
             "env_verifier": self.env_verifier,
             "env_validator": self.env_validator,
             "investor_voice": self.investor_voice,
+            "debrief": self.debrief,
         }
         if role not in fixed:
             raise KeyError(
@@ -393,6 +397,7 @@ def load_roster(path: str | Path | None = None) -> ModelRoster:
         env_verifier=_parse_role(raw["env_verifier"]) if "env_verifier" in raw else None,
         env_validator=_parse_role(raw["env_validator"]) if "env_validator" in raw else None,
         investor_voice=_parse_role(raw["investor_voice"]) if "investor_voice" in raw else None,
+        debrief=_parse_role(raw["debrief"]) if "debrief" in raw else None,
         commercial_bank_2=_parse_role(raw["commercial_bank_2"]) if "commercial_bank_2" in raw else None,
         investment_bank_2=_parse_role(raw["investment_bank_2"]) if "investment_bank_2" in raw else None,
     )
@@ -457,6 +462,8 @@ def load_config(path: str | Path | None = None) -> RunConfig:
         annual_reports_enabled=raw.get("annual_reports_enabled", False),
         env_verification_enabled=raw.get("env_verification_enabled", False),
         env_validator_enabled=raw.get("env_validator_enabled", False),
+        debriefs_enabled=raw.get("debriefs_enabled", True),
+        lt_memory_enabled=raw.get("lt_memory_enabled", False),
         investor_voice_enabled=raw.get("investor_voice_enabled", False),
         restructuring_enabled=raw.get("restructuring_enabled", False),
         env_decision_overrides_enabled=raw.get("env_decision_overrides_enabled", False),

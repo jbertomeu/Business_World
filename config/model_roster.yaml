@@ -239,6 +239,16 @@ investor_voice:
   temperature: 0.25
   note:     "Investor Voice | mistral-small | per-firm market commentary each Q; cheap"
 
+# Wave ν+12: per-quarter debrief writer (shared across firm + env +
+# intermediaries when debriefs_enabled). Cheap model — produces 2-4
+# sentence narrative notes that get fed back next quarter via the
+# render_recent_debriefs() block. If omitted, falls back to data_analyst.
+debrief:
+  model:    "mistralai/mistral-small-24b-instruct-2501"
+  backend:  "openrouter"
+  temperature: 0.30
+  note:     "Debrief Writer | mistral-small | end-of-quarter narrative notes for every agent"
+
 # ============================================================================
 # REFERENCE: All S-tier models (2026-04-15 sweep)
 # ============================================================================

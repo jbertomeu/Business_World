@@ -823,6 +823,9 @@ def run_simulation(config: RunConfig, use_mock: bool = False,
     env_verifier_fn = None
     env_validator_fn = None
     investor_voice_fn = None
+    firm_debrief_fn = None
+    env_debrief_fn = None
+    intermediary_debrief_fns = None
     planning_fn = None
     pitch_fn = None
     pe_eval_fns = None
@@ -916,6 +919,37 @@ def run_simulation(config: RunConfig, use_mock: bool = False,
             )
             print(f"  investor_voice: {iv_llm.model} [{iv_llm.backend}] "
                   f"(per active firm per quarter; soft market view)")
+
+        # Wave ν+12: per-quarter debrief writers (firm + env + intermediaries).
+        # Single cheap backend reused across all roles; the writer factory just
+        # wraps it with role-specific prompts. Toggle: debriefs_enabled (default ON).
+        firm_debrief_fn = None
+        env_debrief_fn = None
+        intermediary_debrief_fns = None
+        if getattr(config, "debriefs_enabled", True):
+            from .debriefs import (
+                make_firm_debrief_writer, make_env_debrief_writer,
+                make_intermediary_debrief_writer,
+            )
+            try:
+                dbr_llm = roster.llm_config_for("debrief")
+                if dbr_llm is None:
+                    dbr_llm = roster.llm_config_for("data_analyst")
+            except Exception:
+                dbr_llm = roster.llm_config_for("data_analyst")
+            dbr_backend = _tag(create_backend(dbr_llm), "debrief")
+            firm_debrief_fn = make_firm_debrief_writer(dbr_backend)
+            env_debrief_fn = make_env_debrief_writer(dbr_backend)
+            intermediary_debrief_fns = {
+                "pe": make_intermediary_debrief_writer(dbr_backend, "pe"),
+                "bank": make_intermediary_debrief_writer(dbr_backend, "bank"),
+                "ibank": make_intermediary_debrief_writer(dbr_backend, "ibank"),
+                "activist": make_intermediary_debrief_writer(dbr_backend, "activist"),
+                "auditor": make_intermediary_debrief_writer(dbr_backend, "auditor"),
+                "sec": make_intermediary_debrief_writer(dbr_backend, "sec"),
+            }
+            print(f"  debriefs: {dbr_llm.model} [{dbr_llm.backend}] "
+                  f"(per-firm + env + 6 intermediary roles each Q)")
 
         # Sell-side analysts
         if config.sellside_analysts_enabled and roster.analysts:
@@ -1112,6 +1146,9 @@ def run_simulation(config: RunConfig, use_mock: bool = False,
             annual_report_fn=annual_report_fn,
             env_verifier_fn=env_verifier_fn,
             env_validator_fn=env_validator_fn,
+            firm_debrief_fn=firm_debrief_fn,
+            env_debrief_fn=env_debrief_fn,
+            intermediary_debrief_fns=intermediary_debrief_fns,
             investor_voice_fn=investor_voice_fn,
             planning_fn=planning_fn if not use_mock else None,
             pitch_fn=pitch_fn if not use_mock else None,
@@ -1332,6 +1369,41 @@ def run_simulation(config: RunConfig, use_mock: bool = False,
     with open(secrets_dir / "world_secrets.txt", "w", encoding="utf-8") as f:
         f.write(world_secrets)
     print(f"World secrets saved: {secrets_dir}/world_secrets.txt (environment only)")
+
+    # ── Wave ν+12: end-of-run LT-memory writer ─────────────────────────
+    # When lt_memory_enabled, a separate LLM summarises the run into a
+    # role-specific note appended to data/agent_memory/<role>.md. Toggle
+    # OFF by default per user direction; infrastructure exists for opt-in.
+    if getattr(config, "lt_memory_enabled", False) and not use_mock:
+        try:
+            from .debriefs import make_lt_memory_writer, maybe_write_lt_memory
+            try:
+                ltm_llm = roster.llm_config_for("debrief")
+                if ltm_llm is None:
+                    ltm_llm = roster.llm_config_for("data_analyst")
+            except Exception:
+                ltm_llm = roster.llm_config_for("data_analyst")
+            ltm_writer = make_lt_memory_writer(
+                _tag(create_backend(ltm_llm), "lt_memory")
+            )
+            # Build a run summary the writer can synthesise: scorecard +
+            # active firm count + final industry rev + key event counts.
+            from io import StringIO
+            sc_buf = StringIO()
+            sc_buf.write(format_scorecard(scorecard))
+            run_summary = sc_buf.getvalue()
+            for role in ("firm", "env", "pe", "bank", "ibank",
+                         "activist", "auditor", "sec"):
+                note = ltm_writer(role, state.run_id, run_summary)
+                if note:
+                    maybe_write_lt_memory(
+                        role, state.run_id, note,
+                        enabled=True, data_dir=config.data_dir,
+                    )
+            print(f"LT memory updated: {config.data_dir}/agent_memory/<role>.md "
+                  f"(8 roles)")
+        except Exception as e:
+            print(f"LT memory write failed (non-fatal): {e}")
 
     # ── Generate post-run debrief bundle (dashboard, events, narrative) ──
     # Wave ν+10: every run produces its own dashboard.html automatically.

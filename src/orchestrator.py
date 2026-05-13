@@ -143,6 +143,12 @@ class WorldState:
     # Rendered in firm decision prompt this quarter. Soft market view.
     investor_notes_by_firm: dict[str, str] = field(default_factory=dict)
 
+    # Wave ν+12: per-quarter debrief notes from each agent type. One dict
+    # per debrief: {"role": "firm"|"env"|"pe"|"bank"|"ibank"|"activist"|"auditor"|"sec",
+    # "agent_id": <firm_id or fund_id or "env">, "quarter": <int>, "note": <str>}.
+    # Surfaced next quarter via agent_history.render_recent_debriefs().
+    debrief_notes: list[dict] = field(default_factory=list)
+
 
 def initialize_world(
     n_firms: int,
@@ -490,6 +496,9 @@ def run_quarter(
     prospectus_fn=None,         # firm-side S-1 prospectus author
     env_verifier_fn=None,       # env output verifier (if env_verification_enabled)
     env_validator_fn=None,      # Wave ν+11 E9: second-env validator (if env_validator_enabled)
+    firm_debrief_fn=None,       # Wave ν+12: per-firm end-of-quarter debrief LLM
+    env_debrief_fn=None,        # Wave ν+12: env end-of-quarter debrief LLM
+    intermediary_debrief_fns=None,  # Wave ν+12: dict role→writer_fn for PE/bank/etc.
     investor_voice_fn=None,     # Wave ν+12: per-firm market-analyst note (if investor_voice_enabled)
     # Wave ν: distressed-firm asset auction (runs after any defaults)
     auction_bidder_fns=None,    # dict: firm_id → auction bidder agent
@@ -3655,6 +3664,58 @@ def run_quarter(
     # events only at fqtr==4. Off = static director pool at founding.
     if config is not None and getattr(config, "director_lifecycle_enabled", False):
         _director_lifecycle_phase(state)
+
+    # ── Phase 15.9: End-of-quarter debrief notes (Wave ν+12) ─────────────
+    # Each active firm + env + each intermediary writes a short narrative
+    # note capturing what mattered this quarter. Surfaced in next quarter's
+    # prompts via agent_history.render_recent_debriefs(). Toggle-able via
+    # config.debriefs_enabled (default ON).
+    if (config is not None and getattr(config, "debriefs_enabled", True)
+            and (firm_debrief_fn is not None
+                  or env_debrief_fn is not None
+                  or intermediary_debrief_fns)):
+        try:
+            from .debriefs import (
+                build_firm_quarter_summary, build_env_quarter_summary,
+                build_intermediary_quarter_summary,
+            )
+            # Firms
+            if firm_debrief_fn is not None:
+                for fid, firm in state.firms.items():
+                    if not firm.is_active:
+                        continue
+                    summary = build_firm_quarter_summary(fid, state, state.macro)
+                    note = firm_debrief_fn(fid, state.quarter, summary)
+                    if note:
+                        state.debrief_notes.append({
+                            "role": "firm", "agent_id": fid,
+                            "quarter": state.quarter, "note": note,
+                        })
+            # Environment
+            if env_debrief_fn is not None:
+                summary = build_env_quarter_summary(state, state.macro)
+                note = env_debrief_fn(state.quarter, summary)
+                if note:
+                    state.debrief_notes.append({
+                        "role": "env", "agent_id": "env",
+                        "quarter": state.quarter, "note": note,
+                    })
+            # Intermediaries (passed as dict: role → writer_fn)
+            for role, writer_fn in (intermediary_debrief_fns or {}).items():
+                if writer_fn is None:
+                    continue
+                summary = build_intermediary_quarter_summary(
+                    role, role, state, state.macro,
+                )
+                note = writer_fn(role, state.quarter, summary)
+                if note:
+                    state.debrief_notes.append({
+                        "role": role, "agent_id": role,
+                        "quarter": state.quarter, "note": note,
+                    })
+            _log(state, f"  DEBRIEFS: wrote {len([n for n in state.debrief_notes if n['quarter']==state.quarter])} notes this quarter")
+        except Exception as e:
+            _log(state, f"  Debrief phase failed (non-fatal): {e}")
 
     # ── Phase 16: Record-keeping ─────────────────────────────────────────
 
