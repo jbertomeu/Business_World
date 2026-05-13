@@ -99,12 +99,32 @@ PRICING REFLECTION (think this through whenever you set price):
      survivor — shrinks because patients, physicians, and payers lose
      trust in the category. Predatory pricing is rarely a win.
 
+  7. PRICE AS A LEVER WHEN YOU ARE SUB-SCALE:
+     The prior six points caution against destructive price competition.
+     A countervailing reality: if your firm is sub-scale, losing share
+     quarter after quarter to entrenched leaders, and you have a real
+     cost advantage (lower unit cost from process R&D, geographic-niche
+     advantages, leaner SG&A), then DOING NOTHING on price is not
+     conservatism — it is slow death. Real biotech challengers DO use
+     pricing aggressively to win share from incumbents when they have
+     the margin to sustain it. The relevant question is not "would I
+     prefer higher prices" (everyone does) — it is whether your current
+     trajectory ends with you operating sustainably. If a sustained,
+     visible price gap below your peers would credibly shift physician
+     and payer behaviour in your favour AND your unit economics support
+     it, that is a legitimate competitive move. The point is not to
+     race to the bottom — it is to USE the price lever when the
+     fundamentals say you should, instead of defaulting to parity that
+     leaves you stuck.
+
 KEY TAKEAWAY: Differentiated products allow PREMIUM PRICING when justified
 by quality, safety profile, or brand. A firm with reasonable capability
 and brand should be able to operate sustainably at a meaningful margin
 above unit cost. The fixed-cost burden in this industry is NOT so high
 that profitability requires winning the share war — it requires PRICE
-DISCIPLINE while serving your differentiated customer base.
+DISCIPLINE while serving your differentiated customer base. BUT — if
+your fundamentals support it AND you are sub-scale, price is the lever
+that earns you the share you need to survive.
 {market_signals_block}
 
 YOUR DECISIONS (output as JSON):
@@ -1311,6 +1331,26 @@ CUSTOMER STICKINESS (read this every quarter):
   several quarters) is your check on yourself: if you're producing a series
   with high quarter-on-quarter volatility for the same firm, that's a sign
   you're allocating demand too freely. Real industries are stickier.
+
+PRICE-DRIVEN SHARE SHIFT IS LEGITIMATE (a check on the stickiness block above):
+- Stickiness does NOT mean prices have no effect. A SUSTAINED, VISIBLE
+  price gap — a firm pricing meaningfully below its peers, quarter after
+  quarter, with a credible product — IS a catalyst. New patients enter
+  the market every quarter; payers re-bid contracts; physicians become
+  aware of cost-effective alternatives. Over several quarters, a real
+  price advantage will move share toward the cheaper firm.
+- When you observe a sustained price gap in the firm panel, do NOT
+  suppress its effect just because share moves gradually quarter-by-
+  quarter. The right pattern is: the cheaper firm gains share STEADILY
+  but VISIBLY, while the higher-priced firms see share erosion at the
+  margin. The cumulative effect over many quarters can be substantial —
+  that is how price competition actually works in real industries.
+- The narrative should reflect this when relevant. Name the dynamic:
+  "Firm X's sustained pricing below peers has begun to win contract
+  business with regional payers; share is migrating gradually."
+- A SINGLE quarter of price-cutting is not yet a catalyst — it might
+  be a one-off response to inventory pressure. But a sustained pattern
+  IS one. Read the trajectory, not just this-quarter's snapshot.
 
 DEMAND IS PHYSICALLY BOUNDED (not a prescription — a check on your own math):
 - The industry's stated TAM (above, in industry character) describes a
