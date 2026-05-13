@@ -1,0 +1,84 @@
+# 2-year validation run for Waves ι (scenario-driven economics) + κ
+# (strategic planning). Tests whether:
+#   - firms produce coherent 5-year plans
+#   - scenario-driven industry narrative + market signals lead firms to
+#     price/scale appropriately for a longevity breakthrough
+#   - plan-vs-actual variance triggers re-planning
+#   - overall behavior differs from v2 (where all firms defaulted)
+#
+# Uses well_capitalized scenario (now with industry_character + market
+# params tuned for a breakthrough industry). One reasoning model in the
+# firm mix (deepseek-r1 for firm_1) per user request.
+
+n_firms_initial: 3
+n_quarters: 8
+seed: 42
+
+scenario: well_capitalized
+
+default_llm:
+  backend: openrouter
+  model: mistralai/mistral-small-24b-instruct-2501
+
+agents:
+  firm_0:
+    model: "mistralai/mistral-small-24b-instruct-2501"
+    backend: openrouter
+    temperature: 0.30
+  firm_1:
+    # REASONING MODEL — tests whether long-horizon reasoning helps firm
+    # decisions. More expensive per call (~$1.3/Mtok vs ~$0.09).
+    model: "deepseek/deepseek-r1-0528"
+    backend: openrouter
+    temperature: 0.35
+  firm_2:
+    model: "google/gemini-2.0-flash-001"
+    backend: openrouter
+    temperature: 0.40
+
+# All θ features ON
+earnings_management_enabled: true
+sec_enabled: true
+sellside_analysts_enabled: true
+earnings_announcement_enabled: true
+auditor_enabled: true
+governance_enabled: true
+restatements_enabled: true
+macro_expansion_enabled: true
+ma_enabled: true
+
+data_broker_enabled: true
+data_broker_mode: combo
+data_broker_max_queries_per_agent_per_quarter: 2
+
+debt_covenants_enabled: true
+convertible_debt_enabled: true
+working_capital_decisions: true
+bad_debt_enabled: true
+
+annual_reports_enabled: true
+env_verification_enabled: true
+
+restructuring_enabled: true
+env_decision_overrides_enabled: true
+
+stock_comp_enabled: true
+
+legal_reserves_enabled: true
+pension_enabled: true
+deferred_taxes_enabled: true
+activist_investors_enabled: true
+
+# Wave θ richness
+noisy_signals_enabled: true
+noisy_signals_sd: 0.15
+directors_enabled: true
+director_lifecycle_enabled: true
+three_llm_board_enabled: true
+cost_telemetry_enabled: true
+
+# Wave κ: strategic planning ON (firms author 5y plans)
+strategic_planning_enabled: true
+
+snapshots_enabled: true
+parallel_firm_decisions: true

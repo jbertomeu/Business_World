@@ -1,0 +1,52 @@
+name: mature_industry
+description: |
+  Mature pharma industry: large, well-capitalized incumbents vs one smaller
+  challenger. Think Pfizer / Merck / BMS in 2010 -- not exciting growth but
+  solid balance sheets.
+
+firms:
+  - firm_id: firm_0
+    founding_cash: 500_000_000
+    ipo_price: 45.00
+    ipo_shares: 20_000_000
+    founding_ppe_gross: 120_000_000
+    founding_capability: 55.0
+    founding_brand: 60.0
+    base_unit_cost: 9_500
+    ceo_base_salary: 2_500_000
+  - firm_id: firm_1
+    founding_cash: 450_000_000
+    ipo_price: 42.00
+    ipo_shares: 20_000_000
+    founding_ppe_gross: 110_000_000
+    founding_capability: 50.0
+    founding_brand: 55.0
+    base_unit_cost: 10_000
+    ceo_base_salary: 2_300_000
+  - firm_id: firm_2
+    founding_cash: 480_000_000
+    ipo_price: 48.00
+    ipo_shares: 18_000_000
+    founding_ppe_gross: 115_000_000
+    founding_capability: 52.0
+    founding_brand: 58.0
+    base_unit_cost: 9_800
+    ceo_base_salary: 2_400_000
+  - firm_id: firm_3
+    founding_cash: 520_000_000
+    ipo_price: 50.00
+    ipo_shares: 18_000_000
+    founding_ppe_gross: 125_000_000
+    founding_capability: 58.0
+    founding_brand: 62.0
+    base_unit_cost: 9_200
+    ceo_base_salary: 2_700_000
+  - firm_id: firm_4
+    founding_cash: 180_000_000
+    ipo_price: 22.00
+    ipo_shares: 12_000_000
+    founding_ppe_gross: 45_000_000
+    founding_capability: 30.0
+    founding_brand: 25.0
+    base_unit_cost: 13_000
+    ceo_base_salary: 1_400_000

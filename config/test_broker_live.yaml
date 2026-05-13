@@ -1,0 +1,30 @@
+# Live mini-test: broker + SEC enabled, OpenRouter firms, 2Q
+# Usage: python -u -m src run --config config/test_broker_live.yaml
+
+n_firms_initial: 3
+n_quarters: 2
+seed: 42
+
+default_llm:
+  backend: openrouter
+  model: mistralai/mistral-small-24b-instruct-2501
+
+agents:
+  firm_0:
+    model: "mistralai/mistral-small-24b-instruct-2501"
+    backend: openrouter
+    temperature: 0.30
+  firm_1:
+    model: "qwen/qwen3-235b-a22b-2507"
+    backend: openrouter
+    temperature: 0.35
+  firm_2:
+    model: "z-ai/glm-4-32b"
+    backend: openrouter
+    temperature: 0.40
+
+# Focus on broker + SEC only
+data_broker_enabled: true
+data_broker_max_queries_per_agent_per_quarter: 2
+sec_enabled: true
+earnings_management_enabled: true

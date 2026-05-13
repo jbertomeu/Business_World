@@ -1,0 +1,640 @@
+%
+\documentclass[11pt]{article}
+
+\usepackage{times}
+\usepackage{fullpage}
+\usepackage{amsmath,amssymb,bm}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{setspace}
+
+\title{An LLM-Run Quarterly Firm Laboratory: Bankruptcy/Entry, Compustat-Style Data, and Debrief Scoring (Draft)}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This document specifies a repeated-game ``laboratory'' where firms are controlled by language models (LLM agents) and interact through (i) a \emph{product market} and (ii) a \emph{financial market} (an LLM agent). The design goal is (a) a realistic-enough operating, financing, and accounting structure to generate familiar financial statements (income statement, balance sheet, statement of cash flows, and statement of stockholders' equity), while (b) keeping the state/action space small enough to be played repeatedly by LLM agents with limited context windows.
+
+The game runs at a \textbf{quarterly} frequency. All firms start from a \textbf{zero book state} (startup-style) and must raise capital to operate.
+
+Crucially, the environment does \emph{not} hard-code \emph{strategic} choices by firms or the financial sector (e.g., no fixed equity multiples, no fixed revolver limits, no fixed credit-spread rules). The financial market LLM sets equity prices and credit terms directly from public information, and the firm LLM chooses operating and financing actions.
+
+The product market is modeled by a compact preset demand system (e.g., logit shares with market-size and taste shocks), which is allowed to be hard-coded. The environment includes a \emph{bankruptcy/entry} mechanism: when a firm defaults, its assets are auctioned, proceeds pay creditors with any residual to equity, and then a fresh entrant replaces the bankrupt firm so the industry size remains constant.
+
+Finally, the simulator must export (i) a Compustat-style \textbf{firm-quarter} panel dataset, (ii) a run-level \textbf{debrief} dataset scoring firm investment outcomes, credit performance, and equity-price efficiency, and (iii) diagnostics to flag degenerate simulations.
+\end{abstract}
+
+\section{Overview}
+
+There are $I$ firms, indexed by $i\in\{1,\ldots,I\}$, operating for periods $t=1,\ldots,T$. 
+\textbf{Each period is one fiscal quarter.} Define the fiscal calendar as
+\[
+\text{fyear}(t)=1+\left\lfloor\frac{t-1}{4}\right\rfloor,\qquad 
+\text{fqtr}(t)=1+\big((t-1)\bmod 4\big).
+\]
+All \emph{flow} variables (revenues, expenses, cash flows) are quarterly; all \emph{stock} variables (balance-sheet accounts) are end-of-quarter.
+
+\paragraph{Zero initial conditions (startup-style).}
+At $t=1$, each firm begins at \emph{zero book state}:
+\[
+\text{Cash}=\text{AR}=\text{Inv}=\text{PPE}=\text{AP}=\text{Accr}=\text{TaxPay}=\text{RevBal}=\text{LTD}=\text{APIC}=\text{RE}=\text{TS}=0,
+\]
+and internal capability/brand/capacity stocks start at $A_{i0}=B_{i0}=K_{i0}=0$.
+To avoid degenerate ``zero-share'' accounting, each firm has a positive share count $\text{Shares}_{i0}>0$ (e.g., $1{,}000{,}000$) with \emph{no-par stock} so the book \emph{Common stock} line item can remain $0$ at initialization.
+Firms must raise capital (equity and/or debt) to fund operating and investment plans.
+
+\paragraph{Mandatory initial capitalization (IPO phase).}
+\textbf{Before} any firm can execute operating or investment decisions in its first quarter (whether at $t=1$ or upon fresh entry after bankruptcy), the environment must run a dedicated \textbf{capitalization sub-step}:
+\begin{enumerate}[leftmargin=*]
+    \item The firm LLM states its desired equity raise (number of new shares $\times$ offer price) and/or debt request.
+    \item The financial-market LLM decides how much equity to purchase (setting the IPO price and quantity) and what credit terms to extend.
+    \item The environment books the equity issuance (credit Cash, credit APIC) and any debt issuance \emph{before} the firm's operating actions are evaluated.
+\end{enumerate}
+If the combined capital raised is zero (financial market refuses all financing), the firm enters ``failed IPO'' status: it does not operate, records zero on all flow accounts, and is replaced by a new entrant next quarter (incrementing the incarnation index). This prevents the degenerate cycle of zero-capital firms defaulting immediately every quarter.
+
+\paragraph{Non-negative asset invariant.}
+The environment must enforce at all times, for every non-defaulted firm:
+\[
+\text{TotalAssets}_{it} \ge 0, \qquad \text{Cash}_{it}\ge 0.
+\]
+Negative total assets are \textbf{impossible} (they indicate a bookkeeping bug).  If the settlement step would cause $\text{Cash}_{it}<0$ after exhausting the revolver, the firm defaults---but the balance sheet snapshot \emph{at the moment of default} still records the cash shortfall for diagnostic purposes. No further quarterly rows are generated for a defaulted incarnation after the default quarter.
+
+\paragraph{Where decisions live.}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Firms choose (LLM):} $p_{it}$ (price), $q^{\text{prod}}_{it}$ (production), $x^K_{it}$ (capex), $x^R_{it}$ (R\&D), $x^M_{it}$ (marketing), payouts, and financing requests.
+    \item \textbf{Financial market chooses (LLM):} equity price $P_{it}$ and credit terms (revolver commitment, interest rates, optional rationing/clearing).
+    \item \textbf{Product market (environment):} a \emph{preset} demand system maps firm prices/attributes into quantities demanded. Random macro/taste shocks are allowed and encouraged; the mapping itself is hard-coded.
+    \item \textbf{Environment (non-strategic):} feasibility, settlement ordering, accounting, bankruptcy auction, and re-entry.
+\end{itemize}
+
+\paragraph{Identity discipline.}
+At each quarter $t$, the simulator must output a 10-K-style:
+(i) income statement, (ii) balance sheet, (iii) statement of cash flows (indirect method), and (iv) statement of stockholders' equity,
+with exact reconciliation (up to numerical tolerance):
+\[
+\text{Assets}=\text{Liabilities}+\text{Equity},\qquad \Delta \text{Cash}=\text{CFO}+\text{CFI}+\text{CFF}.
+\]
+\textbf{Quarterly convention:} interest rates are treated as annualized APRs unless explicitly stated otherwise, and are converted to quarterly accruals by dividing by $4$.
+
+\section{Agents, Information, and Objectives}
+
+\subsection{Firm agents (LLMs)}
+Each firm $i$ is controlled by an LLM that observes:
+\begin{itemize}[leftmargin=*]
+    \item its own private state (detailed balance sheet accounts, internal capability/brand stocks, last-period realized demand and margins);
+    \item public information about rivals (prices, public quality/brand indices, and past public statements);
+    \item public macro state (market size index, risk-free rate, inflation, etc.).
+\end{itemize}
+
+The firm LLM chooses actions to maximize long-run value (not hard-coded in the environment), subject to feasibility constraints.
+
+\subsection{Financial market agent (LLM)}
+A financial-market LLM observes \emph{public} information only:
+\begin{itemize}[leftmargin=*]
+    \item public firm financial statements (or a compressed public summary);
+    \item public actions (e.g., prices, production, capex, major payouts/issuance plans);
+    \item macro state (risk-free rate, volatility proxy, market size growth, etc.);
+    \item past default/auction history (publicly observable outcomes).
+\end{itemize}
+
+It outputs equity prices and credit terms. The environment does not impose valuation formulas or credit limits beyond feasibility bookkeeping and numerical guardrails.
+
+\subsection{Optional product-market agent (LLM)}
+The baseline product market is a preset demand function. Optionally, a product-market LLM may supply \emph{macro/taste} shocks (e.g., total market size $M_t$ or taste shifters), but it does not ``allocate demand'' directly unless explicitly enabled. This option exists mainly to support narrative variation; the simulator must remain well-defined without it.
+
+\section{Timing Within Each Period}
+
+A minimal timing that supports realistic statements:
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Information release:} publish public summaries (prior-period statements, public indices). Provide each firm its private report.
+    \item \textbf{Capitalization phase (new entrants only):} any firm in its first quarter of an incarnation (including $t=1$) runs the mandatory IPO/capitalization sub-step (see ``Mandatory initial capitalization'' in Section ``Overview''). If capitalization fails, the firm does not proceed to step 3 and is recorded as a failed IPO.
+    \item \textbf{Firm actions (LLM):} each firm outputs $p_{it}$, $q^{\text{prod}}_{it}$, $x^K_{it}$, $x^R_{it}$, $x^M_{it}$, dividends, buybacks, and financing requests.
+    \item \textbf{Product market clearing (preset):} demand system computes $q^{\text{dem}}_{it}$ and realized sales $q^{\text{sale}}_{it}\le q^{\text{dem}}_{it}$ subject to supply/inventory constraints.
+    \item \textbf{Financial market clearing (LLM):} financial-market LLM sets equity price $P_{it}$ and credit terms for period $t$ (revolver commitment, interest rates, and any rationing/clearing of requested issuance).
+    \item \textbf{Settlement and bookkeeping (with feasibility clamping):} realize revenues/costs, update working capital, compute taxes, settle financing/payouts subject to cash feasibility, draw revolver if needed, and post accounting entries.
+    
+    \textbf{Critical:} The environment must \emph{clamp} all LLM-requested expenditures to feasible levels before posting them.  The clamping order is:
+    \begin{enumerate}[leftmargin=*]
+        \item Compute available resources: beginning cash $+$ revenue collections $+$ net financing proceeds (equity issued $+$ debt issued $-$ debt repaid) $+$ available revolver commitment.
+        \item Allocate to obligations in priority: (a) COGS (cost of goods actually sold), (b) interest on existing debt, (c) taxes due, (d) capex, R\&D, marketing (pro-rata if insufficient), (e) dividends and buybacks (only from remaining surplus).
+        \item If total obligations exceed available resources even after full revolver draw, \emph{scale down} discretionary spending (capex, R\&D, marketing, payouts) to fit.  Record the \emph{actual} (clamped) amounts on the financial statements, not the LLM's raw requests.
+    \end{enumerate}
+    After clamping, $\text{Cash}_{it}\ge 0$ must hold for any non-defaulted firm.  If it still does not (e.g., mandatory costs exceed all resources), the firm defaults.
+    \item \textbf{Default check and bankruptcy/entry:} if a firm is insolvent (cash infeasible after exhausting market-supplied liquidity), run an auction, distribute proceeds to claimholders, mark the firm exited, and schedule a fresh entrant for $t+1$.
+    \item \textbf{Reporting:} produce 10-K-style statements and export datasets.
+\end{enumerate}
+
+\section{Product Market (Preset Demand System)}
+
+\subsection{Public product attributes}
+Each firm sells one differentiated product. The environment maintains internal ``stocks'' that proxy for capability and brand and exposes simple public indices:
+quality index $Q_{it}$ and brand index $S_{it}$.
+
+These indices are derived from internal states (e.g., accumulated R\&D and marketing with depreciation), but the mapping is fixed and transparent.
+
+\subsection{Market size}
+Let $M_t\ge 0$ be total category demand in units. In the baseline, $M_t$ follows an exogenous macro process, e.g.
+\[
+\log M_t = \mu_M + \rho_M \log M_{t-1} + \sigma_M \varepsilon_t,
+\]
+with $\varepsilon_t\sim \mathcal{N}(0,1)$ or a bounded alternative. Optionally, a product-market LLM may output $M_t$ (subject to guardrails), but the demand allocation remains preset.
+
+\subsection{Demand allocation: multinomial logit example}
+A compact baseline is multinomial logit shares:
+\begin{align}
+u_{it} &= \beta_Q Q_{it} + \beta_S S_{it} - \beta_P p_{it} + \xi_{it},\\
+s_{it} &= \frac{\exp(u_{it})}{\sum_{j=1}^I \exp(u_{jt})},\\
+q^{\text{dem}}_{it} &= s_{it}\, M_t,
+\end{align}
+where $\xi_{it}$ are taste shocks (drawn by the environment or optionally suggested by a product-market LLM). This section is illustrative; any small, documented preset demand function is acceptable.
+
+\subsection{Realized sales under supply constraints}
+Let beginning inventory be $\text{Inv}_{i,t-1}$ and production $q^{\text{prod}}_{it}$. Then feasible sales satisfy
+\[
+q^{\text{sale}}_{it}\le q^{\text{dem}}_{it},\qquad q^{\text{sale}}_{it}\le \text{Inv}_{i,t-1}+q^{\text{prod}}_{it}.
+\]
+Unsatisfied demand is lost (baseline) and excess supply becomes inventory.
+
+\section{Operations Technology and State Dynamics}
+
+\subsection{Production and costs}
+Let unit variable cost depend on capability:
+\[
+c_{it} = c_0 \exp(-\phi A_{it}),
+\]
+where $A_{it}$ is a capability stock (internal, not directly observed by rivals). Then
+\[
+\text{COGS}_{it}=c_{it}\, q^{\text{sale}}_{it}.
+\]
+Fixed operating cost $F$ enters SG\&A.
+
+\subsection{Capability and brand accumulation}
+Internal stocks evolve as
+\begin{align}
+A_{i,t} &= (1-\delta_A)A_{i,t-1} + \eta_A x^R_{it},\\
+B_{i,t} &= (1-\delta_B)B_{i,t-1} + \eta_B x^M_{it},
+\end{align}
+and public indices are monotone transforms, e.g.
+\[
+Q_{it}=\log(1+A_{it}),\qquad S_{it}=\log(1+B_{it}).
+\]
+
+\subsection{Capacity and PPE}
+Capacity $K_{it}$ evolves with capex net of depreciation:
+\[
+K_{it} = (1-\delta_K)K_{i,t-1} + \eta_K x^K_{it}.
+\]
+Book PPE is tracked as $\text{PPE}_{it}$ with depreciation $\text{Dep}_{it}=\delta_P \text{PPE}_{i,t-1}$.
+
+\section{Working Capital, Taxes, and Cash Mechanics}
+
+\subsection{Working capital structure (quarterly)}
+Use a compact working-capital model at the quarterly frequency:
+\begin{itemize}[leftmargin=*]
+    \item Accounts receivable: $\text{AR}_{it} = \theta_{AR}\, \text{NetSales}_{it}$ (one-quarter collection lag).
+    \item Inventory: $\text{Inv}_{it} = \text{Inv}_{i,t-1} + q^{\text{prod}}_{it} - q^{\text{sale}}_{it}$ (in units) times a unit-cost valuation.
+    \item Accounts payable: $\text{AP}_{it} = \theta_{AP}\, \text{COGS}_{it}$ (one-quarter payment lag).
+    \item Accrued expenses: $\text{Accr}_{it}=\theta_{Accr}(\text{SG\&A}_{it}+\text{R\&D}_{it})$ (lagged).
+\end{itemize}
+
+\subsection{Taxes (quarterly accrual, lagged payment)}
+Corporate tax expense (quarterly):
+\[
+\text{TaxExpense}_{it}=\tau \max(\text{PreTaxIncome}_{it},0).
+\]
+Taxes payable can be lagged:
+\[
+\text{TaxPay}_{it} = \text{TaxPay}_{i,t-1} + \text{TaxExpense}_{it} - \text{TaxPaid}_{it},
+\]
+with $\text{TaxPaid}_{it}$ set by a simple policy (e.g., pay last quarter's taxes, subject to cash feasibility).
+
+\subsection{Cash update (conceptual)}
+Cash updates through operating, investing, and financing cash flows as in the statement of cash flows (Section~\ref{sec:scf}).
+
+\section{Financing and Financial Market (LLM-Determined)}
+
+\subsection{Financial-market LLM outputs (quarterly contracting)}
+For each firm, the financial-market LLM outputs (publicly) at least:
+\begin{itemize}[leftmargin=*]
+    \item Equity price $P_{it}>0$ (interpreted as the \emph{start-of-quarter} price for quarter $t$).
+    \item Revolver terms: commitment $L^{\text{commit}}_{it}\ge 0$ and annualized rate $r^{\text{rev}}_{it}\ge 0$.
+    \item Term debt terms: annualized rate $r^{\text{term}}_{it}\ge 0$ and optional max-new amount $L^{\text{term}}_{it}\ge 0$.
+    \item Optional clearing: how much of requested equity/debt issuance and buybacks are filled.
+\end{itemize}
+The environment validates only numerical sanity and firm-ID consistency (no extra/missing firms).
+
+\subsection{Interest and debt accounting (quarterly accrual)}
+Track short-term borrowings (revolver balance) $\text{RevBal}_{it}$ and long-term debt $\text{LTD}_{it}$.
+Treat LLM-provided rates as \emph{annualized APRs} and accrue interest quarterly using a $1/4$ factor:
+\[
+\text{IntExp}_{it} = \frac{r^{\text{rev}}_{it}}{4}\,\text{RevBal}_{i,t-1} + \frac{r^{\text{term}}_{it}}{4}\,\text{LTD}_{i,t-1}.
+\]
+(Using beginning-of-quarter balances is an acceptable approximation; the code may use average balances if desired.)
+Debt issuance/repayment changes balances per clearing.
+
+\subsection{Equity}
+Shares outstanding $\text{Shares}_{it}$ change with issuance/buybacks. Equity market capitalization is
+\[
+\text{MktCap}_{it} = P_{it}\,\text{Shares}_{it}.
+\]
+The environment does not impose any mapping from earnings/book value to $P_{it}$.
+
+\section{Accounting System and Financial Statements (10-K Style)}
+
+The environment is a bookkeeping engine that produces a familiar, 10-K-like presentation using a compact chart of accounts.
+The goal is not to reproduce all footnote complexity, but to ensure that (i) labels look realistic and (ii) the core identities reconcile.
+
+\subsection{Income statement (statement of operations)}
+Define
+\begin{align}
+\text{GrossProfit}_{it}&=\text{NetSales}_{it}-\text{COGS}_{it},\\
+\text{R\&D}_{it}&=x^R_{it},\\
+\text{SG\&A}_{it}&=F+x^M_{it},\\
+\text{EBIT}_{it}&=\text{GrossProfit}_{it}-\text{R\&D}_{it}-\text{SG\&A}_{it}-\text{Dep}_{it},\\
+\text{OtherIncome}_{it}&=0\ \text{ (baseline)}.
+\end{align}
+Net income is
+\begin{equation}
+\text{NetIncome}_{it}=\text{PreTaxIncome}_{it}-\text{TaxExpense}_{it}.
+\end{equation}
+A 10-K-like presentation:
+\begin{center}
+\begin{tabular}{l r}
+\toprule
+Net sales (revenue) & $\text{NetSales}_{it}$\\
+Cost of revenue & $-\text{COGS}_{it}$\\
+\midrule
+Gross profit & $\text{GrossProfit}_{it}$\\
+Operating expenses: & \\
+\quad Research and development & $-\text{R\&D}_{it}$\\
+\quad Selling, general and administrative & $-\text{SG\&A}_{it}$\\
+\quad Depreciation and amortization & $-\text{Dep}_{it}$\\
+\midrule
+Operating income (loss) & $\text{EBIT}_{it}$\\
+Interest expense & $-\text{IntExp}_{it}$\\
+Other income (expense), net & $\text{OtherIncome}_{it}$\\
+\midrule
+Income (loss) before income taxes & $\text{PreTaxIncome}_{it}$\\
+Provision for income taxes & $-\text{TaxExpense}_{it}$\\
+\midrule
+Net income (loss) & $\text{NetIncome}_{it}$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Balance sheet}
+Key asset accounts:
+\begin{align}
+\text{Cash}_{it} &\ge 0 \text{ (strictly enforced; violation triggers default)},\\
+\text{AR}_{it}&=\theta_{AR}\,\text{NetSales}_{it},\\
+\text{Inv}_{it}&\ge 0,\\
+\text{PPE}_{it}&=(1-\delta_P)\text{PPE}_{i,t-1}+x^K_{it} \ge 0.
+\end{align}
+\textbf{Important:} since all asset accounts are non-negative, $\text{TotalAssets}_{it}\ge 0$ follows automatically. If the accounting engine ever produces $\text{TotalAssets}_{it}<0$, this is a \emph{bug} in settlement/clamping logic, not a valid economic outcome.
+Key liability accounts:
+\begin{align}
+\text{AP}_{it}&=\theta_{AP}\,\text{COGS}_{it},\\
+\text{Accr}_{it}&=\theta_{Accr}(\text{SG\&A}_{it}+\text{R\&D}_{it}),\\
+\text{TaxPay}_{it}&\ge 0,\\
+\text{RevBal}_{it}&\ge 0,\qquad \text{LTD}_{it}\ge 0.
+\end{align}
+
+Stockholders' equity (book) is the residual:
+\[
+\text{EquityBook}_{it}=\text{TotalAssets}_{it}-\text{TotalLiab}_{it}.
+\]
+For reporting, represent equity with compact components (common stock, APIC, treasury stock, retained earnings, AOCI baseline 0) that reconcile to the residual.
+
+A 10-K-like balance sheet presentation:
+\begin{center}
+\begin{tabular}{l r}
+\toprule
+\textbf{Assets} & \\
+Cash and cash equivalents & $\text{Cash}_{it}$\\
+Accounts receivable, net & $\text{AR}_{it}$\\
+Inventory & $\text{Inv}_{it}$\\
+Prepaid expenses and other current assets & $\text{Prepaid}_{it}$\\
+\midrule
+Total current assets & $\text{CA}_{it}$\\
+Property and equipment, net & $\text{PPE}_{it}$\\
+Other assets & $\text{OtherA}_{it}$\\
+\midrule
+Total assets & $\text{TotalAssets}_{it}$\\
+\midrule
+\textbf{Liabilities and stockholders' equity} & \\
+Accounts payable & $\text{AP}_{it}$\\
+Accrued expenses and other current liabilities & $\text{Accr}_{it}$\\
+Income taxes payable & $\text{TaxPay}_{it}$\\
+Short-term borrowings (revolver) & $\text{RevBal}_{it}$\\
+\midrule
+Total current liabilities & $\text{CL}_{it}$\\
+Long-term debt & $\text{LTD}_{it}$\\
+Other long-term liabilities & $\text{OtherL}_{it}$\\
+\midrule
+Total liabilities & $\text{TotalLiab}_{it}$\\
+\midrule
+Common stock & $\text{CS}_{it}$\\
+Additional paid-in capital & $\text{APIC}_{it}$\\
+Treasury stock & $-\text{TS}_{it}$\\
+Retained earnings (accumulated deficit) & $\text{RE}_{it}$\\
+Accumulated other comprehensive income (loss) & $\text{AOCI}_{it}$\\
+\midrule
+Total stockholders' equity & $\text{TotalEquity}_{it}$\\
+\midrule
+Total liabilities and stockholders' equity & $\text{TotalLiab}_{it}+\text{TotalEquity}_{it}$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Statement of cash flows (indirect method)}\label{sec:scf}
+Cash flow from operations:
+\begin{align}
+\text{CFO}_{it} &= \text{NetIncome}_{it} + \text{Dep}_{it} \\
+&\quad -\Delta \text{AR}_{it} - \Delta \text{Inv}_{it} + \Delta \text{AP}_{it} + \Delta \text{Accr}_{it} + \Delta \text{TaxPay}_{it}.
+\end{align}
+Cash flow from investing:
+\[
+\text{CFI}_{it} = -x^K_{it}.
+\]
+Cash flow from financing:
+\begin{align}
+\text{CFF}_{it} &= +\text{EquityIssuance}_{it} - \text{Buyback}_{it} - \text{Div}_{it} \\
+&\quad + \Delta \text{LTD}_{it} + \Delta \text{RevBal}_{it}.
+\end{align}
+Cash reconciliation:
+\[
+\text{Cash}_{it}=\text{Cash}_{i,t-1}+\text{CFO}_{it}+\text{CFI}_{it}+\text{CFF}_{it}.
+\]
+10-K-like presentation should list the above line items.
+
+\subsection{Statement of stockholders' equity}
+Retained earnings roll forward:
+\[
+\text{RE}_{it}=\text{RE}_{i,t-1}+\text{NetIncome}_{it}-\text{Div}_{it}.
+\]
+Treasury stock under cost method increases with buybacks and decreases with re-issuance (if allowed).
+AOCI baseline is 0 unless additional features are added.
+
+\section{Feasibility, Default, Bankruptcy Auction, and Entry}
+
+\subsection{Bounds and action constraints (game-friendly)}
+To keep the game playable, enforce simple \emph{numerical/physical} bounds:
+\begin{itemize}[leftmargin=*]
+    \item Production: $0\le q^{\text{prod}}_{it}\le \kappa K_{i,t-1}$.
+    \item Spending: $x^K_{it},x^R_{it},x^M_{it}\ge 0$ (optionally capped at a large technical limit).
+    \item Payout requests: $\text{Div}_{it},\text{Buyback}_{it}\ge 0$.
+    \item Financing requests: $\text{DebtIssue}_{it},\text{DebtRepay}_{it},\text{EquityIssuance}_{it}\ge 0$.
+\end{itemize}
+
+\subsection{Cash feasibility and revolver (market-supplied commitment)}
+At settlement, if projected cash would fall below zero, the environment draws the revolver \emph{up to the available commitment supplied by the financial-market LLM}.
+If the financial-market LLM supplies a per-period commitment $L^{\text{commit}}_{it}$, then the environment enforces
+\[
+\text{RevBal}_{it}\le L^{\text{commit}}_{it}.
+\]
+There is no exogenous hard-coded revolver limit besides technical sanity bounds.
+
+\subsection{Default trigger}
+Default rule:
+\[
+\text{Cash}_{it}<0 \text{ after exhausting market-supplied liquidity} \quad \Rightarrow\quad \text{Default}.
+\]
+
+\subsection{Bankruptcy auction (liquidation) and claim recovery}
+Upon default at the end of quarter $t$:
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Auction proceeds:} sell assets at recovery rates (salvage haircuts) applied to book values:
+    \begin{align}
+    \text{Proceeds}_{it} &= \lambda_C \text{Cash}_{it} + \lambda_{AR}\text{AR}_{it} + \lambda_{Inv}\text{Inv}_{it} + \lambda_{PPE}\text{PPE}_{it} + \lambda_{O}\text{OtherA}_{it}.
+    \end{align}
+    Baseline: $\lambda_C=1$, and $\lambda_{AR},\lambda_{Inv},\lambda_{PPE},\lambda_O\in[0,1]$.
+    \item \textbf{Pay liabilities in a simple priority waterfall:}
+    \begin{enumerate}[leftmargin=*]
+        \item Revolver (short-term borrowings),
+        \item Term debt (long-term debt),
+        \item Trade and statutory payables (AP, accrued liabilities, taxes).
+    \end{enumerate}
+    Any unpaid balance is a loss to the respective claimant class.
+    \item \textbf{Residual to equity:} if proceeds exceed total liabilities, residual value is distributed to equity holders as liquidation proceeds; otherwise equity receives zero.
+\end{enumerate}
+This mechanism ensures that bankruptcy outcomes affect realized creditor returns (used for scoring the financial-market LLM).
+
+\subsection{Fresh entry after bankruptcy (zero reset)}
+To keep the industry size constant, if firm $i$ defaults in $t$, then in $t+1$ a \emph{fresh entrant} replaces it:
+\begin{itemize}[leftmargin=*]
+    \item The entrant begins from the same \textbf{zero book state} as at $t=1$ (Section ``Overview'') and with internal stocks reset to $A=B=K=0$.
+    \item The entrant inherits the \emph{slot} $i$ but receives a new \emph{incarnation index} $g$ so the internal key is $(i,g)$.
+    \item The entrant also receives a new \emph{agent fingerprint} (Section ``LLM Interface''): a random but fixed ``style''/risk profile and nonce tokens, so entrants are not behavioral clones.
+    \item Publicly, the identifier can remain ``Firm $i$'' while internal files and datasets use $(i,g)$ to prevent hallucinated extra firms.
+\end{itemize}
+
+\paragraph{Preventing death spirals (consecutive-failure cap).}
+If a firm slot $i$ has $N_{\max}^{\text{fail}}$ (e.g., 3) consecutive incarnations that default in their first quarter (``failed IPO'' or immediate default), the environment should:
+\begin{enumerate}[leftmargin=*]
+    \item Pause the slot for one quarter (the slot is vacant, industry has $I-1$ active firms),
+    \item On the next entry attempt, provide the financial-market LLM with an explicit flag noting the slot's history of failed capitalization,
+    \item If the pattern persists beyond $2 N_{\max}^{\text{fail}}$ total consecutive failures, freeze the slot permanently for the remainder of the run and log a diagnostic warning.
+\end{enumerate}
+This prevents the degenerate outcome of an incarnation counter climbing to $30+$ with zero activity each quarter.
+
+\section{Data Outputs: Compustat-Style Quarterly Panel, Debrief, and Diagnostics}
+
+\subsection{Compustat-style firm-quarter dataset (Compustat Quarterly flavor)}
+The simulator must export a CSV panel with one row per \emph{firm-incarnation per quarter}:
+\[
+(\text{run\_id},\ i,\ g,\ t)\ \mapsto\ \text{Compustat-style quarterly variables},
+\]
+where $t$ is a fiscal quarter and $(\text{fyear},\text{fqtr})$ is defined in Section ``Overview''.
+
+Include at least the following columns (approximate Compustat naming; suffix ``q'' denotes quarterly):
+\begin{itemize}[leftmargin=*]
+    \item Identifiers: \texttt{run\_id}, \texttt{firm\_id}, \texttt{incarnation}, \texttt{fyearq}, \texttt{fqtr}, \texttt{datadate}.
+    \item Balance sheet (end-of-quarter): 
+    \texttt{atq} (total assets), \texttt{ltq} (total liabilities), \texttt{ceqq} (common equity), 
+    \texttt{cheq} (cash), \texttt{rectq} (AR), \texttt{invtq} (inventory), \texttt{ppentq} (PPE, net), 
+    \texttt{apq} (accounts payable), \texttt{acoq} (accrued expenses and other current liabilities),
+    \texttt{lctq} (current liabilities), \texttt{dlcq} (short-term debt / revolver), 
+    \texttt{dlttq} (long-term debt), \texttt{txpq} (taxes payable).
+    
+    \textbf{Component reconciliation:} $\texttt{lctq} = \texttt{apq} + \texttt{acoq} + \texttt{txpq} + \texttt{dlcq}$, and $\texttt{atq} = \texttt{cheq} + \texttt{rectq} + \texttt{invtq} + \texttt{ppentq} + \text{(other assets)}$. These must hold exactly (up to rounding).
+    \item Income statement (quarterly flows): 
+    \texttt{saleq} (net sales), \texttt{cogsq}, \texttt{gpq} (gross profit),
+    \texttt{xrdq}, \texttt{xsgaq}, \texttt{dpq}, \texttt{oiadpq} (operating income after dep),
+    \texttt{xintq}, \texttt{piq} (pretax income), \texttt{txtq} (tax expense), \texttt{niq}.
+    \item Cash flow (quarterly): 
+    \texttt{oancfq} (operating cash flow), \texttt{capxq}, 
+    \texttt{dltisq} (debt issued), \texttt{dltrq} (debt repaid),
+    \texttt{sstkq} (stock issued), \texttt{prstkcq} (stock repurchased),
+    \texttt{dvq} (dividends), \texttt{chechq} (change in cash).
+    \item Market: \texttt{prccq} (equity price at start of quarter), \texttt{cshoq} (shares), \texttt{mkvaltq} (market cap).
+    \item Events and pricing diagnostics: \texttt{default\_flag}, \texttt{auction\_proceeds}, 
+    \texttt{debt\_recovery\_rate}, \texttt{equity\_recovery}, and \texttt{pricing\_error\_q} (defined below).
+\end{itemize}
+The mapping is approximate but labels should match Compustat conventions and be consistent across runs.
+
+\paragraph{Panel uniqueness and validation.}
+The key $(\texttt{run\_id},\texttt{firm\_id},\texttt{incarnation},\texttt{fyearq},\texttt{fqtr})$ must be \textbf{unique} in the panel.  The export code must deduplicate before writing.  Additionally, the export must validate the following invariants for every non-default row (reject or warn if violated):
+\begin{itemize}[leftmargin=*]
+    \item $\texttt{atq}\ge 0$ (total assets non-negative),
+    \item $\texttt{cheq}\ge 0$ (cash non-negative for non-defaulted firms),
+    \item $|\texttt{atq}-\texttt{ltq}-\texttt{ceqq}|<1$ (balance-sheet identity),
+    \item $|\texttt{lctq}-(\texttt{apq}+\texttt{acoq}+\texttt{txpq}+\texttt{dlcq})|<1$ (current liabilities reconcile with components).
+\end{itemize}
+For the default quarter's row, negative cash is permitted as a diagnostic record, but \texttt{atq} should still be computed correctly as the sum of all asset accounts.
+
+\paragraph{Pricing error per firm-quarter.}
+Let $P_{it}$ denote the \emph{start-of-quarter} price set by the financial-market LLM for quarter $t$, and let $\text{Div}_{it}$ be the dividend paid \emph{during} quarter $t$ (end-of-quarter payout). Let $r^f_t$ be the annualized risk-free rate; define the quarterly discount factor as $1+r^f_t/4$.
+Define an ex post one-quarter ``fundamental'' (realized discounted payoff) as
+\[
+P^{\star}_{it}=\frac{\text{Div}_{it}+P_{i,t+1}}{1+r^f_t/4},
+\]
+and record the pricing error
+\[
+\text{pricing\_error\_q}_{it}=P_{it}-P^{\star}_{it},
+\]
+for all $t<T$ (for $t=T$ omit or use a terminal convention).
+
+\subsection{Debrief dataset (auto-expanding across simulations)}
+Each run must produce a \textbf{debrief CSV} that appends across runs (create file if absent, append if present). 
+The debrief file is the main ``scoreboard'' for repeated simulations and must include:
+
+\paragraph{Firm investment performance.}
+For each firm-incarnation $(i,g)$, report:
+\begin{itemize}[leftmargin=*]
+    \item Terminal total claim value:
+    \[
+    V^{\text{end}}_{i,g}=
+    \begin{cases}
+    P_{iT}\,\text{Shares}_{iT} + \text{RevBal}_{iT}+\text{LTD}_{iT} & \text{if alive at }T,\\
+    \text{Proceeds}_{i,g} & \text{if defaulted before }T.
+    \end{cases}
+    \]
+    \item Equity-investor cash-flow series (quarterly): 
+    \[
+    \text{CF}^{E}_{it}= \text{Div}_{it}+\text{BuybackPaid}_{it}-\text{EquityIssueProceeds}_{it}
+    \]
+    plus a terminal value at exit:
+    $+\ P_{iT}\text{Shares}_{iT}$ if alive at $T$, or $+\ \text{EquityResidual}_{i,g}$ if liquidated.
+    From these cash flows compute \textbf{equity IRR} and \textbf{equity total return}.
+    \item Simple summary components: total capital raised (equity + debt), total distributions to equity (dividends + buybacks + liquidation residual), default quarter (if any), lifespan in quarters.
+\end{itemize}
+
+\paragraph{Credit performance (financial intermediaries).}
+Treat the financial-market agent as a lender supplying revolver draws and term debt. Record quarterly lender cash flows:
+\begin{itemize}[leftmargin=*]
+    \item Principal outflows when credit is extended (revolver draws and term debt issuance),
+    \item Principal inflows when repaid,
+    \item Interest inflows (quarterly accrual based on annualized rates divided by 4),
+    \item Bankruptcy recoveries from the liquidation waterfall.
+\end{itemize}
+Compute and report (for the whole credit portfolio and optionally by instrument):
+\textbf{total return}, \textbf{IRR}, \textbf{loss rate}, and \textbf{default rate}.
+
+\paragraph{Equity price efficiency (financial-market agent).}
+Aggregate pricing errors $\text{pricing\_error\_q}_{it}$ into run-level metrics such as:
+\begin{itemize}[leftmargin=*]
+    \item MAPE or sMAPE of $P_{it}$ vs. $P^{\star}_{it}$,
+    \item RMSE and bias of pricing errors,
+    \item correlation between $P_{it}$ and $P^{\star}_{it}$.
+\end{itemize}
+These constitute the financial-market LLM's ``price efficiency'' score.
+
+\subsection{Diagnostics: non-degenerate behavior checks}
+The simulator should emit a simple diagnostics report (CSV/JSON/Markdown) to help users judge realism. At minimum, warn/flag runs where:
+\begin{itemize}[leftmargin=*]
+    \item all firms choose identical actions for many quarters (prices, capex, R\&D, marketing nearly identical);
+    \item investment is persistently zero (e.g., $\text{capxq}=0$ and $\text{xrdq}=0$ for all firms over long spans);
+    \item market shares are constant with no entry/exit despite shocks (unless shocks are disabled).
+\end{itemize}
+Provide guidance to inspect the Compustat-style panel for dispersion in \texttt{saleq}, \texttt{capxq}, \texttt{xrdq}, margins, leverage, and stock returns.
+
+\paragraph{Hard invariant checks (must pass or the run is flagged invalid).}
+The diagnostics must also verify:
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{No negative total assets} for non-default rows: $\texttt{atq}\ge 0$.
+    \item \textbf{No negative cash} for non-default rows: $\texttt{cheq}\ge 0$.
+    \item \textbf{Balance-sheet identity}: $|\texttt{atq}-\texttt{ltq}-\texttt{ceqq}|<1$ for every row.
+    \item \textbf{Cash reconciliation}: $|\texttt{chechq}-(\text{Cash}_t - \text{Cash}_{t-1})|<1$ for consecutive quarters of the same incarnation.
+    \item \textbf{Current-liabilities decomposition}: $|\texttt{lctq}-(\texttt{apq}+\texttt{acoq}+\texttt{txpq}+\texttt{dlcq})|<1$.
+    \item \textbf{No duplicate keys}: each $(\texttt{run\_id},\texttt{firm\_id},\texttt{incarnation},\texttt{fyearq},\texttt{fqtr})$ appears exactly once.
+    \item \textbf{Death-spiral detection}: flag if any firm slot reaches incarnation $>N_{\max}^{\text{fail}}$ consecutive first-quarter defaults.
+\end{enumerate}
+
+\section{LLM Interface, Prompting, Memory, Randomness, and Hallucination Guardrails}
+
+\subsection{Structured outputs and firm-ID guardrails}
+All LLMs must output \emph{JSON only}. Prompts must include the authoritative list of firms (e.g., \texttt{["firm\_1",...,"firm\_I"]}) and a schema requiring keys only from that set. The environment must validate:
+\begin{itemize}[leftmargin=*]
+    \item no missing firms in required fields;
+    \item no extra firm keys (reject hallucinated firms);
+    \item numeric sanity (finite; nonnegative where required).
+\end{itemize}
+Invalid outputs trigger a bounded repair loop (retry with schema and the offending output).
+
+\subsection{Within-run memory system (mandatory)}
+Because this is a multi-quarter game, prompts must include \emph{what happened previously}. The environment maintains two memories:
+
+\paragraph{Market memory (public, canonical).}
+A structured event log for each quarter including, at minimum:
+market size $M_t$, macro shocks, each firm's public actions (prices, payouts, issuance), realized sales/market shares, credit terms, equity prices/returns, and any defaults/auctions/entries.
+This is the canonical record used to prevent hallucinated events.
+
+\paragraph{Firm memory (private, canonical).}
+For each firm-incarnation $(i,g)$, maintain a private record of its own internal states and outcomes (capability/brand/capacity stocks, unit costs, inventory, and any internal KPIs).
+
+\subsection{Temporal prompts with memory management}
+Each agent prompt (firms and financial market) should include:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Current quarter header:} $(\text{fyear},\text{fqtr})$, macro state, and the authoritative firm list.
+    \item \textbf{Short memory:} last $K$ quarters of structured market-memory events (and, for firms, their private events).
+    \item \textbf{Long memory:} a compressed summary of earlier quarters, updated each quarter \emph{only from the canonical log} (deterministic summarization preferred; LLM summarization allowed only if constrained to summarize provided facts).
+\end{itemize}
+When prompt length approaches a limit, drop older raw quarters but keep the long-memory summary.
+
+\subsection{Randomness, agent fingerprints, and reproducibility}
+To avoid degenerate ``all firms behave the same'' outcomes, the environment includes exogenous randomness and agent heterogeneity:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Exogenous shocks:} macro shocks (e.g., market size, risk-free rate) and firm taste shocks $\xi_{it}$ in demand (Section ``Product Market'').
+    \item \textbf{Agent fingerprints (fixed within a run):} each firm agent and the financial-market agent receive a random but fixed ``profile'' (e.g., risk appetite, growth-vs-profitability tilt) and a nonce token. This profile is included in the system prompt so that different agents make different choices even under similar states.
+    \item \textbf{Determinism option:} for reproducibility, use temperature $=0$ and (if supported) pass an explicit RNG seed to the local LLM runtime. Randomness then enters only through the environment's seeded shocks and agent fingerprints.
+\end{itemize}
+
+\subsection{Consulting a database of past simulations (cross-run memory)}
+To improve decisions, the simulator may provide the firm and financial-market LLMs with \emph{retrieved cases} from prior runs stored as CSVs (Compustat-style quarterly panel and debrief dataset). A simple retrieval rule:
+\begin{itemize}[leftmargin=*]
+    \item compute a feature vector (e.g., leverage, profitability, growth, liquidity);
+    \item select the $K$ nearest historical \emph{firm-quarters};
+    \item include their actions/outcomes as ``prior episodes'' in the prompt.
+\end{itemize}
+The code must: (i) create the historical CSV files if absent, and (ii) append new runs if present.
+
+\section{Baseline Parameterization (Example)}
+
+Choose parameters to produce plausible statement magnitudes while keeping the game stable at a \textbf{quarterly} frequency:
+\begin{itemize}[leftmargin=*]
+    \item $I=4$ firms; $T=80$ quarters (20 fiscal years) as a baseline.
+    \item Shares at start: $\text{Shares}_{i0}=1{,}000{,}000$ (no-par; book common stock can be $0$).
+    \item Demand parameters: $\beta_P>0$ large enough for price sensitivity; $\beta_Q,\beta_S>0$.
+    \item Working capital lags: $\theta_{AR}\in[0.05,0.30]$, $\theta_{AP}\in[0.05,0.30]$, $\theta_{Accr}\in[0.05,0.30]$.
+    \item Annual tax rate $\tau\approx 0.21$ applied to quarterly pretax income.
+    \item Bankruptcy recovery rates: $\lambda_{AR},\lambda_{Inv},\lambda_{PPE}\in[0.2,0.9]$.
+    \item Exogenous shock scales: $\sigma_M$ (market size volatility) and taste shock scale for $\xi_{it}$ chosen to generate nontrivial market-share movement.
+    \item \textbf{Consecutive-failure cap}: $N_{\max}^{\text{fail}}=3$ (configurable).
+\end{itemize}
+
+\paragraph{Prompt guidance for LLM agents (spending reasonableness).}
+The firm-agent system prompt should include guidance that:
+\begin{itemize}[leftmargin=*]
+    \item Total quarterly spending (COGS $+$ R\&D $+$ SG\&A $+$ capex) should not routinely exceed total available capital (cash $+$ credit). The environment will clamp if it does, but the LLM should aim for feasible plans.
+    \item A newly capitalized startup should not spend its entire capital in one quarter. Prompt the LLM with a ``capital budget'' derived from its balance sheet (e.g., ``You have \$X in cash and \$Y in credit; plan accordingly.'').
+    \item Dividends and buybacks should only be attempted when retained earnings and cash are positive.
+\end{itemize}
+
+\end{document}

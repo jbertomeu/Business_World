@@ -1,0 +1,29 @@
+model,backend,tier,quality_pct,firm_score,firm_max,env_score,env_max,pricing_score,pricing_max,total_score,max_score,avg_cost_per_m,value_score,response_time_s,failures,decision_quality,robustness,speed,is_reasoning,roles_assessed
+deepseek/deepseek-r1-0528,openrouter,S,100,17,17,11,11,9,9,37,37,1.325,75,426,0,excellent,all_pass,slow (426s),yes — explicit NPV + pipeline optionality,firm env pricing
+minimax/minimax-m2.5,openrouter,A,97,17,17,10,11,9,9,36,37,0.554,176,109,0,excellent,env_narrative_thin,moderate (109s),yes,firm env pricing
+deepseek/deepseek-v3.2,openrouter,S,100,17,17,11,11,9,9,37,37,0.320,312,115,0,excellent,all_pass,moderate (115s),yes,firm env pricing
+qwen/qwen3-235b-a22b-2507,openrouter,S,100,17,17,11,11,9,9,37,37,0.085,1170,33,0,excellent,all_pass,fast (33s),yes,firm env pricing
+mistralai/mistral-small-24b-instruct-2501,openrouter,S,100,17,17,11,11,9,9,37,37,0.065,1538,15,0,good,all_pass,fastest (15s),yes,firm env pricing
+google/gemma-3-12b-it,openrouter,A,95,17,17,10,11,8,9,35,37,0.085,1113,35,0,good — best credit risk in full sim,env_narrative_thin + pipeline_undervalued,fast (35s),yes,firm env pricing
+qwen/qwen3-32b,openrouter,A,97,17,17,10,11,9,9,36,37,0.160,608,255,0,good,env_narrative_thin,slow (255s),yes,firm env pricing
+qwen/qwen3-14b,openrouter,A,95,17,17,9,11,9,9,35,37,0.150,631,660,0,good,env_shares_wrong + firm0_not_leader,very slow (660s),yes,firm env pricing
+qwen/qwen3.5-9b,openrouter,A,96,17,17,10,11,-1,9,27,28,0.100,964,397,1,good,pricing_task_crashed,slow (397s),yes,firm env
+mistralai/mistral-small-3.2-24b-instruct,openrouter,A,97,17,17,10,11,9,9,36,37,0.138,708,17,0,good,env_narrative_thin,fastest (17s),yes,firm env pricing
+z-ai/glm-4-32b,openrouter,S,100,17,17,11,11,9,9,37,37,0.100,1000,21,0,good,all_pass,fast (21s),yes,firm env pricing
+google/gemma-4-26b-a4b-it,openrouter,A,97,17,17,10,11,9,9,36,37,0.215,453,34,0,good,env_narrative_thin,fast (34s),yes,firm env pricing
+nvidia/nemotron-nano-9b-v2,openrouter,A,97,17,17,10,11,9,9,36,37,0.100,973,79,0,good,env_narrative_thin,moderate (79s),yes,firm env pricing
+microsoft/phi-4,openrouter,S,100,17,17,11,11,9,9,37,37,0.103,976,36,0,good (prev failed — revalidate),all_pass,fast (36s),yes,firm env pricing
+meta-llama/llama-4-scout,openrouter,S,100,17,17,11,11,9,9,37,37,0.190,526,20,0,excellent,all_pass,fast (20s),yes,firm env pricing
+meta-llama/llama-3.3-70b-instruct,openrouter,A,95,17,17,9,11,9,9,35,37,0.210,450,34,0,good,env_shares_wrong + firm0_not_leader,fast (34s),yes,firm env pricing
+google/gemini-2.0-flash-001,openrouter,S,100,17,17,11,11,9,9,37,37,0.250,400,10,0,good,all_pass,fastest (10s),yes,firm env pricing
+nvidia/llama-3.3-nemotron-super-49b-v1.5,openrouter,S,100,17,17,11,11,9,9,37,37,0.250,400,325,0,excellent,all_pass,very slow (325s),yes,firm env pricing
+bytedance-seed/seed-2.0-mini,openrouter,S,100,17,17,11,11,9,9,37,37,0.250,400,657,0,good,all_pass,unusable (657s),yes,firm env pricing
+nvidia/nemotron-3-super-120b-a12b,openrouter,A,97,17,17,10,11,9,9,36,37,0.300,324,294,0,good,env_narrative_thin,very slow (294s),yes,firm env pricing
+minimax/minimax-m2.7,openrouter,A,100*,17,17,-1,11,9,9,26,26,0.750,133,56,1,excellent (firm+pricing),env_task_failed,moderate (56s),yes,firm pricing
+deepseek/deepseek-v3.2-exp,openrouter,S,100,17,17,11,11,9,9,37,37,0.340,294,67,0,excellent,all_pass,moderate (67s),yes,firm env pricing
+aphrodite/TheDrummer/Skyfall-31B-v4.1,aihorde,A,95,17,17,11,11,7,9,35,37,0 (free),n/a,41,0,good — price=$72K rd=$45M,pricing_only_2_firms,fast (41s),yes,firm env pricing
+koboldcpp/Dark-Nexus-24B-v2.0.i1-Q5_K_M,aihorde,S,100,17,17,11,11,9,9,37,37,0 (free),n/a,104,0,good — price=$70K rd=$40M,all_pass,moderate (104s),yes,firm env pricing
+koboldcpp/gemma-4-26B-A4B-it-heretic.IQ4_XS,aihorde,S,100,17,17,11,11,9,9,37,37,0 (free),n/a,46,0,good ��� price=$78K rd=$45M,all_pass,fast (46s),yes,firm env pricing
+aphrodite/TheDrummer/Behemoth-R1-123B-v2-w4a16,aihorde,S,100,17,17,11,11,9,9,37,37,0 (free),n/a,231,0,good — price=$80K rd=$50M,all_pass,slow (231s),yes,firm env pricing
+TheDrummer/Cydonia-24B-v4.3,aihorde,F,0,-1,17,-1,11,-1,9,0,37,0 (free),n/a,1007,3,n/a — all tasks timed out,all_tasks_timed_out,unusable (1007s),unknown,none
+koboldcpp/Gemma-4-31B-it,aihorde,F,0,-1,17,-1,11,-1,9,0,37,0 (free),n/a,1000,3,n/a — all tasks timed out,all_tasks_timed_out,unusable (1000s),unknown,none

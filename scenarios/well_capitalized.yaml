@@ -1,0 +1,148 @@
+name: well_capitalized
+description: |
+  High-cash, low-competition scenario designed for long-horizon (20+ year)
+  research runs where you want firms to survive long enough to generate
+  meaningful longitudinal data.
+
+  Three well-funded firms with strong capability + brand from day 1, low
+  unit cost (good margins), and ample manufacturing capacity. Designed
+  to break out of the "everyone defaults by Q7" pattern seen in the
+  default biotech setup.
+
+  Target dynamics:
+    - Firms survive 20+ years on average (the original $175M IPO setup
+      gives ~6Q runway; this gives ~20-30Q runway minimum)
+    - At least one firm reaches Generation 2 (the $500M cumulative R&D
+      threshold) within the first 5 years
+    - Industry consolidates via M&A rather than mass default
+
+  Pair with `n_firms_initial: 3` in your run config for low competition.
+
+# Wave ι: industry narrative passed to firm + env + analyst prompts
+# Wave ν: TAM bumped to reflect the true size of a proven-longevity market.
+# Once tech is ready, people pay essentially anything to extend healthy
+# lifespan; forward-looking capital should price firms against the full
+# mature-market TAM, not against current quarter revenue.
+industry_character:
+  label: "longevity-breakthrough biotech"
+  tam_at_maturity_usd: 2_000_000_000_000   # $2T global TAM at mature standard-of-care
+  years_to_maturity: 15
+  narrative: |
+    This is a longevity / senolytic-regenerative-therapy industry. The
+    underlying science represents a genuine medical breakthrough: Gen 1
+    products already add 5-8 healthy years on average; Gen 2+ products
+    extend that to 10-25+ years with far better safety profiles.
+
+    Market size at maturity — the BIG picture that should anchor
+    long-horizon valuation:
+      - Once efficacy is proven and therapies become standard-of-care,
+        the addressable market is ENORMOUS — on the order of $1-2
+        trillion annually at maturity. This is not a niche: it is a
+        market as large as global oncology or cardiology combined,
+        because every aging person becomes a customer.
+      - Willingness to pay is effectively unbounded for proven life
+        extension: patients, employers, insurers, and governments all
+        find capacity to finance it, because the alternative is worse.
+        Current practical WTP is $50K-200K per treatment course, but
+        this rises as the therapy becomes more effective.
+      - The question is not WHETHER this market materializes — it is
+        WHICH firms capture it and HOW LONG until tech is ready.
+      - Forward-looking capital (PE, VC, public markets) should be
+        willing to finance multi-year bridges to get firms to the
+        tech-ready state, because the post-ready market is vast.
+
+    Near-term demand realities:
+      - Addressable population today: hundreds of millions globally
+        (aging developed-world demographics + emerging-market uptake).
+      - Current WTP: $50K-200K per course for proven life extension.
+      - Standard-of-care adoption is inevitable over 10-15 years.
+      - Capacity, not demand, is the binding constraint for early years.
+        Firms that pre-build manufacturing for 3-5 year demand dominate.
+
+    Industry dynamics:
+      - R&D-intensive: reaching Gen 2 requires large cumulative product
+        R&D investment AND several years of Phase III trials.
+      - Brand + trust matter: a safety failure can permanently damage
+        a firm. First-to-Gen-N leads can last a decade.
+      - Capital-hungry: real-world analogs required $1-3B of total
+        capital (mix of VC + IPO + secondary offerings) before first
+        profitable year.
+
+    Environmental judgment: calibrate demand to this reality. A
+    monopolist in year 3 at a fair price should be generating
+    hundreds of millions in quarterly revenue, not tens of millions.
+    Once a firm reaches Gen 2+, the upside trajectory should reflect
+    the multi-trillion mature market.
+
+# Wave ι: tune demand coefficients for this industry's specifics
+market_params:
+  # Larger aware population — this is a global industry
+  market_size_baseline: 2_000_000_000      # 2B reachable base population
+  awareness_rate: 0.20                      # 20% aware in Q1 (growing over time)
+  # Lower price sensitivity — patients pay a lot for life extension
+  price_coef: 0.000008                      # ~half of default 0.000015
+  # Raise affordability center — willing-to-pay up to $150K for longevity
+  affordability_center: 150_000
+  affordability_steepness: 0.00002
+  # Outside option decays fast as awareness grows (nothing competes with
+  # proven life extension once it exists)
+  outside_utility_base: 3.0
+  outside_utility_decay: 0.04
+  outside_utility_floor: 0.3
+  # Wave ν+4: Gen 2 R&D threshold tunable via scenario. Default in code
+  # is $500M which is unreachable in 16-20Q runs at sustainable burn.
+  # Lowering scenario-side so Gen 2 transitions are achievable.
+  gen_2_rd_threshold: 200_000_000
+
+firms:
+  - firm_id: firm_0
+    founding_cash: 800_000_000        # 4-5x default; ~25Q runway at $30M/Q burn
+    ipo_price: 80.00
+    ipo_shares: 10_000_000
+    founding_ppe_gross: 80_000_000    # bigger pilot plant — more units/Q capacity
+    founding_capability: 55.0          # strong (vs default 35) — can make good G1 from day 1
+    founding_brand: 50.0               # strong (vs default 10) — market knows them
+    base_unit_cost: 9_500              # lower than default $14k — better margins
+    ceo_base_salary: 1_800_000
+
+  - firm_id: firm_1
+    founding_cash: 800_000_000
+    ipo_price: 80.00
+    ipo_shares: 10_000_000
+    founding_ppe_gross: 75_000_000
+    founding_capability: 52.0
+    founding_brand: 48.0
+    base_unit_cost: 9_800
+    ceo_base_salary: 1_700_000
+
+  - firm_id: firm_2
+    founding_cash: 800_000_000
+    ipo_price: 80.00
+    ipo_shares: 10_000_000
+    founding_ppe_gross: 78_000_000
+    founding_capability: 58.0
+    founding_brand: 52.0
+    base_unit_cost: 9_300
+    ceo_base_salary: 1_900_000
+
+  # Wave ν: add firms 3-19 for 20-firm runs. Varied founding conditions
+  # (cash, capability, brand, cost) to create a heterogeneous competitive
+  # field. Firms above the index count of this list fall back to
+  # uniform defaults.
+  - { firm_id: firm_3,  founding_cash: 700_000_000, ipo_price: 70.00, ipo_shares: 10_000_000, founding_ppe_gross: 70_000_000, founding_capability: 48.0, founding_brand: 42.0, base_unit_cost: 10_200, ceo_base_salary: 1_600_000 }
+  - { firm_id: firm_4,  founding_cash: 650_000_000, ipo_price: 65.00, ipo_shares: 10_000_000, founding_ppe_gross: 65_000_000, founding_capability: 45.0, founding_brand: 40.0, base_unit_cost: 10_500, ceo_base_salary: 1_500_000 }
+  - { firm_id: firm_5,  founding_cash: 750_000_000, ipo_price: 75.00, ipo_shares: 10_000_000, founding_ppe_gross: 72_000_000, founding_capability: 50.0, founding_brand: 45.0, base_unit_cost: 10_000, ceo_base_salary: 1_650_000 }
+  - { firm_id: firm_6,  founding_cash: 850_000_000, ipo_price: 85.00, ipo_shares: 10_000_000, founding_ppe_gross: 82_000_000, founding_capability: 60.0, founding_brand: 55.0, base_unit_cost: 9_000, ceo_base_salary: 2_000_000 }
+  - { firm_id: firm_7,  founding_cash: 600_000_000, ipo_price: 60.00, ipo_shares: 10_000_000, founding_ppe_gross: 60_000_000, founding_capability: 42.0, founding_brand: 38.0, base_unit_cost: 11_000, ceo_base_salary: 1_400_000 }
+  - { firm_id: firm_8,  founding_cash: 720_000_000, ipo_price: 72.00, ipo_shares: 10_000_000, founding_ppe_gross: 70_000_000, founding_capability: 47.0, founding_brand: 43.0, base_unit_cost: 10_300, ceo_base_salary: 1_550_000 }
+  - { firm_id: firm_9,  founding_cash: 780_000_000, ipo_price: 78.00, ipo_shares: 10_000_000, founding_ppe_gross: 76_000_000, founding_capability: 53.0, founding_brand: 47.0, base_unit_cost: 9_700, ceo_base_salary: 1_750_000 }
+  - { firm_id: firm_10, founding_cash: 820_000_000, ipo_price: 82.00, ipo_shares: 10_000_000, founding_ppe_gross: 80_000_000, founding_capability: 56.0, founding_brand: 51.0, base_unit_cost: 9_400, ceo_base_salary: 1_850_000 }
+  - { firm_id: firm_11, founding_cash: 680_000_000, ipo_price: 68.00, ipo_shares: 10_000_000, founding_ppe_gross: 68_000_000, founding_capability: 44.0, founding_brand: 39.0, base_unit_cost: 10_700, ceo_base_salary: 1_450_000 }
+  - { firm_id: firm_12, founding_cash: 760_000_000, ipo_price: 76.00, ipo_shares: 10_000_000, founding_ppe_gross: 74_000_000, founding_capability: 51.0, founding_brand: 46.0, base_unit_cost: 9_900, ceo_base_salary: 1_700_000 }
+  - { firm_id: firm_13, founding_cash: 640_000_000, ipo_price: 64.00, ipo_shares: 10_000_000, founding_ppe_gross: 62_000_000, founding_capability: 43.0, founding_brand: 38.0, base_unit_cost: 10_800, ceo_base_salary: 1_400_000 }
+  - { firm_id: firm_14, founding_cash: 740_000_000, ipo_price: 74.00, ipo_shares: 10_000_000, founding_ppe_gross: 72_000_000, founding_capability: 49.0, founding_brand: 44.0, base_unit_cost: 10_100, ceo_base_salary: 1_600_000 }
+  - { firm_id: firm_15, founding_cash: 790_000_000, ipo_price: 79.00, ipo_shares: 10_000_000, founding_ppe_gross: 77_000_000, founding_capability: 54.0, founding_brand: 49.0, base_unit_cost: 9_600, ceo_base_salary: 1_750_000 }
+  - { firm_id: firm_16, founding_cash: 710_000_000, ipo_price: 71.00, ipo_shares: 10_000_000, founding_ppe_gross: 70_000_000, founding_capability: 46.0, founding_brand: 41.0, base_unit_cost: 10_400, ceo_base_salary: 1_500_000 }
+  - { firm_id: firm_17, founding_cash: 830_000_000, ipo_price: 83.00, ipo_shares: 10_000_000, founding_ppe_gross: 81_000_000, founding_capability: 57.0, founding_brand: 53.0, base_unit_cost: 9_200, ceo_base_salary: 1_900_000 }
+  - { firm_id: firm_18, founding_cash: 690_000_000, ipo_price: 69.00, ipo_shares: 10_000_000, founding_ppe_gross: 66_000_000, founding_capability: 45.0, founding_brand: 40.0, base_unit_cost: 10_600, ceo_base_salary: 1_450_000 }
+  - { firm_id: firm_19, founding_cash: 770_000_000, ipo_price: 77.00, ipo_shares: 10_000_000, founding_ppe_gross: 75_000_000, founding_capability: 52.0, founding_brand: 47.0, base_unit_cost: 9_800, ceo_base_salary: 1_700_000 }

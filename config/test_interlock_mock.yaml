@@ -1,0 +1,14 @@
+# Mock smoke with noisy_signals + directors ON — tests that
+# peer_observations.jsonl is written and interlock logic fires.
+
+n_firms_initial: 5
+n_quarters: 4
+seed: 42
+
+default_llm:
+  backend: mock
+  model: mock
+
+noisy_signals_enabled: true
+noisy_signals_sd: 0.20
+directors_enabled: true

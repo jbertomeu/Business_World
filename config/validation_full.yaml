@@ -1,0 +1,79 @@
+# Full validation: 5 firms, 8 quarters (2 fiscal years), ALL features ON
+# Tests both annual events + data broker in combo mode
+
+n_firms_initial: 5
+n_quarters: 8
+seed: 42
+
+default_llm:
+  backend: openrouter
+  model: mistralai/mistral-small-24b-instruct-2501
+
+# Use OpenRouter firms (skip horde to avoid timeouts with long prompts)
+agents:
+  firm_0:
+    model: "mistralai/mistral-small-24b-instruct-2501"
+    backend: openrouter
+    temperature: 0.30
+  firm_1:
+    model: "qwen/qwen3-235b-a22b-2507"
+    backend: openrouter
+    temperature: 0.35
+  firm_2:
+    model: "z-ai/glm-4-32b"
+    backend: openrouter
+    temperature: 0.40
+  firm_3:
+    model: "microsoft/phi-4"
+    backend: openrouter
+    temperature: 0.45
+  firm_4:
+    model: "google/gemini-2.0-flash-001"
+    backend: openrouter
+    temperature: 0.50
+
+# ALL expansion features ON
+earnings_management_enabled: true
+sec_enabled: true
+sellside_analysts_enabled: true
+earnings_announcement_enabled: true
+auditor_enabled: true
+governance_enabled: true
+restatements_enabled: true
+macro_expansion_enabled: true
+# M&A kept off for this validation (adds complexity, not needed to verify datasets)
+ma_enabled: false
+
+# Data broker in combo mode (templates + code fallback)
+data_broker_enabled: true
+data_broker_mode: combo
+data_broker_max_queries_per_agent_per_quarter: 2
+
+# v0.6 Stage 3/4/5 features ON
+debt_covenants_enabled: true
+convertible_debt_enabled: false   # keep off for this run (cleaner data)
+working_capital_decisions: true
+bad_debt_enabled: true
+
+# Annual reports (10-K-style markdown + CSV at fqtr=4)
+annual_reports_enabled: true
+
+# Environment output verification: deterministic anomaly check + LLM verifier
+# triggered only on flag (cheap in steady-state, catches hallucinations)
+env_verification_enabled: true
+
+# Stage 10 -- restructuring + env decision overrides (feasibility patching)
+restructuring_enabled: true
+env_decision_overrides_enabled: true
+
+# Stage 11 -- CEO stock-based compensation lifecycle (grants/vesting/sell/retire)
+stock_comp_enabled: true
+
+# Stage 12 -- corporate finance features (C1/C3/C4/C5/C6)
+legal_reserves_enabled: true
+pension_enabled: true
+deferred_taxes_enabled: true
+activist_investors_enabled: true
+
+# Performance: parallel firm LLM calls within a quarter (~Nx speedup).
+parallel_firm_decisions: true

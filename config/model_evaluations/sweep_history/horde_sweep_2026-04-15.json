@@ -1,0 +1,205 @@
+[
+  {
+    "model": "aphrodite/TheDrummer/Skyfall-31B-v4.1",
+    "status": "ok",
+    "firm": {
+      "success": true,
+      "score": 17,
+      "max_score": 17,
+      "issues": [],
+      "price": 72000.0,
+      "production": 280.0,
+      "rd_spend": 45000000.0,
+      "time": 8.629274129867554
+    },
+    "env": {
+      "success": true,
+      "score": 11,
+      "max_score": 11,
+      "issues": [],
+      "total_demand": 735,
+      "time": 16.809054851531982
+    },
+    "pricing": {
+      "success": true,
+      "score": 7,
+      "max_score": 9,
+      "issues": [],
+      "prices": {
+        "firm_0": 12.0,
+        "firm_1": 18.0
+      },
+      "time": 15.580215692520142
+    },
+    "total_score": 35,
+    "max_score": 37,
+    "quality_pct": 94.5945945945946,
+    "total_time": 41.01854467391968,
+    "failures": 0
+  },
+  {
+    "model": "TheDrummer/Cydonia-24B-v4.3",
+    "status": "ok",
+    "firm": {
+      "success": false,
+      "error": "Timed out after 270s",
+      "time": 333.17358803749084
+    },
+    "env": {
+      "success": false,
+      "error": "Timed out after 270s",
+      "time": 336.2103605270386
+    },
+    "pricing": {
+      "success": false,
+      "error": "Timed out after 270s",
+      "time": 337.33611130714417
+    },
+    "total_score": 0,
+    "max_score": 0,
+    "quality_pct": 0,
+    "total_time": 1006.7200598716736,
+    "failures": 3
+  },
+  {
+    "model": "koboldcpp/Dark-Nexus-24B-v2.0.i1-Q5_K_M",
+    "status": "ok",
+    "firm": {
+      "success": true,
+      "score": 17,
+      "max_score": 17,
+      "issues": [],
+      "price": 70000.0,
+      "production": 300.0,
+      "rd_spend": 40000000.0,
+      "time": 26.528292417526245
+    },
+    "env": {
+      "success": true,
+      "score": 11,
+      "max_score": 11,
+      "issues": [],
+      "total_demand": 735,
+      "time": 42.60115671157837
+    },
+    "pricing": {
+      "success": true,
+      "score": 9,
+      "max_score": 9,
+      "issues": [],
+      "prices": {
+        "firm_0": 22.0,
+        "firm_1": 18.5,
+        "firm_2": 12.0
+      },
+      "time": 34.771212577819824
+    },
+    "total_score": 37,
+    "max_score": 37,
+    "quality_pct": 100.0,
+    "total_time": 103.90066170692444,
+    "failures": 0
+  },
+  {
+    "model": "koboldcpp/gemma-4-26B-A4B-it-heretic.IQ4_XS",
+    "status": "ok",
+    "firm": {
+      "success": true,
+      "score": 17,
+      "max_score": 17,
+      "issues": [],
+      "price": 78000.0,
+      "production": 280.0,
+      "rd_spend": 45000000.0,
+      "time": 8.205566167831421
+    },
+    "env": {
+      "success": true,
+      "score": 11,
+      "max_score": 11,
+      "issues": [],
+      "total_demand": 735,
+      "time": 26.360284566879272
+    },
+    "pricing": {
+      "success": true,
+      "score": 9,
+      "max_score": 9,
+      "issues": [],
+      "prices": {
+        "firm_0": 45.5,
+        "firm_1": 28.0,
+        "firm_2": 15.5
+      },
+      "time": 11.520553588867188
+    },
+    "total_score": 37,
+    "max_score": 37,
+    "quality_pct": 100.0,
+    "total_time": 46.08640432357788,
+    "failures": 0
+  },
+  {
+    "model": "koboldcpp/Gemma-4-31B-it",
+    "status": "ok",
+    "firm": {
+      "success": false,
+      "error": "Timed out after 270s",
+      "time": 332.73144602775574
+    },
+    "env": {
+      "success": false,
+      "error": "Timed out after 270s",
+      "time": 334.11498832702637
+    },
+    "pricing": {
+      "success": false,
+      "error": "Timed out after 270s",
+      "time": 333.44557762145996
+    },
+    "total_score": 0,
+    "max_score": 0,
+    "quality_pct": 0,
+    "total_time": 1000.2920119762421,
+    "failures": 3
+  },
+  {
+    "model": "aphrodite/TheDrummer/Behemoth-R1-123B-v2-w4a16",
+    "status": "ok",
+    "firm": {
+      "success": true,
+      "score": 17,
+      "max_score": 17,
+      "issues": [],
+      "price": 80000.0,
+      "production": 300.0,
+      "rd_spend": 50000000.0,
+      "time": 74.23525142669678
+    },
+    "env": {
+      "success": true,
+      "score": 11,
+      "max_score": 11,
+      "issues": [],
+      "total_demand": 735,
+      "time": 59.707775592803955
+    },
+    "pricing": {
+      "success": true,
+      "score": 9,
+      "max_score": 9,
+      "issues": [],
+      "prices": {
+        "firm_0": 22.0,
+        "firm_1": 18.0,
+        "firm_2": 12.0
+      },
+      "time": 96.58265805244446
+    },
+    "total_score": 37,
+    "max_score": 37,
+    "quality_pct": 100.0,
+    "total_time": 230.5256850719452,
+    "failures": 0
+  }
+]

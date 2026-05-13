@@ -1,0 +1,18 @@
+This is major extension of the code base. You need to start with planning stage, building on what is there, and ask me questions before coding the expansion. The current version has firms making operating and financing decisions, product markets and some financial intermediaries.
+
+This is what is missing and I want. You need to use different LLMs for each roles, using many LLMs is fine. Missing pieces:
+(1) a set of analysts (3 as default but could be more chosen by users) who make earnings forecasts, they can do it every quarter, but don't need to (sometimes they do, sometimes they don't); they do their forecasts using comparables and DCF, and produce brokerage notes circulated publicly. This can affect all players.
+(2) earnings management. Firms can decide to push their earnings up or down, within the law but it can carry some risks. The way this works is that there is a stock of manipulated earnings that will continue and detection will be a function of that. Asymmetric because if the firm has a stock of overreported assets, this will make it more likely to have an issue than under-reported. 
+(3) SEC. The SEC can launch investigations, first private, contacting firm, then the firm can correct or it can become public if severe, or firm does not resolve (AAERs).
+(4) auditor: one per firm, they do not observe manipulation but environment decides what info they get. They can issue unqualified, qualifier or adverse. They get paid by the firm an audit fee (make it reasonable) and the firm can try to find a new auditor; auditor change. 
+(5) Separate quarters and annual; annual is every 4Q, and the audit in (4) is only after 4Q.
+(6) CEO comp: the firm offers a CEO contract, this is decided by the board who decides on contract and whether to dismiss the CEO (in this case there is a search step); contracts affect EM incentives. There should be probably a state file for things like CEO type stating details about whether the CEO is good (be detailed) known only to the environment but 'preparing' possible issues that would cuase a firing.
+(7) Earnings announcement discussion. The firm management provides a discussion of results each Q, and there could be forecasts one Q ahead and up to one year ahead of EPS, as well of discussions of past forecasts.
+(8) Firm may restate if they want to, are forced by the SEC or are forced by auditor.
+(9) M&A and new entry needs to possibly occur.
+(10) the environment should include macro factors, from political uncertainty, changes in market levels (market returns), risk-free rate. Anything big macro relevant. 
+(11) I like the current template about the longevity drug, keep it, but allow the user to regenerate that side of the template with a different scenario which creates a new template with all template relevant issues, could be simulating a more mature industry, pure start-up, some other industry that is service only, etc.
+
+The resulting should create a more complex timeline each Q, eveluate what's right. Make sure the flow of players each quarter makes sense: firms, financial sector, analysts, board, auditor (auditor only end of year), SEC, data analyst. Make sure the flow of information reflects what each player would know, including relevant past information.
+
+Keep a different LLM per player. Make sure to document the timelines and operational flow of prompts in a separate document.

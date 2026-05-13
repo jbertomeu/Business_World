@@ -1,0 +1,87 @@
+name: declining_industry
+description: |
+  A legacy pharmaceutical industry facing secular decline: branded
+  prescription drugs losing exclusivity to generics + biosimilars;
+  declining demand as alternative therapies (biologics, gene therapy)
+  capture share. Useful to verify the same simulation machinery works
+  across expansion AND contraction scenarios, and to study consolidation
+  dynamics in declining industries (M&A, restructuring, wind-down).
+
+# Wave ι: industry narrative passed to firm + env + analyst prompts
+industry_character:
+  label: "declining legacy pharmaceuticals"
+  tam_at_maturity_usd: 80_000_000_000   # $80B TAM today, shrinking
+  years_to_maturity: 10                   # time until TAM halves
+  narrative: |
+    This is a MATURE, DECLINING industry. Products are late-lifecycle
+    branded drugs facing patent cliffs (loss of exclusivity) and
+    substitution by biosimilars / generics / newer therapy classes.
+
+    Demand realities:
+      - Total industry TAM is ~$80B today, projected to shrink ~7%/year
+        for the next decade as drugs lose exclusivity.
+      - Price power erodes: insurance formularies + PBMs push generics;
+        newly approved alternatives (biologics, gene therapy) capture
+        premium pricing.
+      - Volume may stay flat but ASP (average selling price) drops.
+      - Brand loyalty matters mainly among older patients; younger
+        prescribers routinely substitute.
+
+    Industry dynamics:
+      - Product R&D can extend exclusivity via formulation improvements,
+        but genuine breakthroughs are rare in this category.
+      - Consolidation through M&A is the dominant strategy:
+        acquire smaller firms for their cash cow residuals, wind down
+        redundant manufacturing, extract shareholder value.
+      - Firms that don't consolidate are at risk of slow wind-down.
+      - Capital-light: dividends + buybacks are typical; equity issuance
+        is unusual (stock prices declining).
+
+    Environmental judgment: calibrate demand to this declining reality.
+    Revenue should drop over time even for well-run firms. Survivors
+    are those who consolidate effectively and manage decline rather
+    than those who chase growth.
+
+# Wave ι: tune demand coefficients for this industry
+market_params:
+  market_size_baseline: 150_000_000       # smaller patient pool
+  awareness_rate: 0.80                     # already high awareness (mature)
+  # Higher price sensitivity (generics/biosimilars compete on price)
+  price_coef: 0.00003
+  # Lower affordability center — these are commodity drugs
+  affordability_center: 15_000
+  affordability_steepness: 0.00004
+  # Outside utility GROWS over time (new therapy classes become
+  # more attractive relative to legacy products)
+  outside_utility_base: 2.0
+  outside_utility_decay: -0.02          # NEGATIVE decay → increasing outside option
+  outside_utility_floor: 2.0
+
+firms:
+  - firm_id: firm_0
+    founding_cash: 300_000_000
+    ipo_price: 30.00
+    ipo_shares: 20_000_000
+    founding_ppe_gross: 200_000_000   # big legacy manufacturing
+    founding_capability: 45.0          # mature capability but no growth
+    founding_brand: 55.0               # strong legacy brand
+    base_unit_cost: 8_000
+    ceo_base_salary: 1_500_000
+  - firm_id: firm_1
+    founding_cash: 250_000_000
+    ipo_price: 25.00
+    ipo_shares: 20_000_000
+    founding_ppe_gross: 180_000_000
+    founding_capability: 42.0
+    founding_brand: 50.0
+    base_unit_cost: 8_500
+    ceo_base_salary: 1_400_000
+  - firm_id: firm_2
+    founding_cash: 280_000_000
+    ipo_price: 28.00
+    ipo_shares: 20_000_000
+    founding_ppe_gross: 190_000_000
+    founding_capability: 48.0
+    founding_brand: 52.0
+    base_unit_cost: 7_800
+    ceo_base_salary: 1_550_000

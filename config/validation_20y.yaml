@@ -1,0 +1,86 @@
+# 20-year single-seed run: 3 firms × 80 quarters
+# ALL feature toggles ON.
+# Uses well_capitalized scenario: $800M founding cash per firm, strong
+# initial capability + brand, low unit cost. Designed so firms survive
+# long enough to reach G2 and become profitable under low (3-firm)
+# competition.
+#
+# Estimated: ~20-26 hours wall-clock, ~$2-4 USD total.
+# Uses checkpoint snapshots at every quarter — resume with
+#   python -u -m src run --config config/validation_20y.yaml --restart-from outputs/<run_id>/snapshots/Q<N>.pkl
+
+n_firms_initial: 3
+n_quarters: 80
+seed: 42
+
+# Scenario: high cash + strong initial capability + low unit cost so
+# firms can survive 20+ years and reach G2 profitability under low
+# (3-firm) competition.
+scenario: well_capitalized
+
+default_llm:
+  backend: openrouter
+  model: mistralai/mistral-small-24b-instruct-2501
+
+agents:
+  firm_0:
+    model: "mistralai/mistral-small-24b-instruct-2501"
+    backend: openrouter
+    temperature: 0.30
+  firm_1:
+    model: "qwen/qwen3-235b-a22b-2507"
+    backend: openrouter
+    temperature: 0.35
+  firm_2:
+    # gemini-2.0-flash has 1M context — safe for 20y cumulative memory
+    model: "google/gemini-2.0-flash-001"
+    backend: openrouter
+    temperature: 0.40
+
+# Core expansion
+earnings_management_enabled: true
+sec_enabled: true
+sellside_analysts_enabled: true
+earnings_announcement_enabled: true
+auditor_enabled: true
+governance_enabled: true
+restatements_enabled: true
+macro_expansion_enabled: true
+
+# M&A ON so strong firms consolidate weak ones instead of everyone defaulting
+ma_enabled: true
+
+data_broker_enabled: true
+data_broker_mode: combo
+data_broker_max_queries_per_agent_per_quarter: 2
+
+debt_covenants_enabled: true
+convertible_debt_enabled: true
+working_capital_decisions: true
+bad_debt_enabled: true
+
+annual_reports_enabled: true
+env_verification_enabled: true
+
+restructuring_enabled: true
+env_decision_overrides_enabled: true
+
+stock_comp_enabled: true
+
+legal_reserves_enabled: true
+pension_enabled: true
+deferred_taxes_enabled: true
+activist_investors_enabled: true
+
+# Wave θ richness
+noisy_signals_enabled: true
+noisy_signals_sd: 0.15
+directors_enabled: true
+director_lifecycle_enabled: true
+three_llm_board_enabled: true   # testing full richness — ~4x governance cost
+cost_telemetry_enabled: true
+
+# Snapshots every quarter (for --restart-from safety on long runs)
+snapshots_enabled: true
+
+parallel_firm_decisions: true

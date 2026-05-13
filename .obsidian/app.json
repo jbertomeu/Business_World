@@ -1,0 +1,25 @@
+{
+  "alwaysUpdateLinks": true,
+  "attachmentFolderPath": "./attachments",
+  "newFileLocation": "current",
+  "newLinkFormat": "relative",
+  "promptDelete": true,
+  "showLineNumber": true,
+  "strictLineBreaks": false,
+  "tabSize": 2,
+  "useMarkdownLinks": true,
+  "userIgnoreFilters": [
+    ".obsidian/",
+    ".pytest_cache/",
+    "__pycache__/",
+    ".git/",
+    "archive/",
+    "outputs/",
+    "*.pyc",
+    "*.csv",
+    "*.tex",
+    "*.json",
+    "*.pdf",
+    ".env"
+  ]
+}

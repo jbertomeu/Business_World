@@ -1,0 +1,17 @@
+# Test: broker + earnings management + SEC + analysts, mock backend
+# Usage: python -m src run --config config/test_broker.yaml --mock
+
+n_firms_initial: 3
+n_quarters: 4
+seed: 42
+
+default_llm:
+  backend: mock
+  model: mock
+
+# Enable broker + a few features that exercise it
+data_broker_enabled: true
+data_broker_max_queries_per_agent_per_quarter: 3
+sec_enabled: true
+sellside_analysts_enabled: true
+earnings_management_enabled: true

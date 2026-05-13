@@ -1,0 +1,27 @@
+# Quick mock smoke to verify well_capitalized scenario works
+n_firms_initial: 3
+n_quarters: 8
+seed: 42
+
+scenario: well_capitalized
+
+default_llm:
+  backend: mock
+  model: mock
+
+# Same toggles as the long run (so smoke matches what live run will do)
+ma_enabled: true
+debt_covenants_enabled: true
+working_capital_decisions: true
+bad_debt_enabled: true
+restructuring_enabled: true
+stock_comp_enabled: true
+legal_reserves_enabled: true
+pension_enabled: true
+deferred_taxes_enabled: true
+activist_investors_enabled: true
+noisy_signals_enabled: true
+directors_enabled: true
+director_lifecycle_enabled: true
+strategic_planning_enabled: true
+pe_lifecycle_enabled: true

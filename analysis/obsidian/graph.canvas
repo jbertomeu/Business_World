@@ -1,0 +1,2657 @@
+{
+  "nodes": [
+    {
+      "id": "g0",
+      "type": "group",
+      "label": "Schumpeter / RBV / Cash Anomalies",
+      "x": 0,
+      "y": 0,
+      "width": 1320,
+      "height": 1020,
+      "color": "1"
+    },
+    {
+      "id": "n_nu6_research_overview_aghion_howitt_1992",
+      "type": "file",
+      "file": "graphify/obsidian/Aghion & Howitt (1992) Growth Through Creative Destruction.md",
+      "x": 20,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_aghion_2005",
+      "type": "file",
+      "file": "graphify/obsidian/Aghion et al. (2005) Inverted-U Competition and Innovation.md",
+      "x": 220,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_barney_1991",
+      "type": "file",
+      "file": "graphify/obsidian/Barney (1991) Firm Resources and Sustained Competitive Advantage.md",
+      "x": 420,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_bates_2009",
+      "type": "file",
+      "file": "graphify/obsidian/Bates, Kahle & Stulz (2009) US Firms Cash Holdings.md",
+      "x": 20,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_berry_haile_2014",
+      "type": "file",
+      "file": "graphify/obsidian/Berry & Haile (2014) Identification in Differentiated Products.md",
+      "x": 220,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_bloom_2018",
+      "type": "file",
+      "file": "graphify/obsidian/Bloom et al. (2018) Really Uncertain Business Cycles.md",
+      "x": 420,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_cash_rich_non_response",
+      "type": "file",
+      "file": "graphify/obsidian/Cash-Rich Non-Response Anomaly.md",
+      "x": 20,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_ericson_pakes_1995",
+      "type": "file",
+      "file": "graphify/obsidian/Ericson & Pakes (1995) Markov-Perfect Industry Dynamics.md",
+      "x": 220,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_fig_rd_progress",
+      "type": "file",
+      "file": "graphify/obsidian/Figure 6 Cumulative Product R&D Across Firms.md",
+      "x": 420,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_fig_capability",
+      "type": "file",
+      "file": "graphify/obsidian/Figure 7 Capability Stocks Over Time.md",
+      "x": 20,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_fig_cash",
+      "type": "file",
+      "file": "graphify/obsidian/Figure 9 Cash Trajectories (firm_9 $5.9B hoard).md",
+      "x": 220,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_fudenberg_maskin_1986",
+      "type": "file",
+      "file": "graphify/obsidian/Fudenberg & Maskin (1986) Folk Theorem.md",
+      "x": 420,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_gabaix_2014",
+      "type": "file",
+      "file": "graphify/obsidian/Gabaix (2014) Sparsity-Based Bounded Rationality.md",
+      "x": 20,
+      "y": 400,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_ghemawat_1991",
+      "type": "file",
+      "file": "graphify/obsidian/Ghemawat (1991) Commitment.md",
+      "x": 220,
+      "y": 400,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_hortacsu_2017",
+      "type": "file",
+      "file": "graphify/obsidian/Hortacsu, Madanizadeh & Puller (2017) Consumer Inertia.md",
+      "x": 420,
+      "y": 400,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_loughran_mcdonald_2011",
+      "type": "file",
+      "file": "graphify/obsidian/Loughran & McDonald (2011) Textual Analysis 10-Ks.md",
+      "x": 20,
+      "y": 480,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_no_gen2",
+      "type": "file",
+      "file": "graphify/obsidian/No Firm Reaches Gen-2 Product.md",
+      "x": 220,
+      "y": 480,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_no_schumpeterian_destruction",
+      "type": "file",
+      "file": "graphify/obsidian/No Schumpeterian Creative Destruction (anomaly).md",
+      "x": 420,
+      "y": 480,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_porter_1980",
+      "type": "file",
+      "file": "graphify/obsidian/Porter (1980) Competitive Strategy.md",
+      "x": 20,
+      "y": 560,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_schumpeter_1942",
+      "type": "file",
+      "file": "graphify/obsidian/Schumpeter (1942) Capitalism, Socialism and Democracy.md",
+      "x": 220,
+      "y": 560,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_sims_2003",
+      "type": "file",
+      "file": "graphify/obsidian/Sims (2003) Rational Inattention.md",
+      "x": 420,
+      "y": 560,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_tirole_1988",
+      "type": "file",
+      "file": "graphify/obsidian/Tirole (1988) Theory of Industrial Organization.md",
+      "x": 20,
+      "y": 640,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_wave_nu_plus_6_research_overview_md",
+      "type": "file",
+      "file": "graphify/obsidian/Wave nu+6 Research Overview (Markdown).md",
+      "x": 220,
+      "y": 640,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_paper",
+      "type": "file",
+      "file": "graphify/obsidian/Wave nu+6 Research Overview Paper.md",
+      "x": 420,
+      "y": 640,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_wernerfelt_1984",
+      "type": "file",
+      "file": "graphify/obsidian/Wernerfelt (1984) Resource-Based View.md",
+      "x": 20,
+      "y": 720,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_firm_9",
+      "type": "file",
+      "file": "graphify/obsidian/firm_9 (DTC telemedicine  cardiovascular, eventual monopolist).md",
+      "x": 220,
+      "y": 720,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g1",
+      "type": "group",
+      "label": "Q41 Cascade Evidence + M&A Theory",
+      "x": 1400,
+      "y": 0,
+      "width": 1100,
+      "height": 820,
+      "color": "2"
+    },
+    {
+      "id": "n_nu6_research_overview_brunnermeier_2009",
+      "type": "file",
+      "file": "graphify/obsidian/Brunnermeier (2009) 2007-2008 Liquidity Crunch.md",
+      "x": 1420,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_chamley_gale_1994",
+      "type": "file",
+      "file": "graphify/obsidian/Chamley & Gale (1994) Information Revelation Cascades.md",
+      "x": 1620,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_farrell_shapiro_1990",
+      "type": "file",
+      "file": "graphify/obsidian/Farrell & Shapiro (1990) Horizontal Mergers Equilibrium Analysis.md",
+      "x": 1820,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_fig_concentration",
+      "type": "file",
+      "file": "graphify/obsidian/Figure 1 Industry Concentration (top-firm share & HHI).md",
+      "x": 1420,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_fig_per_firm_revenue",
+      "type": "file",
+      "file": "graphify/obsidian/Figure 2 Per-Firm Revenue Stacked.md",
+      "x": 1620,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_fig_revenue",
+      "type": "file",
+      "file": "graphify/obsidian/Figure 4 Total Industry Revenue Collapse Post-Q41.md",
+      "x": 1820,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_fig_cascade_zoom",
+      "type": "file",
+      "file": "graphify/obsidian/Figure 8 Production Cascade Zoom (Q38-Q50).md",
+      "x": 1420,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_khan_2017",
+      "type": "file",
+      "file": "graphify/obsidian/Khan (2017) Amazon's Antitrust Paradox.md",
+      "x": 1620,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_ma_bidder",
+      "type": "file",
+      "file": "graphify/obsidian/M&A Bidder LLM.md",
+      "x": 1820,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_no_antitrust_response",
+      "type": "file",
+      "file": "graphify/obsidian/No AntitrustRegulatory Response (anomaly).md",
+      "x": 1420,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_no_ma_anomaly",
+      "type": "file",
+      "file": "graphify/obsidian/No M&A Response in Phase 2 (anomaly).md",
+      "x": 1620,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_q41_default_cascade",
+      "type": "file",
+      "file": "graphify/obsidian/Q41 Default Cascade.md",
+      "x": 1820,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_sec_llm",
+      "type": "file",
+      "file": "graphify/obsidian/SEC LLM.md",
+      "x": 1420,
+      "y": 400,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_salant_switzer_reynolds_1983",
+      "type": "file",
+      "file": "graphify/obsidian/Salant, Switzer & Reynolds (1983) Losses from Horizontal Merger.md",
+      "x": 1620,
+      "y": 400,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_speed_of_cascade",
+      "type": "file",
+      "file": "graphify/obsidian/Speed of Cascade (one quarter, anomaly).md",
+      "x": 1820,
+      "y": 400,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_whinston_2007",
+      "type": "file",
+      "file": "graphify/obsidian/Whinston (2007) Antitrust Policy Toward Mergers.md",
+      "x": 1420,
+      "y": 480,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_firm_5",
+      "type": "file",
+      "file": "graphify/obsidian/firm_5 (Nordic+Benelux  mid-life, default Q39 trigger).md",
+      "x": 1620,
+      "y": 480,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_firm_6",
+      "type": "file",
+      "file": "graphify/obsidian/firm_6 (Asia-Pacific  broad demographic, Q41 default).md",
+      "x": 1820,
+      "y": 480,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_firm_9_monopoly",
+      "type": "file",
+      "file": "graphify/obsidian/firm_9 Absorbing Monopoly (39 quarters at 100% share).md",
+      "x": 1420,
+      "y": 560,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g2",
+      "type": "group",
+      "label": "Phase 1: Horizontal Differentiation / BLP",
+      "x": 2580,
+      "y": 0,
+      "width": 880,
+      "height": 620,
+      "color": "3"
+    },
+    {
+      "id": "n_nu6_research_overview_blp_share_dispersion",
+      "type": "file",
+      "file": "graphify/obsidian/BLP-style Share Dispersion (top firm 16-26%).md",
+      "x": 2600,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_berry_1994",
+      "type": "file",
+      "file": "graphify/obsidian/Berry (1994) Discrete-Choice Differentiation.md",
+      "x": 2800,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_blp_1995",
+      "type": "file",
+      "file": "graphify/obsidian/Berry, Levinsohn & Pakes (1995) Automobile Prices in Market Equilibrium.md",
+      "x": 3000,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_distribution_channel",
+      "type": "file",
+      "file": "graphify/obsidian/Distribution Channel (differentiation attribute).md",
+      "x": 2600,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_geographic_focus",
+      "type": "file",
+      "file": "graphify/obsidian/Geographic Focus (differentiation attribute).md",
+      "x": 2800,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_horizontal_differentiation",
+      "type": "file",
+      "file": "graphify/obsidian/Horizontal Differentiation (phenomenon).md",
+      "x": 3000,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_hotelling_1929",
+      "type": "file",
+      "file": "graphify/obsidian/Hotelling (1929) Stability in Competition.md",
+      "x": 2600,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_nevo_2001",
+      "type": "file",
+      "file": "graphify/obsidian/Nevo (2001) Market Power in RTE Cereal Industry.md",
+      "x": 2800,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_patient_segment",
+      "type": "file",
+      "file": "graphify/obsidian/Patient Segment (differentiation attribute).md",
+      "x": 3000,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_rationale_design_intervention",
+      "type": "file",
+      "file": "graphify/obsidian/Rationale nu+5 collapsed to monopoly, so add idiosyncratic differentiation in nu+6.md",
+      "x": 2600,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_salop_1979",
+      "type": "file",
+      "file": "graphify/obsidian/Salop (1979) Monopolistic Competition with Outside Goods.md",
+      "x": 2800,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_signature_feature",
+      "type": "file",
+      "file": "graphify/obsidian/Signature Feature (differentiation attribute).md",
+      "x": 3000,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_wave_nu_plus_3_20y_analysis_prior_collapse",
+      "type": "file",
+      "file": "graphify/obsidian/Wave nu+3 prior-wave industry-wide collapse (motivation context).md",
+      "x": 2600,
+      "y": 400,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_daspremont_1979",
+      "type": "file",
+      "file": "graphify/obsidian/d'Aspremont, Gabszewicz & Thisse (1979).md",
+      "x": 2800,
+      "y": 400,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_idiosyncratic_differentiation_intervention",
+      "type": "file",
+      "file": "graphify/obsidian/nu+6 Design Intervention Idiosyncratic Product Differentiation.md",
+      "x": 3000,
+      "y": 400,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g3",
+      "type": "group",
+      "label": "Phase 2: Coordination Failure & Contagion",
+      "x": 3540,
+      "y": 0,
+      "width": 880,
+      "height": 620,
+      "color": "4"
+    },
+    {
+      "id": "n_nu6_research_overview_acemoglu_2015",
+      "type": "file",
+      "file": "graphify/obsidian/Acemoglu, Ozdaglar & Tahbaz-Salehi (2015) Systemic Risk in Networks.md",
+      "x": 3560,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_allen_gale_2000",
+      "type": "file",
+      "file": "graphify/obsidian/Allen & Gale (2000) Financial Contagion.md",
+      "x": 3760,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_bloom_2009",
+      "type": "file",
+      "file": "graphify/obsidian/Bloom (2009) Impact of Uncertainty Shocks.md",
+      "x": 3960,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_cooper_john_1988",
+      "type": "file",
+      "file": "graphify/obsidian/Cooper & John (1988) Coordinating Coordination Failures.md",
+      "x": 3560,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_cooper_1999",
+      "type": "file",
+      "file": "graphify/obsidian/Cooper (1999) Coordination Games (book).md",
+      "x": 3760,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_coordination_failure",
+      "type": "file",
+      "file": "graphify/obsidian/Coordination Failure (multi-equilibria).md",
+      "x": 3960,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_diamond_dybvig_1983",
+      "type": "file",
+      "file": "graphify/obsidian/Diamond & Dybvig (1983) Bank Runs.md",
+      "x": 3560,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_dixit_pindyck_1994",
+      "type": "file",
+      "file": "graphify/obsidian/Dixit & Pindyck (1994) Investment Under Uncertainty.md",
+      "x": 3760,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_fig_firm_population",
+      "type": "file",
+      "file": "graphify/obsidian/Figure 5 Firm Population Dynamics (activeproducingdefaulted).md",
+      "x": 3960,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_financial_contagion",
+      "type": "file",
+      "file": "graphify/obsidian/Financial-Contagion Mechanics (product-market analog).md",
+      "x": 3560,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_phase_2",
+      "type": "file",
+      "file": "graphify/obsidian/Phase 2 (Q42-Q80) Coordination Collapse  Absorbing Monopoly.md",
+      "x": 3760,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_firm_12",
+      "type": "file",
+      "file": "graphify/obsidian/firm_12 (US Southeast replacement, survived Phase 2).md",
+      "x": 3960,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_firm_2",
+      "type": "file",
+      "file": "graphify/obsidian/firm_2 (US Southeast  high-comorbidity, $272M cash survivor).md",
+      "x": 3560,
+      "y": 400,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_firm_3",
+      "type": "file",
+      "file": "graphify/obsidian/firm_3 (US Midwest  athletic).md",
+      "x": 3760,
+      "y": 400,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_firm_7",
+      "type": "file",
+      "file": "graphify/obsidian/firm_7 (Latin America  cash-pay premium, leapfrog survivor).md",
+      "x": 3960,
+      "y": 400,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g4",
+      "type": "group",
+      "label": "LLM Agents + Focal-Point Selection",
+      "x": 4500,
+      "y": 0,
+      "width": 880,
+      "height": 620,
+      "color": "5"
+    },
+    {
+      "id": "n_nu6_research_overview_aher_2023",
+      "type": "file",
+      "file": "graphify/obsidian/Aher, Arriaga & Kalai (2023) LLMs Simulate Multiple Humans.md",
+      "x": 4520,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_argyle_2023",
+      "type": "file",
+      "file": "graphify/obsidian/Argyle et al. (2023) LLMs Simulate Human Samples.md",
+      "x": 4720,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_demand_calibrator",
+      "type": "file",
+      "file": "graphify/obsidian/Demand Calibrator LLM.md",
+      "x": 4920,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_env_narrative_self_fulfilling",
+      "type": "file",
+      "file": "graphify/obsidian/Env Narrative as Self-Fulfilling Common Knowledge.md",
+      "x": 4520,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_env_llm",
+      "type": "file",
+      "file": "graphify/obsidian/Environment LLM (demand allocator).md",
+      "x": 4720,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_firm_llm",
+      "type": "file",
+      "file": "graphify/obsidian/Firm Decision LLMs.md",
+      "x": 4920,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_focal_point_selection",
+      "type": "file",
+      "file": "graphify/obsidian/Focal-Point Equilibrium Selection by env LLM.md",
+      "x": 4520,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_horton_2023",
+      "type": "file",
+      "file": "graphify/obsidian/Horton (2023) LLMs as Simulated Economic Agents.md",
+      "x": 4720,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_mailath_postlewaite_1990",
+      "type": "file",
+      "file": "graphify/obsidian/Mailath & Postlewaite (1990) Asymmetric Information Bargaining.md",
+      "x": 4920,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_park_2023",
+      "type": "file",
+      "file": "graphify/obsidian/Park et al. (2023) Generative Agents.md",
+      "x": 4520,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_q40_q42_transition",
+      "type": "file",
+      "file": "graphify/obsidian/Q40-Q42 Equilibrium Transition.md",
+      "x": 4720,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_rationale_research_artifact",
+      "type": "file",
+      "file": "graphify/obsidian/Rationale Q40-Q42 transition is clean natural experiment with primitives unchanged.md",
+      "x": 4920,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_rationale_env_focal",
+      "type": "file",
+      "file": "graphify/obsidian/Rationale env LLM as agentic focal-point selector (novel finding).md",
+      "x": 4520,
+      "y": 400,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_schelling_1960",
+      "type": "file",
+      "file": "graphify/obsidian/Schelling (1960) Strategy of Conflict (focal points).md",
+      "x": 4720,
+      "y": 400,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_sugden_zamarron_2006",
+      "type": "file",
+      "file": "graphify/obsidian/Sugden & Zamarron (2006) Riddle of Focal Points.md",
+      "x": 4920,
+      "y": 400,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g5",
+      "type": "group",
+      "label": "Entry Deterrence + VC Dry Powder",
+      "x": 0,
+      "y": 1100,
+      "width": 880,
+      "height": 520,
+      "color": "6"
+    },
+    {
+      "id": "n_nu6_research_overview_bain_1956",
+      "type": "file",
+      "file": "graphify/obsidian/Bain (1956) Barriers to New Competition.md",
+      "x": 20,
+      "y": 1180,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_bresnahan_reiss_1991",
+      "type": "file",
+      "file": "graphify/obsidian/Bresnahan & Reiss (1991) Entry and Competition in Concentrated Markets.md",
+      "x": 220,
+      "y": 1180,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_dixit_1980",
+      "type": "file",
+      "file": "graphify/obsidian/Dixit (1980) Investment in Entry-Deterrence.md",
+      "x": 420,
+      "y": 1180,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_entry_deterrence_no_strategy",
+      "type": "file",
+      "file": "graphify/obsidian/Entry Deterrence Without Strategic Action.md",
+      "x": 20,
+      "y": 1260,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_equilibrium_firm_count",
+      "type": "file",
+      "file": "graphify/obsidian/Equilibrium Firm Count (8-9 firms).md",
+      "x": 220,
+      "y": 1260,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_gompers_lerner_2001",
+      "type": "file",
+      "file": "graphify/obsidian/Gompers & Lerner (2001) Venture Capital Revolution.md",
+      "x": 420,
+      "y": 1260,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_gompers_1995",
+      "type": "file",
+      "file": "graphify/obsidian/Gompers (1995) Staging of Venture Capital.md",
+      "x": 20,
+      "y": 1340,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_kaplan_stromberg_2003",
+      "type": "file",
+      "file": "graphify/obsidian/Kaplan & Stromberg (2003) VC Contracts.md",
+      "x": 220,
+      "y": 1340,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_kortum_lerner_2000",
+      "type": "file",
+      "file": "graphify/obsidian/Kortum & Lerner (2000) VC Contribution to Innovation.md",
+      "x": 420,
+      "y": 1340,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_spence_1977",
+      "type": "file",
+      "file": "graphify/obsidian/Spence (1977) Entry, Capacity, Investment, Pricing.md",
+      "x": 20,
+      "y": 1420,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_sutton_1991",
+      "type": "file",
+      "file": "graphify/obsidian/Sutton (1991) Sunk Costs and Market Structure.md",
+      "x": 220,
+      "y": 1420,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_dry_powder_withdrawal",
+      "type": "file",
+      "file": "graphify/obsidian/VCPE Dry-Powder Withdrawal under Perceived Monopoly.md",
+      "x": 420,
+      "y": 1420,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g6",
+      "type": "group",
+      "label": "Leapfrog Entry & Failure",
+      "x": 1400,
+      "y": 1100,
+      "width": 880,
+      "height": 520,
+      "color": "1"
+    },
+    {
+      "id": "n_nu6_research_overview_entry_judge",
+      "type": "file",
+      "file": "graphify/obsidian/Entry-Judge LLM.md",
+      "x": 1420,
+      "y": 1180,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_leapfrog_failure",
+      "type": "file",
+      "file": "graphify/obsidian/Failure of Leapfrog Entry (firm_13141516 dormant).md",
+      "x": 1620,
+      "y": 1180,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_fig_timeline",
+      "type": "file",
+      "file": "graphify/obsidian/Figure 3 Firm Lifecycle Timeline (entrydormantproducedefault).md",
+      "x": 1820,
+      "y": 1180,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_fudenberg_1983",
+      "type": "file",
+      "file": "graphify/obsidian/Fudenberg, Gilbert, Stiglitz, Tirole (1983) Preemption and Leapfrogging.md",
+      "x": 1420,
+      "y": 1260,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_pe_lifecycle",
+      "type": "file",
+      "file": "graphify/obsidian/Private-Equity Lifecycle (8 PE funds + per-firm pitch).md",
+      "x": 1620,
+      "y": 1260,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_vives_2008",
+      "type": "file",
+      "file": "graphify/obsidian/Vives (2008) Innovation and Competitive Pressure.md",
+      "x": 1820,
+      "y": 1260,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_firm_13",
+      "type": "file",
+      "file": "graphify/obsidian/firm_13 (US Midwest replacement, leapfrog dormant).md",
+      "x": 1420,
+      "y": 1340,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_firm_14",
+      "type": "file",
+      "file": "graphify/obsidian/firm_14 (Western Europe replacement, leapfrog dormant).md",
+      "x": 1620,
+      "y": 1340,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_firm_15",
+      "type": "file",
+      "file": "graphify/obsidian/firm_15 (Nordic+Benelux replacement, leapfrog dormant).md",
+      "x": 1820,
+      "y": 1340,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_firm_16",
+      "type": "file",
+      "file": "graphify/obsidian/firm_16 (leapfrog candidate spawned Q81).md",
+      "x": 1420,
+      "y": 1420,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g7",
+      "type": "group",
+      "label": "Phase 1 Cohort + Industry Dynamics",
+      "x": 2580,
+      "y": 1100,
+      "width": 660,
+      "height": 420,
+      "color": "2"
+    },
+    {
+      "id": "n_nu6_research_overview_hopenhayn_1992",
+      "type": "file",
+      "file": "graphify/obsidian/Hopenhayn (1992) Entry, Exit, Firm Dynamics.md",
+      "x": 2600,
+      "y": 1180,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_jovanovic_1982",
+      "type": "file",
+      "file": "graphify/obsidian/Jovanovic (1982) Selection and Evolution of Industry.md",
+      "x": 2800,
+      "y": 1180,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_klepper_graddy_1990",
+      "type": "file",
+      "file": "graphify/obsidian/Klepper & Graddy (1990) Evolution of New Industries.md",
+      "x": 3000,
+      "y": 1180,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_klepper_1996",
+      "type": "file",
+      "file": "graphify/obsidian/Klepper (1996) Industry Life Cycle.md",
+      "x": 2600,
+      "y": 1260,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_monopolistic_competition_equilibrium",
+      "type": "file",
+      "file": "graphify/obsidian/Multi-Firm Differentiated Equilibrium with Regional Niches.md",
+      "x": 2800,
+      "y": 1260,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_phase_1",
+      "type": "file",
+      "file": "graphify/obsidian/Phase 1 (Q1-Q40) Differentiated Competition.md",
+      "x": 3000,
+      "y": 1260,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_firm_0",
+      "type": "file",
+      "file": "graphify/obsidian/firm_0 (US Northeast  advanced-stage).md",
+      "x": 2600,
+      "y": 1340,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_firm_1",
+      "type": "file",
+      "file": "graphify/obsidian/firm_1 (US West Coast  early intervention).md",
+      "x": 2800,
+      "y": 1340,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_nu6_research_overview_firm_4",
+      "type": "file",
+      "file": "graphify/obsidian/firm_4 (Western Europe  geriatric, first default Q12).md",
+      "x": 3000,
+      "y": 1340,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g8",
+      "type": "group",
+      "label": "Plot Generation Code",
+      "x": 3540,
+      "y": 1100,
+      "width": 600,
+      "height": 400,
+      "color": "3"
+    },
+    {
+      "id": "n_make_plots_rationale_1",
+      "type": "file",
+      "file": "graphify/obsidian/Generate plots for the \u03bd+6 20Y research overview..md",
+      "x": 3560,
+      "y": 1180,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_make_plots_hhi",
+      "type": "file",
+      "file": "graphify/obsidian/hhi().md",
+      "x": 3760,
+      "y": 1180,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_analysis_make_plots_py",
+      "type": "file",
+      "file": "graphify/obsidian/make_plots.py.md",
+      "x": 3960,
+      "y": 1180,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g9",
+      "type": "group",
+      "label": "Prior Wave Documents",
+      "x": 4500,
+      "y": 1100,
+      "width": 600,
+      "height": 400,
+      "color": "4"
+    },
+    {
+      "id": "n_wave_nu_plus_4_solutions_qualitative_only",
+      "type": "file",
+      "file": "graphify/obsidian/Rationale no hardcoded numerical thresholds (qualitative-only design).md",
+      "x": 4520,
+      "y": 1180,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_wave_nu_plus_3_20y_analysis_md",
+      "type": "file",
+      "file": "graphify/obsidian/Wave nu+3 20-Year Run Analysis.md",
+      "x": 4720,
+      "y": 1180,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_wave_nu_plus_4_solutions_md",
+      "type": "file",
+      "file": "graphify/obsidian/Wave nu+4 Qualitative Solutions.md",
+      "x": 4920,
+      "y": 1180,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g10",
+      "type": "group",
+      "label": "Data Extraction Script",
+      "x": 0,
+      "y": 1700,
+      "width": 600,
+      "height": 400,
+      "color": "5"
+    },
+    {
+      "id": "n_extract_data_rationale_1",
+      "type": "file",
+      "file": "graphify/obsidian/Extract panel data from snapshots for \u03bd+6 20Y analysis..md",
+      "x": 20,
+      "y": 1780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_analysis_extract_data_py",
+      "type": "file",
+      "file": "graphify/obsidian/extract_data.py.md",
+      "x": 220,
+      "y": 1780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g11",
+      "type": "group",
+      "label": "Timeline Plot Script",
+      "x": 1400,
+      "y": 1700,
+      "width": 600,
+      "height": 400,
+      "color": "6"
+    },
+    {
+      "id": "n_make_extra_plots_rationale_1",
+      "type": "file",
+      "file": "graphify/obsidian/Additional plot firm timeline (Gantt-style)..md",
+      "x": 1420,
+      "y": 1780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_analysis_make_extra_plots_py",
+      "type": "file",
+      "file": "graphify/obsidian/make_extra_plots.py.md",
+      "x": 1620,
+      "y": 1780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g12",
+      "type": "group",
+      "label": "firm_8 (singleton)",
+      "x": 2580,
+      "y": 1700,
+      "width": 600,
+      "height": 400,
+      "color": "1"
+    },
+    {
+      "id": "n_nu6_research_overview_firm_8",
+      "type": "file",
+      "file": "graphify/obsidian/firm_8 (Global multi-region  diabetic, defaulted late Phase 2).md",
+      "x": 2600,
+      "y": 1780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g13",
+      "type": "group",
+      "label": "firm_10 (singleton)",
+      "x": 3540,
+      "y": 1700,
+      "width": 600,
+      "height": 400,
+      "color": "2"
+    },
+    {
+      "id": "n_nu6_research_overview_firm_10",
+      "type": "file",
+      "file": "graphify/obsidian/firm_10 (US Northeast replacement).md",
+      "x": 3560,
+      "y": 1780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g14",
+      "type": "group",
+      "label": "firm_11 (singleton)",
+      "x": 4500,
+      "y": 1700,
+      "width": 600,
+      "height": 400,
+      "color": "3"
+    },
+    {
+      "id": "n_nu6_research_overview_firm_11",
+      "type": "file",
+      "file": "graphify/obsidian/firm_11 (US West Coast replacement).md",
+      "x": 4520,
+      "y": 1780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g15",
+      "type": "group",
+      "label": "Auditor LLMs",
+      "x": 0,
+      "y": 2180,
+      "width": 600,
+      "height": 400,
+      "color": "4"
+    },
+    {
+      "id": "n_nu6_research_overview_auditor",
+      "type": "file",
+      "file": "graphify/obsidian/Auditor LLMs (4 named).md",
+      "x": 20,
+      "y": 2260,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g16",
+      "type": "group",
+      "label": "Board Governance LLM",
+      "x": 1400,
+      "y": 2180,
+      "width": 600,
+      "height": 400,
+      "color": "5"
+    },
+    {
+      "id": "n_nu6_research_overview_board_governance",
+      "type": "file",
+      "file": "graphify/obsidian/Board-Governance LLM committee.md",
+      "x": 1420,
+      "y": 2260,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g17",
+      "type": "group",
+      "label": "Sell-Side Analyst LLMs",
+      "x": 2580,
+      "y": 2180,
+      "width": 600,
+      "height": 400,
+      "color": "6"
+    },
+    {
+      "id": "n_nu6_research_overview_sell_side_analyst",
+      "type": "file",
+      "file": "graphify/obsidian/Sell-Side Analyst LLMs (3).md",
+      "x": 2600,
+      "y": 2260,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g18",
+      "type": "group",
+      "label": "Investment Bank LLM",
+      "x": 3540,
+      "y": 2180,
+      "width": 600,
+      "height": 400,
+      "color": "1"
+    },
+    {
+      "id": "n_nu6_research_overview_investment_bank",
+      "type": "file",
+      "file": "graphify/obsidian/Investment Bank LLM.md",
+      "x": 3560,
+      "y": 2260,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g19",
+      "type": "group",
+      "label": "Commercial Bank LLM",
+      "x": 4500,
+      "y": 2180,
+      "width": 600,
+      "height": 400,
+      "color": "2"
+    },
+    {
+      "id": "n_nu6_research_overview_commercial_bank",
+      "type": "file",
+      "file": "graphify/obsidian/Commercial Bank LLM.md",
+      "x": 4520,
+      "y": 2260,
+      "width": 180,
+      "height": 60
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_analysis_extract_data_py_extract_data_rationale_1",
+      "fromNode": "n_analysis_extract_data_py",
+      "toNode": "n_extract_data_rationale_1",
+      "label": "rationale_for [EXTRACTED]"
+    },
+    {
+      "id": "e_analysis_make_extra_plots_py_make_extra_plots_rationale_1",
+      "fromNode": "n_analysis_make_extra_plots_py",
+      "toNode": "n_make_extra_plots_rationale_1",
+      "label": "rationale_for [EXTRACTED]"
+    },
+    {
+      "id": "e_analysis_make_plots_py_make_plots_hhi",
+      "fromNode": "n_analysis_make_plots_py",
+      "toNode": "n_make_plots_hhi",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_analysis_make_plots_py_make_plots_rationale_1",
+      "fromNode": "n_analysis_make_plots_py",
+      "toNode": "n_make_plots_rationale_1",
+      "label": "rationale_for [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_hotelling_1929",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_hotelling_1929",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_salop_1979",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_salop_1979",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_daspremont_1979",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_daspremont_1979",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_blp_1995",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_blp_1995",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_berry_1994",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_berry_1994",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_berry_haile_2014",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_berry_haile_2014",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_nevo_2001",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_nevo_2001",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_bresnahan_reiss_1991",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_bresnahan_reiss_1991",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_sutton_1991",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_sutton_1991",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_klepper_1996",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_klepper_1996",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_klepper_graddy_1990",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_klepper_graddy_1990",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_hopenhayn_1992",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_hopenhayn_1992",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_jovanovic_1982",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_jovanovic_1982",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_cooper_john_1988",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_cooper_john_1988",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_cooper_1999",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_cooper_1999",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_diamond_dybvig_1983",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_diamond_dybvig_1983",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_allen_gale_2000",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_allen_gale_2000",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_acemoglu_2015",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_acemoglu_2015",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_chamley_gale_1994",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_chamley_gale_1994",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_brunnermeier_2009",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_brunnermeier_2009",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_dixit_pindyck_1994",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_dixit_pindyck_1994",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_dixit_1980",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_dixit_1980",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_spence_1977",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_spence_1977",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_bain_1956",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_bain_1956",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_bloom_2009",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_bloom_2009",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_bloom_2018",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_bloom_2018",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_gompers_1995",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_gompers_1995",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_gompers_lerner_2001",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_gompers_lerner_2001",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_kaplan_stromberg_2003",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_kaplan_stromberg_2003",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_kortum_lerner_2000",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_kortum_lerner_2000",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_salant_switzer_reynolds_1983",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_salant_switzer_reynolds_1983",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_farrell_shapiro_1990",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_farrell_shapiro_1990",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_tirole_1988",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_tirole_1988",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_fudenberg_maskin_1986",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_fudenberg_maskin_1986",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_fudenberg_1983",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_fudenberg_1983",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_vives_2008",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_vives_2008",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_schelling_1960",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_schelling_1960",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_mailath_postlewaite_1990",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_mailath_postlewaite_1990",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_sugden_zamarron_2006",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_sugden_zamarron_2006",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_schumpeter_1942",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_schumpeter_1942",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_aghion_howitt_1992",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_aghion_howitt_1992",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_aghion_2005",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_aghion_2005",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_porter_1980",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_porter_1980",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_ghemawat_1991",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_ghemawat_1991",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_barney_1991",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_barney_1991",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_wernerfelt_1984",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_wernerfelt_1984",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_bates_2009",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_bates_2009",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_hortacsu_2017",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_hortacsu_2017",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_sims_2003",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_sims_2003",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_gabaix_2014",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_gabaix_2014",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_loughran_mcdonald_2011",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_loughran_mcdonald_2011",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_whinston_2007",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_whinston_2007",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_khan_2017",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_khan_2017",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_ericson_pakes_1995",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_ericson_pakes_1995",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_park_2023",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_park_2023",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_argyle_2023",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_argyle_2023",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_horton_2023",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_horton_2023",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_aher_2023",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_aher_2023",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_phase_1",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_phase_1",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_phase_2",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_phase_2",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_q40_q42_transition",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_q40_q42_transition",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_fig_concentration",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_fig_concentration",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_fig_per_firm_revenue",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_fig_per_firm_revenue",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_fig_timeline",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_fig_timeline",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_fig_revenue",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_fig_revenue",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_fig_firm_population",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_fig_firm_population",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_fig_rd_progress",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_fig_rd_progress",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_fig_capability",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_fig_capability",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_fig_cascade_zoom",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_fig_cascade_zoom",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_nu6_research_overview_fig_cash",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_nu6_research_overview_fig_cash",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_wave_nu_plus_6_research_overview_md",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_wave_nu_plus_6_research_overview_md",
+      "label": "semantically_similar_to [INFERRED]"
+    },
+    {
+      "id": "e_nu6_research_overview_paper_wave_nu_plus_4_solutions_md",
+      "fromNode": "n_nu6_research_overview_paper",
+      "toNode": "n_wave_nu_plus_4_solutions_md",
+      "label": "conceptually_related_to [INFERRED]"
+    },
+    {
+      "id": "e_wave_nu_plus_4_solutions_md_wave_nu_plus_4_solutions_qualitative_only",
+      "fromNode": "n_wave_nu_plus_4_solutions_md",
+      "toNode": "n_wave_nu_plus_4_solutions_qualitative_only",
+      "label": "rationale_for [EXTRACTED]"
+    },
+    {
+      "id": "e_wave_nu_plus_4_solutions_md_wave_nu_plus_3_20y_analysis_md",
+      "fromNode": "n_wave_nu_plus_4_solutions_md",
+      "toNode": "n_wave_nu_plus_3_20y_analysis_md",
+      "label": "conceptually_related_to [INFERRED]"
+    },
+    {
+      "id": "e_nu6_research_overview_phase_1_nu6_research_overview_horizontal_differentiation",
+      "fromNode": "n_nu6_research_overview_phase_1",
+      "toNode": "n_nu6_research_overview_horizontal_differentiation",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_phase_1_nu6_research_overview_monopolistic_competition_equilibrium",
+      "fromNode": "n_nu6_research_overview_phase_1",
+      "toNode": "n_nu6_research_overview_monopolistic_competition_equilibrium",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_phase_1_nu6_research_overview_blp_share_dispersion",
+      "fromNode": "n_nu6_research_overview_phase_1",
+      "toNode": "n_nu6_research_overview_blp_share_dispersion",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_phase_1_nu6_research_overview_equilibrium_firm_count",
+      "fromNode": "n_nu6_research_overview_phase_1",
+      "toNode": "n_nu6_research_overview_equilibrium_firm_count",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_phase_1_nu6_research_overview_fig_per_firm_revenue",
+      "fromNode": "n_nu6_research_overview_phase_1",
+      "toNode": "n_nu6_research_overview_fig_per_firm_revenue",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_phase_1_nu6_research_overview_fig_firm_population",
+      "fromNode": "n_nu6_research_overview_phase_1",
+      "toNode": "n_nu6_research_overview_fig_firm_population",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_phase_1_nu6_research_overview_klepper_1996",
+      "fromNode": "n_nu6_research_overview_phase_1",
+      "toNode": "n_nu6_research_overview_klepper_1996",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_phase_1_nu6_research_overview_klepper_graddy_1990",
+      "fromNode": "n_nu6_research_overview_phase_1",
+      "toNode": "n_nu6_research_overview_klepper_graddy_1990",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_phase_1_nu6_research_overview_firm_0",
+      "fromNode": "n_nu6_research_overview_phase_1",
+      "toNode": "n_nu6_research_overview_firm_0",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_phase_1_nu6_research_overview_firm_1",
+      "fromNode": "n_nu6_research_overview_phase_1",
+      "toNode": "n_nu6_research_overview_firm_1",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_phase_1_nu6_research_overview_firm_4",
+      "fromNode": "n_nu6_research_overview_phase_1",
+      "toNode": "n_nu6_research_overview_firm_4",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_phase_1_nu6_research_overview_firm_5",
+      "fromNode": "n_nu6_research_overview_phase_1",
+      "toNode": "n_nu6_research_overview_firm_5",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_phase_2_nu6_research_overview_coordination_failure",
+      "fromNode": "n_nu6_research_overview_phase_2",
+      "toNode": "n_nu6_research_overview_coordination_failure",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_phase_2_nu6_research_overview_financial_contagion",
+      "fromNode": "n_nu6_research_overview_phase_2",
+      "toNode": "n_nu6_research_overview_financial_contagion",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_phase_2_nu6_research_overview_dry_powder_withdrawal",
+      "fromNode": "n_nu6_research_overview_phase_2",
+      "toNode": "n_nu6_research_overview_dry_powder_withdrawal",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_phase_2_nu6_research_overview_entry_deterrence_no_strategy",
+      "fromNode": "n_nu6_research_overview_phase_2",
+      "toNode": "n_nu6_research_overview_entry_deterrence_no_strategy",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_phase_2_nu6_research_overview_firm_9_monopoly",
+      "fromNode": "n_nu6_research_overview_phase_2",
+      "toNode": "n_nu6_research_overview_firm_9_monopoly",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_phase_2_nu6_research_overview_q41_default_cascade",
+      "fromNode": "n_nu6_research_overview_phase_2",
+      "toNode": "n_nu6_research_overview_q41_default_cascade",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_phase_2_nu6_research_overview_fig_firm_population",
+      "fromNode": "n_nu6_research_overview_phase_2",
+      "toNode": "n_nu6_research_overview_fig_firm_population",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_phase_2_nu6_research_overview_firm_2",
+      "fromNode": "n_nu6_research_overview_phase_2",
+      "toNode": "n_nu6_research_overview_firm_2",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_phase_2_nu6_research_overview_firm_3",
+      "fromNode": "n_nu6_research_overview_phase_2",
+      "toNode": "n_nu6_research_overview_firm_3",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_phase_2_nu6_research_overview_firm_7",
+      "fromNode": "n_nu6_research_overview_phase_2",
+      "toNode": "n_nu6_research_overview_firm_7",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_phase_2_nu6_research_overview_firm_12",
+      "fromNode": "n_nu6_research_overview_phase_2",
+      "toNode": "n_nu6_research_overview_firm_12",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_q41_default_cascade_nu6_research_overview_coordination_failure",
+      "fromNode": "n_nu6_research_overview_q41_default_cascade",
+      "toNode": "n_nu6_research_overview_coordination_failure",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_q41_default_cascade_nu6_research_overview_firm_5",
+      "fromNode": "n_nu6_research_overview_q41_default_cascade",
+      "toNode": "n_nu6_research_overview_firm_5",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_q41_default_cascade_nu6_research_overview_firm_6",
+      "fromNode": "n_nu6_research_overview_q41_default_cascade",
+      "toNode": "n_nu6_research_overview_firm_6",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_q41_default_cascade_nu6_research_overview_fig_concentration",
+      "fromNode": "n_nu6_research_overview_q41_default_cascade",
+      "toNode": "n_nu6_research_overview_fig_concentration",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_q41_default_cascade_nu6_research_overview_fig_timeline",
+      "fromNode": "n_nu6_research_overview_q41_default_cascade",
+      "toNode": "n_nu6_research_overview_fig_timeline",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_q41_default_cascade_nu6_research_overview_fig_revenue",
+      "fromNode": "n_nu6_research_overview_q41_default_cascade",
+      "toNode": "n_nu6_research_overview_fig_revenue",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_q41_default_cascade_nu6_research_overview_fig_cascade_zoom",
+      "fromNode": "n_nu6_research_overview_q41_default_cascade",
+      "toNode": "n_nu6_research_overview_fig_cascade_zoom",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_q41_default_cascade_nu6_research_overview_firm_9_monopoly",
+      "fromNode": "n_nu6_research_overview_q41_default_cascade",
+      "toNode": "n_nu6_research_overview_firm_9_monopoly",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_q41_default_cascade_nu6_research_overview_speed_of_cascade",
+      "fromNode": "n_nu6_research_overview_q41_default_cascade",
+      "toNode": "n_nu6_research_overview_speed_of_cascade",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_q40_q42_transition_nu6_research_overview_focal_point_selection",
+      "fromNode": "n_nu6_research_overview_q40_q42_transition",
+      "toNode": "n_nu6_research_overview_focal_point_selection",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_q40_q42_transition_nu6_research_overview_env_narrative_self_fulfilling",
+      "fromNode": "n_nu6_research_overview_q40_q42_transition",
+      "toNode": "n_nu6_research_overview_env_narrative_self_fulfilling",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_q40_q42_transition_nu6_research_overview_rationale_research_artifact",
+      "fromNode": "n_nu6_research_overview_q40_q42_transition",
+      "toNode": "n_nu6_research_overview_rationale_research_artifact",
+      "label": "rationale_for [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_firm_9_monopoly_nu6_research_overview_firm_9",
+      "fromNode": "n_nu6_research_overview_firm_9_monopoly",
+      "toNode": "n_nu6_research_overview_firm_9",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_firm_9_monopoly_nu6_research_overview_fig_concentration",
+      "fromNode": "n_nu6_research_overview_firm_9_monopoly",
+      "toNode": "n_nu6_research_overview_fig_concentration",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_firm_9_monopoly_nu6_research_overview_fig_per_firm_revenue",
+      "fromNode": "n_nu6_research_overview_firm_9_monopoly",
+      "toNode": "n_nu6_research_overview_fig_per_firm_revenue",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_firm_9_monopoly_nu6_research_overview_dry_powder_withdrawal",
+      "fromNode": "n_nu6_research_overview_firm_9_monopoly",
+      "toNode": "n_nu6_research_overview_dry_powder_withdrawal",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_firm_9_monopoly_nu6_research_overview_no_ma_anomaly",
+      "fromNode": "n_nu6_research_overview_firm_9_monopoly",
+      "toNode": "n_nu6_research_overview_no_ma_anomaly",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_firm_9_monopoly_nu6_research_overview_no_schumpeterian_destruction",
+      "fromNode": "n_nu6_research_overview_firm_9_monopoly",
+      "toNode": "n_nu6_research_overview_no_schumpeterian_destruction",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_firm_9_monopoly_nu6_research_overview_no_antitrust_response",
+      "fromNode": "n_nu6_research_overview_firm_9_monopoly",
+      "toNode": "n_nu6_research_overview_no_antitrust_response",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_firm_2_nu6_research_overview_cash_rich_non_response",
+      "fromNode": "n_nu6_research_overview_firm_2",
+      "toNode": "n_nu6_research_overview_cash_rich_non_response",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_firm_5_nu6_research_overview_cash_rich_non_response",
+      "fromNode": "n_nu6_research_overview_firm_5",
+      "toNode": "n_nu6_research_overview_cash_rich_non_response",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_firm_9_nu6_research_overview_cash_rich_non_response",
+      "fromNode": "n_nu6_research_overview_firm_9",
+      "toNode": "n_nu6_research_overview_cash_rich_non_response",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_firm_9_nu6_research_overview_fig_capability",
+      "fromNode": "n_nu6_research_overview_firm_9",
+      "toNode": "n_nu6_research_overview_fig_capability",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_firm_9_nu6_research_overview_fig_cash",
+      "fromNode": "n_nu6_research_overview_firm_9",
+      "toNode": "n_nu6_research_overview_fig_cash",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_firm_13_nu6_research_overview_leapfrog_failure",
+      "fromNode": "n_nu6_research_overview_firm_13",
+      "toNode": "n_nu6_research_overview_leapfrog_failure",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_firm_14_nu6_research_overview_leapfrog_failure",
+      "fromNode": "n_nu6_research_overview_firm_14",
+      "toNode": "n_nu6_research_overview_leapfrog_failure",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_firm_15_nu6_research_overview_leapfrog_failure",
+      "fromNode": "n_nu6_research_overview_firm_15",
+      "toNode": "n_nu6_research_overview_leapfrog_failure",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_firm_16_nu6_research_overview_leapfrog_failure",
+      "fromNode": "n_nu6_research_overview_firm_16",
+      "toNode": "n_nu6_research_overview_leapfrog_failure",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_geographic_focus_nu6_research_overview_idiosyncratic_differentiation_intervention",
+      "fromNode": "n_nu6_research_overview_geographic_focus",
+      "toNode": "n_nu6_research_overview_idiosyncratic_differentiation_intervention",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_patient_segment_nu6_research_overview_idiosyncratic_differentiation_intervention",
+      "fromNode": "n_nu6_research_overview_patient_segment",
+      "toNode": "n_nu6_research_overview_idiosyncratic_differentiation_intervention",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_distribution_channel_nu6_research_overview_idiosyncratic_differentiation_intervention",
+      "fromNode": "n_nu6_research_overview_distribution_channel",
+      "toNode": "n_nu6_research_overview_idiosyncratic_differentiation_intervention",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_signature_feature_nu6_research_overview_idiosyncratic_differentiation_intervention",
+      "fromNode": "n_nu6_research_overview_signature_feature",
+      "toNode": "n_nu6_research_overview_idiosyncratic_differentiation_intervention",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_idiosyncratic_differentiation_intervention_nu6_research_overview_horizontal_differentiation",
+      "fromNode": "n_nu6_research_overview_idiosyncratic_differentiation_intervention",
+      "toNode": "n_nu6_research_overview_horizontal_differentiation",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_idiosyncratic_differentiation_intervention_nu6_research_overview_rationale_design_intervention",
+      "fromNode": "n_nu6_research_overview_idiosyncratic_differentiation_intervention",
+      "toNode": "n_nu6_research_overview_rationale_design_intervention",
+      "label": "rationale_for [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_idiosyncratic_differentiation_intervention_wave_nu_plus_3_20y_analysis_prior_collapse",
+      "fromNode": "n_nu6_research_overview_idiosyncratic_differentiation_intervention",
+      "toNode": "n_wave_nu_plus_3_20y_analysis_prior_collapse",
+      "label": "rationale_for [INFERRED]"
+    },
+    {
+      "id": "e_nu6_research_overview_idiosyncratic_differentiation_intervention_nu6_research_overview_blp_share_dispersion",
+      "fromNode": "n_nu6_research_overview_idiosyncratic_differentiation_intervention",
+      "toNode": "n_nu6_research_overview_blp_share_dispersion",
+      "label": "semantically_similar_to [INFERRED]"
+    },
+    {
+      "id": "e_nu6_research_overview_env_llm_nu6_research_overview_focal_point_selection",
+      "fromNode": "n_nu6_research_overview_env_llm",
+      "toNode": "n_nu6_research_overview_focal_point_selection",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_env_llm_nu6_research_overview_demand_calibrator",
+      "fromNode": "n_nu6_research_overview_env_llm",
+      "toNode": "n_nu6_research_overview_demand_calibrator",
+      "label": "shares_data_with [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_env_llm_nu6_research_overview_firm_llm",
+      "fromNode": "n_nu6_research_overview_env_llm",
+      "toNode": "n_nu6_research_overview_firm_llm",
+      "label": "shares_data_with [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_entry_judge_nu6_research_overview_pe_lifecycle",
+      "fromNode": "n_nu6_research_overview_entry_judge",
+      "toNode": "n_nu6_research_overview_pe_lifecycle",
+      "label": "shares_data_with [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_pe_lifecycle_nu6_research_overview_leapfrog_failure",
+      "fromNode": "n_nu6_research_overview_pe_lifecycle",
+      "toNode": "n_nu6_research_overview_leapfrog_failure",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_ma_bidder_nu6_research_overview_no_ma_anomaly",
+      "fromNode": "n_nu6_research_overview_ma_bidder",
+      "toNode": "n_nu6_research_overview_no_ma_anomaly",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_sec_llm_nu6_research_overview_no_antitrust_response",
+      "fromNode": "n_nu6_research_overview_sec_llm",
+      "toNode": "n_nu6_research_overview_no_antitrust_response",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_horizontal_differentiation_nu6_research_overview_hotelling_1929",
+      "fromNode": "n_nu6_research_overview_horizontal_differentiation",
+      "toNode": "n_nu6_research_overview_hotelling_1929",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_horizontal_differentiation_nu6_research_overview_salop_1979",
+      "fromNode": "n_nu6_research_overview_horizontal_differentiation",
+      "toNode": "n_nu6_research_overview_salop_1979",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_horizontal_differentiation_nu6_research_overview_daspremont_1979",
+      "fromNode": "n_nu6_research_overview_horizontal_differentiation",
+      "toNode": "n_nu6_research_overview_daspremont_1979",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_horizontal_differentiation_nu6_research_overview_focal_point_selection",
+      "fromNode": "n_nu6_research_overview_horizontal_differentiation",
+      "toNode": "n_nu6_research_overview_focal_point_selection",
+      "label": "semantically_similar_to [AMBIGUOUS]"
+    },
+    {
+      "id": "e_nu6_research_overview_monopolistic_competition_equilibrium_nu6_research_overview_klepper_1996",
+      "fromNode": "n_nu6_research_overview_monopolistic_competition_equilibrium",
+      "toNode": "n_nu6_research_overview_klepper_1996",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_monopolistic_competition_equilibrium_nu6_research_overview_hopenhayn_1992",
+      "fromNode": "n_nu6_research_overview_monopolistic_competition_equilibrium",
+      "toNode": "n_nu6_research_overview_hopenhayn_1992",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_monopolistic_competition_equilibrium_nu6_research_overview_jovanovic_1982",
+      "fromNode": "n_nu6_research_overview_monopolistic_competition_equilibrium",
+      "toNode": "n_nu6_research_overview_jovanovic_1982",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_equilibrium_firm_count_nu6_research_overview_bresnahan_reiss_1991",
+      "fromNode": "n_nu6_research_overview_equilibrium_firm_count",
+      "toNode": "n_nu6_research_overview_bresnahan_reiss_1991",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_equilibrium_firm_count_nu6_research_overview_sutton_1991",
+      "fromNode": "n_nu6_research_overview_equilibrium_firm_count",
+      "toNode": "n_nu6_research_overview_sutton_1991",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_blp_share_dispersion_nu6_research_overview_blp_1995",
+      "fromNode": "n_nu6_research_overview_blp_share_dispersion",
+      "toNode": "n_nu6_research_overview_blp_1995",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_blp_share_dispersion_nu6_research_overview_berry_1994",
+      "fromNode": "n_nu6_research_overview_blp_share_dispersion",
+      "toNode": "n_nu6_research_overview_berry_1994",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_blp_share_dispersion_nu6_research_overview_nevo_2001",
+      "fromNode": "n_nu6_research_overview_blp_share_dispersion",
+      "toNode": "n_nu6_research_overview_nevo_2001",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_coordination_failure_nu6_research_overview_cooper_john_1988",
+      "fromNode": "n_nu6_research_overview_coordination_failure",
+      "toNode": "n_nu6_research_overview_cooper_john_1988",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_coordination_failure_nu6_research_overview_cooper_1999",
+      "fromNode": "n_nu6_research_overview_coordination_failure",
+      "toNode": "n_nu6_research_overview_cooper_1999",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_coordination_failure_nu6_research_overview_diamond_dybvig_1983",
+      "fromNode": "n_nu6_research_overview_coordination_failure",
+      "toNode": "n_nu6_research_overview_diamond_dybvig_1983",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_coordination_failure_nu6_research_overview_dixit_pindyck_1994",
+      "fromNode": "n_nu6_research_overview_coordination_failure",
+      "toNode": "n_nu6_research_overview_dixit_pindyck_1994",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_coordination_failure_nu6_research_overview_bloom_2009",
+      "fromNode": "n_nu6_research_overview_coordination_failure",
+      "toNode": "n_nu6_research_overview_bloom_2009",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_coordination_failure_nu6_research_overview_financial_contagion",
+      "fromNode": "n_nu6_research_overview_coordination_failure",
+      "toNode": "n_nu6_research_overview_financial_contagion",
+      "label": "semantically_similar_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_focal_point_selection_nu6_research_overview_schelling_1960",
+      "fromNode": "n_nu6_research_overview_focal_point_selection",
+      "toNode": "n_nu6_research_overview_schelling_1960",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_focal_point_selection_nu6_research_overview_mailath_postlewaite_1990",
+      "fromNode": "n_nu6_research_overview_focal_point_selection",
+      "toNode": "n_nu6_research_overview_mailath_postlewaite_1990",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_focal_point_selection_nu6_research_overview_sugden_zamarron_2006",
+      "fromNode": "n_nu6_research_overview_focal_point_selection",
+      "toNode": "n_nu6_research_overview_sugden_zamarron_2006",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_focal_point_selection_nu6_research_overview_rationale_env_focal",
+      "fromNode": "n_nu6_research_overview_focal_point_selection",
+      "toNode": "n_nu6_research_overview_rationale_env_focal",
+      "label": "rationale_for [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_focal_point_selection_nu6_research_overview_horton_2023",
+      "fromNode": "n_nu6_research_overview_focal_point_selection",
+      "toNode": "n_nu6_research_overview_horton_2023",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_focal_point_selection_nu6_research_overview_park_2023",
+      "fromNode": "n_nu6_research_overview_focal_point_selection",
+      "toNode": "n_nu6_research_overview_park_2023",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_focal_point_selection_nu6_research_overview_argyle_2023",
+      "fromNode": "n_nu6_research_overview_focal_point_selection",
+      "toNode": "n_nu6_research_overview_argyle_2023",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_focal_point_selection_nu6_research_overview_aher_2023",
+      "fromNode": "n_nu6_research_overview_focal_point_selection",
+      "toNode": "n_nu6_research_overview_aher_2023",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_dry_powder_withdrawal_nu6_research_overview_gompers_1995",
+      "fromNode": "n_nu6_research_overview_dry_powder_withdrawal",
+      "toNode": "n_nu6_research_overview_gompers_1995",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_dry_powder_withdrawal_nu6_research_overview_gompers_lerner_2001",
+      "fromNode": "n_nu6_research_overview_dry_powder_withdrawal",
+      "toNode": "n_nu6_research_overview_gompers_lerner_2001",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_dry_powder_withdrawal_nu6_research_overview_kaplan_stromberg_2003",
+      "fromNode": "n_nu6_research_overview_dry_powder_withdrawal",
+      "toNode": "n_nu6_research_overview_kaplan_stromberg_2003",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_dry_powder_withdrawal_nu6_research_overview_kortum_lerner_2000",
+      "fromNode": "n_nu6_research_overview_dry_powder_withdrawal",
+      "toNode": "n_nu6_research_overview_kortum_lerner_2000",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_dry_powder_withdrawal_nu6_research_overview_leapfrog_failure",
+      "fromNode": "n_nu6_research_overview_dry_powder_withdrawal",
+      "toNode": "n_nu6_research_overview_leapfrog_failure",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_dry_powder_withdrawal_nu6_research_overview_entry_deterrence_no_strategy",
+      "fromNode": "n_nu6_research_overview_dry_powder_withdrawal",
+      "toNode": "n_nu6_research_overview_entry_deterrence_no_strategy",
+      "label": "semantically_similar_to [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_entry_deterrence_no_strategy_nu6_research_overview_dixit_1980",
+      "fromNode": "n_nu6_research_overview_entry_deterrence_no_strategy",
+      "toNode": "n_nu6_research_overview_dixit_1980",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_entry_deterrence_no_strategy_nu6_research_overview_spence_1977",
+      "fromNode": "n_nu6_research_overview_entry_deterrence_no_strategy",
+      "toNode": "n_nu6_research_overview_spence_1977",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_entry_deterrence_no_strategy_nu6_research_overview_bain_1956",
+      "fromNode": "n_nu6_research_overview_entry_deterrence_no_strategy",
+      "toNode": "n_nu6_research_overview_bain_1956",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_entry_deterrence_no_strategy_nu6_research_overview_sutton_1991",
+      "fromNode": "n_nu6_research_overview_entry_deterrence_no_strategy",
+      "toNode": "n_nu6_research_overview_sutton_1991",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_leapfrog_failure_nu6_research_overview_fudenberg_1983",
+      "fromNode": "n_nu6_research_overview_leapfrog_failure",
+      "toNode": "n_nu6_research_overview_fudenberg_1983",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_leapfrog_failure_nu6_research_overview_vives_2008",
+      "fromNode": "n_nu6_research_overview_leapfrog_failure",
+      "toNode": "n_nu6_research_overview_vives_2008",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_leapfrog_failure_nu6_research_overview_fig_timeline",
+      "fromNode": "n_nu6_research_overview_leapfrog_failure",
+      "toNode": "n_nu6_research_overview_fig_timeline",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_cash_rich_non_response_nu6_research_overview_porter_1980",
+      "fromNode": "n_nu6_research_overview_cash_rich_non_response",
+      "toNode": "n_nu6_research_overview_porter_1980",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_cash_rich_non_response_nu6_research_overview_ghemawat_1991",
+      "fromNode": "n_nu6_research_overview_cash_rich_non_response",
+      "toNode": "n_nu6_research_overview_ghemawat_1991",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_cash_rich_non_response_nu6_research_overview_barney_1991",
+      "fromNode": "n_nu6_research_overview_cash_rich_non_response",
+      "toNode": "n_nu6_research_overview_barney_1991",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_cash_rich_non_response_nu6_research_overview_wernerfelt_1984",
+      "fromNode": "n_nu6_research_overview_cash_rich_non_response",
+      "toNode": "n_nu6_research_overview_wernerfelt_1984",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_cash_rich_non_response_nu6_research_overview_bates_2009",
+      "fromNode": "n_nu6_research_overview_cash_rich_non_response",
+      "toNode": "n_nu6_research_overview_bates_2009",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_cash_rich_non_response_nu6_research_overview_hortacsu_2017",
+      "fromNode": "n_nu6_research_overview_cash_rich_non_response",
+      "toNode": "n_nu6_research_overview_hortacsu_2017",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_cash_rich_non_response_nu6_research_overview_sims_2003",
+      "fromNode": "n_nu6_research_overview_cash_rich_non_response",
+      "toNode": "n_nu6_research_overview_sims_2003",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_cash_rich_non_response_nu6_research_overview_gabaix_2014",
+      "fromNode": "n_nu6_research_overview_cash_rich_non_response",
+      "toNode": "n_nu6_research_overview_gabaix_2014",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_cash_rich_non_response_nu6_research_overview_tirole_1988",
+      "fromNode": "n_nu6_research_overview_cash_rich_non_response",
+      "toNode": "n_nu6_research_overview_tirole_1988",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_cash_rich_non_response_nu6_research_overview_fudenberg_maskin_1986",
+      "fromNode": "n_nu6_research_overview_cash_rich_non_response",
+      "toNode": "n_nu6_research_overview_fudenberg_maskin_1986",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_cash_rich_non_response_nu6_research_overview_fig_cash",
+      "fromNode": "n_nu6_research_overview_cash_rich_non_response",
+      "toNode": "n_nu6_research_overview_fig_cash",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_cash_rich_non_response_nu6_research_overview_no_schumpeterian_destruction",
+      "fromNode": "n_nu6_research_overview_cash_rich_non_response",
+      "toNode": "n_nu6_research_overview_no_schumpeterian_destruction",
+      "label": "semantically_similar_to [INFERRED]"
+    },
+    {
+      "id": "e_nu6_research_overview_no_ma_anomaly_nu6_research_overview_salant_switzer_reynolds_1983",
+      "fromNode": "n_nu6_research_overview_no_ma_anomaly",
+      "toNode": "n_nu6_research_overview_salant_switzer_reynolds_1983",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_no_ma_anomaly_nu6_research_overview_farrell_shapiro_1990",
+      "fromNode": "n_nu6_research_overview_no_ma_anomaly",
+      "toNode": "n_nu6_research_overview_farrell_shapiro_1990",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_no_schumpeterian_destruction_nu6_research_overview_schumpeter_1942",
+      "fromNode": "n_nu6_research_overview_no_schumpeterian_destruction",
+      "toNode": "n_nu6_research_overview_schumpeter_1942",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_no_schumpeterian_destruction_nu6_research_overview_aghion_howitt_1992",
+      "fromNode": "n_nu6_research_overview_no_schumpeterian_destruction",
+      "toNode": "n_nu6_research_overview_aghion_howitt_1992",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_nu6_research_overview_no_schumpeterian_destruction_nu6_research_overview_aghion_2005",
+      "fromNode": "n_nu6_research_overview_no_schumpeterian_destruction",
+      "toNode": "n_nu6_research_overview_aghion_2005",
+      "label": "references [EXTRACTED]"
+    }
+  ]
+}

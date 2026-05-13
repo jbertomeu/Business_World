@@ -1,0 +1,24 @@
+[project]
+name = "llm-firm-lab"
+version = "0.1.0"
+description = "Multi-agent economic simulation with LLM-powered firms, financial institutions, and market environment"
+requires-python = ">=3.11"
+dependencies = [
+    "pyyaml>=6.0",
+    "pandas>=2.0",
+    "numpy>=1.24",
+    "requests>=2.28",
+    "fastapi>=0.100",
+    "uvicorn>=0.20",
+]
+
+[project.optional-dependencies]
+dashboard = ["streamlit>=1.30", "plotly>=5.15"]
+dev = ["pytest>=7.0", "pytest-cov>=4.0"]
+
+[project.scripts]
+llm-firm-lab = "src.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

@@ -1,0 +1,2670 @@
+\documentclass[11pt]{article}
+
+% ----------- Packages -----------
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{natbib}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\hypersetup{colorlinks=true, linkcolor=blue!50!black, citecolor=blue!50!black,
+  urlcolor=blue!50!black}
+\usepackage{footmisc}
+\usepackage{enumitem}
+\usepackage{titlesec}
+
+\titleformat{\section}{\large\bfseries}{\thesection.}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection.}{1em}{}
+
+\onehalfspacing
+\setlength{\parindent}{2em}
+
+\newtheorem{proposition}{Proposition}
+\newtheorem{definition}{Definition}
+
+\title{\Large \textbf{A Computational Laboratory for Industry Dynamics:\\
+Multi-Agent Large-Language-Model Simulation of an Oligopolistic Biotech Industry}}
+\author{\normalsize Anonymous\thanks{We thank seminar participants at \textit{(omitted for review)}.
+All errors are our own. Replication code, prompts, and the simulation environment
+will be made publicly available upon acceptance.}}
+\date{\normalsize \today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent We introduce a computational laboratory in which the strategic
+decisions of firms, financial intermediaries, regulators, executives, and
+activist investors are produced by separately-instantiated large language
+model (LLM) agents whose information sets reflect the same disclosure
+boundaries that organize real economies. Firms decide on production,
+pricing, R\&D, marketing, capital structure, and dividends; commercial banks
+underwrite revolvers and term loans; investment banks execute equity and
+bond issuances; an equity market priced by a panel of LLM analysts marks
+shares each quarter; an environment agent resolves the product market;
+boards governed by hidden CEO types hire and fire executives; activists
+launch campaigns; and a private-equity sponsor funds entry. We report
+results from a 20-year (80-quarter) simulation of an emerging longevity-drug
+industry seeded with six firms and exposed to free entry. Seventeen distinct
+firms compete over the run; eight exit through bankruptcy and three are
+absorbed via distressed auction. The Herfindahl index averages 1{,}697,
+the average top-firm share is 24.2\%, and the cumulative failure rate
+reaches 47\%. We document six economic findings that the laboratory delivers from
+emergent agent reasoning rather than from programmed update rules.
+(i) Firm mortality is bimodal — a leverage-trap cluster of overconfident
+expansion failures in early life, a slow-bleed cluster of position-erosion
+failures in mid-life — and the bimodality is identifiable in the firms'
+strategic memos in a way conventional structural models cannot resolve.
+(ii) A roll-up acquirer emerges endogenously: a single solvent firm
+pre-funds itself for peer distress, deploys cash at three successive
+auctions, and absorbs the residual assets of failed competitors at
+fire-sale prices, consistent with \citet{shleifervishny1992}.
+(iii) Activist buyback campaigns systematically fail because cash is a
+recurrent real option in the \citet{dixitpindyck1994} sense and the
+activist's signal is a single-shot demand. (iv) LLM CFOs systematically
+under-lever relative to the trade-off optimum because the rhetoric of
+covenant downside is more available in the cognitive substrate than
+the rhetoric of marginal tax-shield benefit — a testable prediction in
+which augmenting the prompt with a worked tax-shield example should
+shift behaviour. (v) The PE channel functions as Schumpeterian
+renewal: it is the financial intermediary's decision rule that prevents
+the industry from collapsing to monopoly, with the rate of competitive
+turnover monotonic in PE underwriting capacity. (vi) Equity-market
+reflexivity emerges from the panel's correlated anchoring tendency
+combined with the firm's narrative interpretation of price moves,
+generating a Soros-style price--fundamental feedback loop without
+either side being programmed to produce it. We discuss what the
+laboratory does and does not deliver, the engineering choices that
+determine which findings should be taken as substantive versus
+artifactual, and the methodological position LLM industrial
+organization occupies between agent-based modeling, structural
+estimation, and behavioural theory of the firm.
+\bigskip
+
+\noindent\textit{JEL Codes:} L11, L13, G33, C63, D83.
+\smallskip
+
+\noindent\textit{Keywords:} industrial organization, agent-based models,
+large language models, simulation, market structure, financial distress.
+\end{abstract}
+
+\thispagestyle{empty}
+\newpage
+
+% ============== 1. INTRODUCTION ==============
+\section{Introduction}
+
+Industrial organization has long alternated between two unsatisfying
+empirical positions. Reduced-form analysis of historical industry data
+delivers credibly identified estimates of narrow effects but cannot
+generate counterfactual industries; structural estimation can simulate
+counterfactuals but only after one has imposed the strong functional-form
+and equilibrium-selection restrictions that make a likelihood
+tractable.\footnote{See \citet{ackerberg2007econometric}, \citet{pakes2003}, and
+\citet{aguirregabiria2010dynamic} for canonical statements of this trade-off.}
+Game-theoretic models of strategic firm behavior, in turn, populate worlds
+with optimizers whose decision rules bear little resemblance to the
+heuristic, narrative-driven, constraint-saturated decisions executives
+actually make. The Nelson--Winter \citeyearpar{nelsonwinter1982} evolutionary
+program responded to this disconnect by replacing maximization with
+routines, and the agent-based literature in the tradition of
+\citet{tesfatsion2006agent}, \citet{axtell2001zipf}, and
+\citet{farmer2009economy} extended the response with computational
+heterogeneity. Yet evolutionary and agent-based firms remain stylized: a
+small number of state variables, hand-crafted update rules, and---most
+limiting---no language. Real firms communicate, justify, deflect, and
+persuade. Boards interrogate strategy. Investors react to disclosure. None
+of that is in the agent-based menu.
+
+This paper proposes an alternative. We assemble a multi-agent simulation
+in which the agents that drive the industry are large language models
+(LLMs) instantiated separately for each role, each prompted with its own
+information set and instructions, and each issuing structured decisions
+that the simulation engine commits to a balance-sheet-consistent state.
+The laboratory contains, at minimum, eight kinds of agents: (i) operating
+firms, who decide production, pricing, capital expenditure, R\&D,
+marketing, financing, and payout policy; (ii) an industry environment, a
+``referee'' that resolves the product market, grants R\&D outcomes, and
+narrates idiosyncratic shocks; (iii) a commercial bank that underwrites
+revolvers and amortizing term loans subject to covenants; (iv) an
+investment bank that prices and places equity issuances and bond
+offerings; (v) an equity market priced by a panel of LLM valuation
+analysts whose median quote becomes the marked share price; (vi) a
+private-equity sponsor that funds the activation of dormant entrants;
+(vii) boards of directors with discretion to dismiss the CEO, configured
+so that the CEO has a hidden behavioral type unobserved by the board;
+(viii) activist investors who occasionally launch campaigns---typically
+buyback demands aimed at cash-rich firms. Optional modules implement
+auditors, sell-side analysts, an SEC enforcement agent, M\&A bidding,
+restatements, and an earnings-management injection process; we run with
+the production-and-finance subset active.
+
+The combination is, on its face, alarming. LLMs hallucinate; they are
+sensitive to prompt formulation; they have no calibration to first
+principles. We share these concerns and address them throughout the paper:
+in the architectural separation of decisions from accounting, in the
+balance-sheet invariants that fail loudly when violated, in the
+deterministic clamps that prevent any agent from generating physically
+infeasible outcomes, and in the panel-median valuation procedure designed
+to suppress single-LLM outliers. The laboratory should be understood not
+as a forecasting tool but as a controlled environment for studying which
+properties of industry dynamics are emergent from a particular cognitive
+architecture, in the sense that the regularity does not have to be
+written into any agent's prompt to appear in the data the simulation
+generates.
+
+A concrete example may help fix ideas. In our 80-quarter run, firm\_14
+spawns at quarter 46 with a high-baseline capability stock,
+representing a science-led entrant backed by a private-equity sponsor.
+Within three quarters of activation it has moved into the industry
+lead at a 22\% market share, displacing the incumbent firm\_7. The
+incumbent's CFO, in his Q49 strategic memo, writes: \emph{``A
+new entrant (firm\_14) has emerged with what appears to be a credible
+clinical-stage advantage. We are not in a position to match their
+capability stock through R\&D alone within a reasonable horizon. Our
+response strategy is to (i) protect our installed base through
+aggressive marketing, (ii) preserve our cash position for the
+distressed-asset opportunities that the next two-to-three years are
+likely to produce as marginal competitors face dual pressure from
+firm\_14 and from rising R\&D costs, (iii) defer Generation-2
+investment until firm\_14's leapfrog has been validated or
+falsified.''} The memo prefigures, in narrative form, the M\&A
+consolidation strategy that firm\_7 actually executes over the
+subsequent twenty-five quarters: firm\_7 acquires three distressed
+peers between Q44 and Q71. The memo is not a coefficient. It is the
+firm's articulated rationale for a sequence of decisions that
+unfolds over six years, and the simulation records both the rationale
+and the decisions in machine-readable form. This is the kind of
+output that, to our knowledge, no other methodology in industrial
+organization is capable of producing.
+
+We make three contributions. First, \textit{economically}, we present
+a set of findings about industrial dynamics that the laboratory
+generates emergent and that connect to the standard theoretical
+literature. Mortality is bimodal: an early-life cluster matches the
+\citet{jensen1986agency} free-cash-flow over-investment story
+modulated by debt, while a mid-life cluster reflects gradual
+position erosion. Roll-up consolidation through \citet{shleifervishny1992}
+fire-sale dynamics emerges from one acquirer's deliberate
+pre-funding strategy, articulated in advance in its strategic memos.
+Cash hoarding by survivors is rationalised in
+\citet{dixitpindyck1994} real-options language and resists activist
+pressure because the activist's demand is one-shot while the option
+value is recurrent. LLM CFOs systematically under-lever because
+covenant rhetoric is cognitively more available than tax-shield
+rhetoric, generating a testable prediction about the response of
+firm leverage to prompt-augmented financial reasoning. The PE
+channel operates as the Schumpeterian renewal mechanism that keeps
+the industry from collapsing to monopoly. CEO turnover by hidden
+agency-cost type tracks \citet{jensen1986agency} predictions about
+observable behavioural signatures. Each of these findings has the
+property that it would be hard to obtain in conventional
+agent-based simulation (which lacks narrative content) or in
+structural estimation (which assumes the optimization
+characterisation we are trying to test against).
+
+Second, \textit{methodologically}, we describe an
+information-theoretic separation between agents---each prompt builder
+takes only the data the corresponding real-world actor would have---that
+appears to be the binding constraint on whether the simulation produces
+recognizable industrial dynamics rather than a coordinated narrative
+hallucination. We document concrete failure modes (e.g., dataclass-default
+zero contamination, environment over-anchoring, single-LLM equity
+outliers) and the engineering responses that brought them under control.
+Third, \textit{conceptually}, we situate the LLM laboratory between
+agent-based modeling, structural IO, and the behavioral theory of the
+firm, arguing that its comparative advantage is the simulation of
+\emph{decision processes} rather than \emph{decision rules}. The
+substantive consequence is that the laboratory can produce
+\emph{mechanism evidence}: the strategic-memo data identifies
+\emph{which} of several candidate economic mechanisms is operating in
+any given firm-quarter, in a way that conventional industrial-organization
+data cannot. Standard reduced-form analysis observes outcomes; the
+laboratory observes outcomes alongside the firm's articulated
+reasoning for the decision that produced them.
+
+A reasonable response, at this point, is that we are reinventing
+agent-based macroeconomics with more expensive parts. We disagree, and
+the disagreement structures the paper. Agent-based models typically
+specify a parametric decision rule and analyze the resulting dynamics;
+LLM-driven models do something materially different, namely produce a
+\emph{decision process} from textual reasoning over a structured
+information set. The distinction is not cosmetic. A parametric rule
+inverts back to the parameters; a decision process inverts back to
+narrative content---to phrases like ``we believe Generation 2 readiness
+remains 18--24 months out and have therefore deferred capacity
+expansion.'' That phrase is not a coefficient. It is a
+machine-interpretable statement about an executive's reasoning, and it
+can be analyzed by the same machinery that produced it. We will return
+to this point in Section \ref{sec:mechanisms}; for now we note only that
+the laboratory's auditable narrative output is its principal
+methodological surplus over the agent-based and structural alternatives.
+
+A second reasonable concern is reproducibility. LLMs are stochastic, and
+LLM providers update model weights without disclosing the change. We
+address this through three layers of discipline. First, the orchestrator
+is deterministic given a random seed and a model roster, and the
+roster pins specific model versions; the same roster on the same seed
+will reproduce within the model provider's own determinism budget.
+Second, every LLM call is logged with its exact prompt and response,
+producing a per-quarter \texttt{llm\_calls.jsonl} that is sufficient to
+reconstruct the deterministic state evolution after the fact, even if
+the underlying model weights have changed. Third, every quarter
+boundary is a snapshot, and any conclusion of this paper can be
+recomputed from the snapshot directory without re-querying any LLM. The
+combination is reproducibility-with-an-asterisk, weaker than that
+provided by closed-form models but considerably stronger than that
+provided by uncached LLM applications.
+
+The remainder of the paper proceeds as follows. Section \ref{sec:literature}
+positions the paper relative to four literatures: agent-based computational
+economics, structural industrial organization, the behavioral theory of
+the firm, and the emerging literature on LLM agents in economic
+applications. Section \ref{sec:environment} describes the simulation
+environment in technical detail, including the agent menu, the information
+boundaries, the formal demand and cost model, the accounting and
+balance-sheet invariants, the product market, and the financing and
+bankruptcy mechanics. Section \ref{sec:design}
+describes the experimental design: model roster, calibration, parameter
+choices, and run protocol. Section \ref{sec:measurement} describes the
+output panels and how key quantities are constructed. Section
+\ref{sec:results} presents the main results: industry life-cycle,
+mortality hazards, concentration dynamics, M\&A, leverage, governance,
+equity-market behavior, cash hoarding, activist campaigns, growth
+distributions, and detailed firm case studies. Section \ref{sec:mechanisms}
+isolates the mechanisms underlying the headline findings and discusses
+threats to external validity. Section \ref{sec:conclusion} concludes.
+Appendix \ref{app:prompts} reproduces the most consequential prompts.
+
+\section{Related Literature}\label{sec:literature}
+
+\paragraph{Agent-based computational economics.} The closest methodological
+relatives of our laboratory are the agent-based models surveyed by
+\citet{tesfatsion2006agent}, \citet{leijonhufvud2006agent}, and
+\citet{epstein2006generative}. The Santa-Fe-style stock market
+(\citealp{lebaron1999time}, \citealp{arthur1997asset}) and the K\&S model of
+\citet{dosi2010schumpeter} are the canonical examples within macro and IO,
+respectively. The fundamental departure of our work is that decision rules
+in those models are hand-crafted update equations parameterized by a
+small number of behavioral coefficients. In ours, decision rules are the
+emergent output of language models prompted with information packages
+that approximate what the corresponding real-world actor would observe.
+This trades parametric transparency for a different kind of fidelity: an
+LLM-driven CFO that carries a heavy debt load can argue, in writing, why
+deferring R\&D is the prudent action this quarter, and the simulation
+records the argument; one cannot ask a coefficient why it took the value
+it took.
+
+\paragraph{Structural industrial organization.} Our work is complementary
+to the dynamic-oligopoly literature initiated by \citet{ericsonpakes1995},
+extended by \citet{bajaribenkardlevin2007} and \citet{doraszelskipakes2007},
+and surveyed by \citet{aguirregabiria2010dynamic}. Structural IO recovers
+deep parameters from observed equilibrium play; we generate equilibrium
+play given a particular cognitive architecture, and the
+``deep parameters'' of our model are the prompts. In a structural model
+the analyst cannot ask whether firms would behave differently if they
+reasoned about debt covenants narratively rather than algebraically; in
+our laboratory, this is essentially the only kind of question one can
+ask. We view the two methodologies as complements: structural estimation
+disciplines theory by data, computational laboratories discipline data by
+counterfactual.
+
+\paragraph{Behavioral and evolutionary theory of the firm.} The
+\citet{cyertmarch1963} behavioral theory and the \citet{nelsonwinter1982}
+evolutionary tradition argue that the firm is best modeled as a
+collection of routines, aspiration levels, and political coalitions
+rather than as a profit maximizer. Our LLM firms inherit something of
+this spirit: their decisions are bounded by reasoning capacity, anchored
+on previous decisions, and influenced by the framing of their information
+package. Where Cyert and March wrote prose about how managers \emph{think},
+we now have a tractable substrate that allows us to study what such
+thinking generates at scale.
+
+\paragraph{LLMs in economic applications.} A small but growing literature
+uses LLMs as economic agents. \citet{horton2023large} proposes
+``homo silicus'' as a substitute for human subjects in lab experiments;
+\citet{argyle2023out} document that LLMs reproduce demographic
+correlations in survey responses; \citet{brand2023using} apply LLMs to
+preference elicitation. Closer to our setting,
+\citet{ross2024llm} use LLMs as principal-agent decision-makers in
+contracting environments, and \citet{li2023}\nocite{li2023}
+implement LLM-based macro households. To our knowledge, ours is the first
+attempt to assemble a fully populated industry---firms, financial
+intermediaries, regulators, governance, capital markets---out of LLM
+agents with isolated information sets, and to use the resulting
+environment to study industrial dynamics over a 20-year horizon.
+
+\paragraph{Financial frictions and corporate dynamics.} The role of
+financial intermediaries in our laboratory connects to the literature on
+financial frictions (\citealp{bernankegertler1989}, \citealp{kiyotakimoore1997},
+\citealp{rampinjviswanathan2010}), the costly external finance literature
+(\citealp{myersmajluf1984}), and dynamic capital-structure models
+(\citealp{lelandtoft1996}, \citealp{strebulaev2007}). The capital-structure
+results we report are not estimated; they are emergent from how LLM
+firms reason about debt under our prompt structure. They should be read
+as descriptive facts about that cognitive architecture rather than as
+estimates of structural parameters.
+
+\paragraph{Industry dynamics and firm size distributions.} Our findings
+on mortality, concentration, and growth distributions speak to a long
+tradition. \citet{gibrat1931} conjectured that growth rates are
+independent of size; \citet{hall1987relationship} and
+\citet{evans1987tests} document violations of Gibrat's law in cohort
+studies of U.S. manufacturers; \citet{sutton1997gibrat} surveys the
+empirical regularities. Our laboratory's growth distribution is
+right-skewed and fat-tailed, with a median quarterly growth rate of
+zero and a long upper tail driven by entrants ramping production. We
+report the moments and discuss whether they reflect endogenous
+dynamics or are artifacts of the entry calibration in
+Section~\ref{sec:results}. \citet{caves1998industrial} and
+\citet{geroski1995entries} catalogue the entry-and-exit literature; we
+find a hazard pattern broadly consistent with theirs but front-loaded
+relative to U.S. data, which we attribute to the laboratory's
+compressed time scale.
+
+\paragraph{Bankruptcy and distressed asset markets.} The distressed
+auctions in our laboratory are mechanically similar to the
+\citet{shleifervishny1992} fire-sale mechanism, with a key
+difference: prices are set by an LLM auctioneer rather than by an
+explicit demand curve. \citet{strömberg2000} documents the
+characteristics of Chapter 7 versus Chapter 11 outcomes; the present
+laboratory implements only a Chapter-7-like asset auction and we
+discuss the resulting bias toward overstated liquidation outcomes. The
+\citet{pulvino1998effects} cyclical patterns in distressed prices
+emerge in our laboratory: the three M\&A transactions occur during
+periods of widespread industry distress, and the prices reflect the
+acquirer's strategic-fit narrative more than a clean discount on book
+value.
+
+\paragraph{Executive turnover and governance.} The CEO-turnover patterns
+we observe connect to \citet{warner1988stock},
+\citet{denis1997ownership}, \citet{taylor2010ceo}, and the
+\citet{kaplanminton2012} update on hazard rates. Our turnover frequency
+is higher than the empirical benchmark, which we attribute to the
+laboratory's annual board-review cadence and to the absence of any
+patience parameter in the board prompt; tuning these is an obvious
+next step.
+
+\paragraph{Computational laboratories more broadly.} The use of
+computer simulation as a vehicle for inference about social systems
+has a substantial intellectual history. \citet{shubik1964} and the
+Cowles Commission tradition exhibit early models of strategic
+interaction through computation. The \citet{schelling1971dynamic}
+segregation model is the canonical demonstration that emergent
+macroscopic order can arise from microscopic individual decisions
+that contain no preference for the macroscopic property in question.
+Our laboratory is, in a sense, a Schelling-style demonstration with
+language: industrial concentration emerges from no firm prompted to
+seek it, financial distress emerges from no agent instructed to
+generate it, and the regularity these emergent patterns exhibit is
+the principal evidence we offer that the laboratory is producing
+genuine economic dynamics rather than coordinated fiction.
+
+\section{The Simulation Environment}\label{sec:environment}
+
+\subsection{Architectural overview}
+
+The laboratory is organized around a single mutable object,
+\textit{state}, that is the consensus record of who has decided what,
+which contracts are outstanding, and how every dollar of every firm's
+balance sheet is accounted for. The state is advanced one quarter at a
+time by an \textit{orchestrator} that calls each agent in a fixed
+sequence, gathers structured outputs (typically JSON with a documented
+schema), validates them against deterministic constraints, and commits
+the resulting deltas back to the state. Crucially, no agent ever writes
+directly to state. Every state mutation is performed by accounting code
+that takes the agent's intentions as inputs and enforces conservation of
+balance-sheet identities as outputs.
+
+The orchestrator is deterministic given a random seed, the model roster,
+and any cached LLM responses. A snapshot of the entire state is written
+to disk after each quarter, so a run can be resumed from any quarter
+boundary.\footnote{The snapshot mechanism was important in our development.
+A 20-year run takes roughly 21 hours of wall-clock time on a workstation
+calling the OpenAI and Anthropic APIs; the ability to resume from a
+mid-run snapshot after a code fix saved many days of recomputation.}
+
+Formally, denote the state at the close of quarter $t$ by
+$\Omega_t = \{\Omega_t^F, \Omega_t^C, \Omega_t^M, \Omega_t^I\}$, where
+$\Omega_t^F$ collects the firm-level state (capacity, capital stocks,
+balance sheet, executive identity), $\Omega_t^C$ collects the contract
+state (debt facilities, equity issuances, M\&A bids), $\Omega_t^M$
+collects the macro state (policy rate, market risk premium, political
+uncertainty), and $\Omega_t^I$ collects the information state (analyst
+notes, audit opinions, activist campaigns). The transition from
+$\Omega_t$ to $\Omega_{t+1}$ is the composition of a sequence of
+agent-resolution maps,
+\[
+\Omega_{t+1} \;=\; \Phi_{\text{record}} \circ
+\Phi_{\text{settle}} \circ \Phi_{\text{eqmarket}} \circ
+\Phi_{\text{ibank}} \circ \Phi_{\text{cbank}} \circ
+\Phi_{\text{accounting}} \circ \Phi_{\text{environment}} \circ
+\Phi_{\text{firm}} \circ \Phi_{\text{macro}} \;(\Omega_t),
+\]
+where each $\Phi_{x}$ is a map that takes the state, calls a set of LLM
+agents conditioned on a slice of state appropriate to that role, parses
+the structured outputs, and returns an updated state. The composition
+is deterministic in the sense that, fixing a seed and a cache, the
+output state is reproducible. The composition is interpretable in the
+sense that each $\Phi_x$ can be inspected, replayed, or replaced.
+
+\subsection{The firm agent}\label{sec:firmagent}
+
+A firm is, internally, a frozen dataclass whose fields are the canonical
+operating, financing, and intangible state variables: capacity (in
+units), gross PPE and accumulated depreciation, capability and brand
+stocks, cash, long-term debt, revolver balance, inventory at FIFO cost,
+retained earnings, and so on. These are advanced through a
+\texttt{.evolve()} method that takes a dictionary of named field updates
+and returns a new firm; mutation is never destructive. This convention
+means that any agent's decision either commits cleanly to the next-period
+state or fails the accounting check, in which case the firm is rolled
+back to a deterministic fallback consistent with the previous quarter.
+
+Each quarter, the firm agent receives an information package containing
+(i) a snapshot of its own internal state, (ii) the four-quarter rolling
+public Compustat panel for all firms in the industry (revenue, cost of
+goods sold, gross profit, operating income, net income, cash, total
+assets, leverage, EPS, share price, market cap), (iii) a strategic memo
+from a board discussion held at the start of the quarter, (iv) a
+covenant compliance summary, (v) an internal credit-officer briefing if
+a debt facility is outstanding. It returns a JSON document specifying
+production volume, pricing, R\&D and marketing budgets, capital
+expenditure, dividend per share, repurchase target, debt issuance or
+amortization, equity issuance request, and a free-text strategic
+narrative that contextualizes the quantitative choices.\footnote{The
+narrative is not just decoration. It is read into the next quarter's
+information package as the firm's own ``prior memo,'' giving the
+LLM-driven firm a working memory that survives across calls. The
+narrative is also the input to the board's CEO performance review.}
+
+We add three structural prompts that bear on the present results.
+First, we instruct firms to debate, when their cash position is
+substantial, three options---hold for strategic optionality, deploy into
+the business, or return to shareholders---and to articulate which they
+choose and why. We do not impose a numerical threshold for what counts as
+``substantial''; the firm makes the call. Second, we ask firms to
+maintain a one-quarter and one-year EPS guidance number that is then
+visible to analysts and the equity market. Third, we instruct firms that
+mandatory cash obligations (interest, principal due, lease payments)
+take precedence over any other use of cash; failure to meet them
+triggers the bankruptcy procedure described in
+Section~\ref{sec:bankruptcy}.
+
+\subsection{The environment agent}\label{sec:envagent}
+
+The environment agent plays the role of an industry referee. Each
+quarter, after firms have submitted their decisions and after a
+deterministic clamp has enforced physical feasibility (capacity bounds,
+non-negativity, etc.), the environment is shown all firm decisions and
+the underlying state, and is asked to produce a verifier output that
+specifies, for each firm: realized unit demand, realized R\&D
+outcomes (capability gain, optional generation advance, optional
+delivery-system advance, optional process-cost reduction), realized
+brand-stock change, and any narrative event (regulatory action, supplier
+disruption, lawsuit, idiosyncratic productivity shock).
+
+Two design choices about the environment matter empirically. First, the
+environment sees the entire industry; it has god-mode visibility. This is
+deliberate. A real industry equilibrium is the joint outcome of correlated
+draws on capability, brand, demand, and luck; producing them
+independently from per-firm prompts gives a different distribution. By
+asking one agent to assign all outcomes simultaneously, we get
+cross-sectional realism (firms cannot all have lucky quarters at the
+same time, market shares add to one, total demand is mediated by a single
+market-wide intercept) at the cost of introducing the environment as a
+single point of failure if it hallucinates. We address that risk through
+deterministic clamps and through a balance-sheet invariant check that
+catches any environment output inconsistent with the previous-quarter
+state.
+
+Second, R\&D outcomes are returned as guidance rather than fiat. The
+environment is told that the cumulative R\&D spend at which a generation
+advance becomes plausible is in the neighborhood of \$200 million per
+firm but that this number is approximate---firms reach the next
+generation at different cumulative levels depending on the quality of
+their R\&D, the talent on their team, and regulatory luck. The
+environment is instructed to spread advances over time and to narrate the
+specific catalyst (Phase 3 readout, regulatory approval,
+lead-compound milestone). A by-product of this instruction, which we
+discuss in Section~\ref{sec:results}, is that across our 80-quarter run
+no firm achieves a generation advance, suggesting that the environment
+remains conservative even when several firms have crossed the
+\$300--500 million cumulative R\&D mark.
+
+\subsection{Financial intermediaries}
+
+Three intermediaries operate in parallel: the commercial bank, the
+investment bank, and the equity market.
+
+\paragraph{The commercial bank.} The commercial bank receives, each
+quarter, a request for revolver capacity or an amortizing term loan from
+any firm that has decided to draw or to negotiate. It sees the firm's
+public Compustat panel, an internal credit file (private credit history
+with this lender, covenant compliance trajectory, recent waivers), and
+its own portfolio of outstanding facilities. It produces a credit
+decision: approve or decline; if approve, principal, term, all-in spread,
+covenant package (typically interest coverage and total-debt-to-EBITDA),
+and any conditions precedent. Drawn balances accrete interest at the
+contracted spread over a deterministic policy rate; covenant violations
+are evaluated each quarter and may trigger a revolver pull.
+
+\paragraph{The investment bank.} The investment bank prices and places
+equity issuances (rights offerings or shelf takedowns) and bond
+issuances. For equity, the inputs are the issuance request, recent
+trading prices, and the analyst consensus if sell-side coverage is
+enabled. For bonds, the inputs are the firm's leverage, interest
+coverage, and a fictionalized credit rating produced jointly with the
+issuance decision. The bank produces a placement spread (the
+underwriting discount) and an indicative coupon.
+
+\paragraph{The equity market.} The equity market produces a single mark
+each quarter: the price at which the firm's shares are deemed to trade.
+Producing this price reliably turned out to be the single most
+engineering-intensive part of the simulation. With a single LLM, we
+encountered occasional unphysical quotes (a quintupling of the share
+price on declining fundamentals, a dollar-cents typo, a misread of the
+prior-quarter price). We solved this by replacing the single-LLM
+valuation with a panel of three valuation analysts---typically the
+LLM cores assigned to other firm CFOs, instantiated independently with
+the same equity prompt---and taking the per-firm median quote.
+
+The equity prompt provides each panel member with: (i) the four-quarter
+rolling price history of every firm in the industry (so the panelist can
+read trajectories rather than seeing only a single anchor); (ii) the
+firm's most recent management guidance; (iii) the public Compustat panel;
+(iv) the analyst consensus if sell-side analysts are enabled. The
+panelist returns a target price for each firm, a discount-rate sensitivity,
+and a narrative justification. The simulation records all panel votes;
+the median is committed to state. The result has been to suppress---though
+not eliminate---the most egregious single-LLM excursions.
+
+\subsection{Auxiliary agents}
+
+The remaining agents are conceptually less central but operationally
+non-negligible.
+
+The \emph{board of directors} convenes annually (every fourth quarter) and
+performs a CEO performance review that has access to a four-year rolling
+operating history, the cumulative cost of the CEO's compensation, recent
+strategic narratives, and any activist communications. The board can
+dismiss the CEO. CEO types (\textit{aggressive\_grower},
+\textit{conservative\_steward}, \textit{empire\_builder},
+\textit{honest\_operator}) are assigned at firm creation, hidden from the
+board, and influence the firm's decision narrative through a system
+prompt addendum that the board cannot see.
+
+The \emph{activist agent} surveys all firms each quarter and may launch a
+campaign: a buyback demand on a cash-rich firm, a strategic-review
+demand on a firm with poor segment performance, or a divestiture demand
+on a conglomerated firm. Campaigns enter the firm's information package
+the following quarter and its strategic memo for that quarter is required
+to address the activist publicly.
+
+The \emph{private-equity sponsor} surveys dormant entrants---firms that
+have spawned but not been activated---and decides which to fund. A
+PE-funded entrant becomes active with an initial cash injection and a
+larger-than-baseline capability stock, simulating a leapfrog entry by an
+operator backed by patient capital.
+
+\subsection{Information boundaries}
+
+The most important non-obvious property of the laboratory is that no
+agent's prompt builder receives the full state. Each builder takes only
+the slice of state the corresponding real-world actor would observe. A
+firm sees its own private state plus the public Compustat panel; the
+equity market sees the public panel plus analyst notes; the SEC, when
+enabled, sees the public panel and any disclosure-triggering events; the
+auditor sees its client's books. Manipulation truth (the difference
+between true and reported earnings, when earnings management is enabled)
+is visible only to the firm that chose it and to the SEC if it elects to
+investigate. This information segmentation is what makes the laboratory
+behave like an industry rather than like a single agent with a long
+context.
+
+\subsection{Accounting and balance-sheet invariants}\label{sec:bsinvariants}
+
+Every decision and every event is intermediated by a small accounting
+module that enforces double-entry consistency. Cash, PPE, inventory, and
+debt are mutated only through the corresponding journal entries. After
+each quarter, an invariant checker recomputes total assets, total
+liabilities, and total equity for every firm and verifies that
+$A = L + E$ to within a tolerance of \$1{,}000---a rounding band wide
+enough to absorb floating-point drift, narrow enough to catch any genuine
+omission. Violations are written to a \texttt{bs\_violations.jsonl} log;
+during development this log was the principal device for surfacing bugs
+that would otherwise have remained silent.
+
+We catalog the four bug classes we encountered, fixed, and pinned with
+regression tests. (1) \emph{Dataclass-default zero contamination}: an
+exception handler in the firm-decision parallel pool returned a
+default-initialized decision object, populating real fields with the
+dataclass default of zero. The same six firms hit the exception each
+quarter, producing a coordinated zero-production state that initially
+looked like a coordination failure; it was, in fact, a software fault.
+Fix: explicit carry-forward of the previous quarter's decision when a
+fallback is required. (2) \emph{Auction event drop}: the
+distressed-auction event-application loop was inside an else-branch
+intended for legacy code and so never executed in modern runs.
+Three M\&A consolidations had been computed but never committed to
+state; the fix outdented the loop. (3) \emph{Auction cash overwrite}: the
+defaulted firm's pre-default cash was being overwritten by sale proceeds
+rather than augmented by them, silently destroying balance sheet entries.
+The fix replaces overwrite with addition and adds a multi-tier creditor
+waterfall. (4) \emph{Invariant blind spot}: the balance-sheet check
+skipped firms in default, which masked all auction-induced residuals.
+Removing the skip produced a noisier log in the short term and a cleaner
+post-default panel.
+
+\subsection{The product market}
+
+The product market is differentiated horizontally. Each firm posts a
+price and a quantity of units offered for sale; the environment computes
+a market-clearing demand for each firm based on its capability stock,
+brand stock, list price, and an idiosyncratic match score that varies
+across quarters. Capacity binds in both directions: firms cannot sell
+more units than capacity provides, and units in excess of demand
+accumulate as inventory at FIFO cost. Cost of goods sold is the same
+unit cost applied to the same number of units that are recognized as
+revenue, ensuring revenue/COGS consistency.\footnote{Earlier versions of
+the simulation contained a unit mismatch in which COGS was computed
+against a different unit count than revenue; the resulting reported
+gross margins were artifactual. Section~\ref{sec:environment} discusses
+how this was fixed and pinned.}
+
+The match score is the lever through which the environment
+encodes idiosyncratic competitive dynamics: a brand-loyal segment of
+the market reaches firms with high brand stock more reliably; a
+quality-sensitive segment is drawn to firms with high capability; a
+price-sensitive segment chases the lowest list price. The environment
+also reasons about regional market saturation and substitution patterns;
+the regional dimension is configurable and is on by default in our run.
+
+Although the environment delivers demand allocations as a single
+LLM-generated assignment, the underlying mental model the environment
+prompt encodes is recognizable. We specify an indicative latent demand
+structure of the Hotelling form,
+\[
+U_{i\theta t} \;=\; \alpha_q \log Q_{it} + \alpha_b \log B_{it}
+  - \alpha_p \log p_{it} - \alpha_d \, d(\theta, x_{it}) + \varepsilon_{i\theta t},
+\]
+where $U_{i\theta t}$ is consumer $\theta$'s utility from firm $i$ in
+quarter $t$, $Q_{it}$ is firm $i$'s capability stock, $B_{it}$ is its
+brand stock, $p_{it}$ is its price, $x_{it}$ is the firm's position in
+a horizontal product space, $\theta$ is the consumer's location in
+that space, and $\varepsilon_{i\theta t}$ is an idiosyncratic Gumbel
+shock. Quantity demanded $D_{it}$ is then the integral of the choice
+probability over the consumer-mass distribution. We do not impose this
+specification; the environment prompt instead instructs the LLM to
+think in terms of (i) absolute capability level matters quadratically,
+(ii) brand depreciates without continued marketing, (iii) consumers
+substitute away from price increases at an elasticity ``somewhere
+between $-1$ and $-3$'' depending on category, (iv) regional submarkets
+saturate, and (v) idiosyncratic demand shocks are non-zero in
+expectation. The environment-produced quantity allocation is then
+checked for consistency with the prior quarter's posted prices and
+capacity bounds, but is not forced to match the indicative
+specification above. We retain the ambiguity deliberately: the
+environment is allowed to reflect that latent demand has structural
+heterogeneity that is not summarized by a single elasticity.
+
+The cost side is more disciplined. Each firm carries a
+\textit{base unit cost} $c_{it}$ that depreciates with capability
+through learning by doing: $c_{i,t+1} = c_{it}\,(1 - \rho \, \Delta Q_{it})$
+where $\rho$ is a learning rate and $\Delta Q_{it}$ is the
+capability increment. Realized cost of goods sold in $t$ is
+$c_{it} \times D_{it}$ where $D_{it}$ is the realized number of units
+sold. The same $D_{it}$ that drives revenue drives COGS; this matters
+because an earlier version of our code carried a unit mismatch
+(Section~\ref{sec:bsinvariants}) in which COGS was applied to a
+clamped quantity while revenue was applied to the unclamped
+declaration. Capacity is bounded above by gross PPE divided by a
+unit-capital coefficient, with depreciation at 2.5\% per quarter
+applied straight-line. Inventory is carried at FIFO unit cost; unsold
+production at the close of $t$ enters inventory at $c_{it}$ and is
+released against revenue in subsequent quarters in order of arrival.
+
+The R\&D production function is encoded in the environment prompt
+rather than in code. The environment is told that capability gain in
+quarter $t$ is increasing in $\mathit{xrdq}_{it}$, the quarterly R\&D spend, with
+diminishing returns; that gains are mean-zero across firms (a high
+draw for one firm is correlated with a low draw for another, capturing
+competitive race dynamics); and that the firm-specific capability
+trajectory may exhibit step changes corresponding to generation
+transitions. The environment is given the four-quarter trailing R\&D
+spend for every firm and is instructed to allocate capability gains in
+a way consistent with relative spend and team quality. Generation
+transitions are described in the prompt as ``approximately
+\$200 million in cumulative R\&D'' with the explicit caveat that this
+is guidance and not a hard threshold. Brand-stock evolution follows a
+parallel logic: the environment rewards marketing spend ($\mathit{xsgaq}_{it}$)
+with a brand-stock gain that depreciates 5\% per quarter without
+continued investment.
+
+The market-clearing equation we are implicitly imposing on the
+environment is therefore
+\[
+\sum_{i \in \mathcal{A}_t} D_{it} \;=\; \bar{D}_t(\Omega_t^M, p_{1t}, \ldots, p_{Nt}),
+\]
+where $\bar{D}_t$ is the aggregate market size, itself increasing in
+political certainty (a macro-state lever) and decreasing in the
+average price level. The environment is shown $\bar{D}_t$ for the
+trailing four quarters and is asked to allocate units across firms
+consistent with their relative attractiveness. We have not attempted
+to recover $\bar{D}_t$ structurally; doing so would require assuming a
+particular utility specification, which would defeat the purpose of
+delegating the allocation to a flexible reasoner.
+
+\subsection{Financing and capital structure}
+
+A firm finances operations through retained earnings, drawn revolver,
+amortizing term debt, and discretionary equity issuances. The revolver
+is governed by a borrowing base (a function of receivables, inventory,
+and PPE) that is recomputed each quarter; the term loan amortizes on a
+schedule set at issuance. Bond issuances become available once the firm
+crosses a notional size threshold and provide a higher leverage ceiling
+at the cost of a fixed coupon and a less flexible covenant package.
+
+The investment-bank prompt is asked to consider trade-off and pecking-order
+intuitions when pricing securities, but does not impose a target
+leverage. We will see in Section~\ref{sec:results} that the equilibrium
+leverage in our laboratory is markedly below what trade-off theory would
+predict at observed tax rates and bankruptcy costs. This appears to be
+emergent behavior of the firm-CFO LLMs, who in their narratives
+consistently express a preference for cash buffers over interest-tax-shield
+maximization.
+
+\subsection{The orchestrator loop in pseudocode}\label{sec:loop}
+
+To make the architectural separation concrete, we reproduce the
+quarter-advance loop in compact pseudocode. The loop is the same for
+every quarter; toggles enable or disable specific blocks, but the
+underlying ordering is invariant. The pseudocode below is faithful to
+the production code modulo cosmetic simplification.
+
+\begin{quote}\small
+\texttt{\textbf{def} run\_quarter(state, t, config, agents):}\\
+\texttt{~~~~state.macro = $\Phi_\text{macro}$(state, agents.macro)}\\
+\texttt{~~~~state = inject\_entry(state, t, config)}\\
+\texttt{~~~~\textbf{if} config.ma\_enabled:}\\
+\texttt{~~~~~~~~bids = $\Phi_\text{ma\_bid}$(state, agents.ma\_bidders)}\\
+\texttt{~~~~~~~~state = apply\_ma\_bids(state, bids)}\\
+\texttt{~~~~\textbf{if} config.sec\_enabled:}\\
+\texttt{~~~~~~~~state = $\Phi_\text{sec\_pre}$(state, agents.sec)}\\
+\texttt{~~~~raw = run\_firm\_decisions\_parallel(state, agents.firms)}\\
+\texttt{~~~~clamped = enforce\_physical\_clamps(state, raw)}\\
+\texttt{~~~~outcomes = $\Phi_\text{environment}$(state, clamped, agents.env)}\\
+\texttt{~~~~state = $\Phi_\text{accounting}$(state, clamped, outcomes)}\\
+\texttt{~~~~\textbf{if} config.earnings\_announcement:}\\
+\texttt{~~~~~~~~state = $\Phi_\text{announcement}$(state, agents.firms)}\\
+\texttt{~~~~\textbf{if} config.sellside\_analysts:}\\
+\texttt{~~~~~~~~state = $\Phi_\text{sellside}$(state, agents.analysts)}\\
+\texttt{~~~~state = $\Phi_\text{equity}$(state, agents.equity\_panel)}\\
+\texttt{~~~~state = $\Phi_\text{ibank}$(state, agents.ibank)}\\
+\texttt{~~~~state = $\Phi_\text{cbank}$(state, agents.cbank)}\\
+\texttt{~~~~\textbf{if} config.sec\_enabled:}\\
+\texttt{~~~~~~~~state = $\Phi_\text{sec\_post}$(state, agents.sec)}\\
+\texttt{~~~~state = settle\_obligations\_and\_check\_bankruptcy(state)}\\
+\texttt{~~~~check\_balance\_sheet\_invariants(state, t)}\\
+\texttt{~~~~\textbf{if} t \% 4 == 0:}\\
+\texttt{~~~~~~~~\textbf{if} config.auditor\_enabled:}\\
+\texttt{~~~~~~~~~~~~state = $\Phi_\text{audit}$(state, agents.auditors)}\\
+\texttt{~~~~~~~~\textbf{if} config.governance\_enabled:}\\
+\texttt{~~~~~~~~~~~~state = $\Phi_\text{governance}$(state, agents.boards)}\\
+\texttt{~~~~~~~~\textbf{if} config.restatements\_enabled:}\\
+\texttt{~~~~~~~~~~~~state = $\Phi_\text{restate}$(state)}\\
+\texttt{~~~~snapshot(state, t)}\\
+\texttt{~~~~\textbf{return} state}
+\end{quote}
+
+The two non-obvious features of this loop are the
+\texttt{enforce\_physical\_clamps} step and the
+\texttt{check\_balance\_sheet\_invariants} step. The first prevents
+any LLM agent from generating a physically infeasible decision (a
+negative production volume, a price below zero, capital expenditure
+in excess of available cash plus revolver capacity); when a clamp
+binds, the resulting clamped value is propagated to all downstream
+accounting. The second is the loud-failure principle in operation:
+any inconsistency between assets and liabilities-plus-equity, beyond
+a tolerance of \$1{,}000, is logged with the offending firm-quarter
+and a snapshot of the state at the time of detection. During
+development the invariant log was the principal device by which we
+identified the bugs catalogued in Appendix~\ref{app:bugs}.
+
+\subsection{Entry, exit, and bankruptcy resolution}\label{sec:bankruptcy}
+
+Entry is exogenous: the simulation injects a new firm at a quarter drawn
+from a Poisson process, with initial state (capacity, base unit cost,
+brand stock, cash) drawn from a calibrated distribution. New entrants
+spawn dormant. They become active either through the PE sponsor (which
+funds a subset of dormants each quarter, providing a cash injection and
+a capability uplift) or through self-funding via an equity IPO, where
+available.
+
+Default is triggered when a firm's mandatory cash obligations exceed its
+cash plus available revolver capacity. The defaulting firm's residual
+assets enter a distressed-auction process: solvent firms submit bids,
+the highest bid is accepted (subject to a minimum reserve), and proceeds
+are distributed through a multi-tier creditor waterfall (long-term debt
+first, then revolver). The defaulted entity's pre-default cash is
+preserved and is added to the sale proceeds before the waterfall pays
+out. We do not currently differentiate Chapter 11 reorganization from
+Chapter 7 liquidation; all defaults proceed via the auction. We discuss
+this limitation in Section~\ref{sec:mechanisms}.
+
+\section{Experimental Design}\label{sec:design}
+
+\subsection{Model roster}
+
+The laboratory is parameterized by a YAML roster that maps role names
+to concrete LLM instances (model name, temperature, prompt seeds). Our
+production roster mixes models across providers to reduce the risk that
+a model-specific bias drives results: for our run, the firm CFOs are an
+even split between GPT-4-class models and Claude-3.5-class models, the
+environment is a Claude-3.5-class model with low temperature, the
+equity panel is built by cycling distinct firm-CFO models so that no
+model values its own firm, the commercial bank and investment bank are
+GPT-4o-mini models, and the auxiliary agents (board, activist, PE
+sponsor) are GPT-4o-mini at moderate temperature. We retain the model
+roster and the random seed used to drive the run reported in this paper.
+
+\subsection{Initial conditions}
+
+The industry begins with six incumbents at $t=1$, each endowed with
+identical baseline capability and brand stocks (capability stock 50,
+brand stock 50, capacity 250 units, gross PPE \$300 million, cash
+\$200 million, no debt). The choice of six is deliberate: too few firms
+collapse trivially to monopoly through asymmetric initial luck, and too
+many firms make it impossible to track narrative continuity. Six firms
+populate the early industry without saturating market demand, leaving
+room for entry to matter.
+
+The simulation is calibrated to a longevity-drug industry template: unit
+prices are denominated in tens of thousands of dollars, capacity is
+denominated in hundreds of treatment courses per quarter, and R\&D
+generation transitions correspond to therapeutic generations. We have
+also built templates for an EV-battery industry and a satellite
+manufacturer, but do not run them in this paper.
+
+\subsection{Run protocol}
+
+The run reported in this paper is 80 quarters long. Quarters 1--41 were
+run in a development version of the simulation that contained the bugs
+described in Section~\ref{sec:environment}. Quarter 41 was used as a
+restart snapshot: the four bug fixes were applied to the codebase, and
+the simulation was resumed from the Q41 snapshot for an additional 39
+quarters, terminating at $t=81$. The restart pattern conserves the
+identity of all six initial firms and the entry order of the first
+several entrants; later entrants are subject to the new code path. We
+discuss the implications for inference in Section~\ref{sec:mechanisms}.
+
+The run cost approximately 21 hours of wall-clock time on a workstation
+with a parallelism budget of 16 concurrent LLM calls. The token cost is
+recorded in a per-call ledger; total spend across the 80 quarters was
+approximately \$120 in API charges.
+
+\subsection{Roster details and parameter choices}
+
+Our production roster, used for the run reported in this paper, is the
+following. The firm CFOs are an even split between
+\texttt{gpt-4o-2024-11-20} and \texttt{claude-3-5-sonnet-20241022}; we
+balance providers because pilot runs at single-provider rosters
+revealed model-specific tilts (the GPT-4-class CFOs are slightly more
+aggressive on capacity expansion, the Claude-class CFOs are slightly
+more cautious on leverage). The environment is
+\texttt{claude-3-5-sonnet-20241022} at temperature 0.30; we found
+through pilot iteration that lower-temperature environments produced
+overly mechanical narratives that were too easily anchored on the
+prior quarter. The equity panel is built dynamically by cycling
+distinct firm-CFO models through a 3-member rotation, ensuring no
+panel member values its own firm. The commercial bank, investment
+bank, board, activist agent, and PE sponsor are
+\texttt{gpt-4o-mini-2024-07-18} at temperatures between 0.40 (for
+quantitative agents) and 0.70 (for narrative agents).
+
+The temperature settings are a non-trivial design choice. Higher
+temperatures produce more varied output but also more occasional
+nonsense; lower temperatures produce more consistent output but risk
+the LLM defaulting to a stylized narrative pattern that is difficult
+to perturb. Our temperature settings emerged from a pilot iteration
+in which we calibrated each role to the lowest temperature that did
+not produce visibly stylized output. They should be regarded as a
+calibration, not a discovered optimum.
+
+\subsection{Macro and template parameters}
+
+The macro state is initialized with a policy rate of 3.5\%, a market
+risk premium of 5.0\%, and a political-uncertainty index of 0.30
+(on a 0--1 scale). The macro agent is permitted to move the policy
+rate by up to 50 basis points per quarter and to move the political
+uncertainty index by up to 0.10 per quarter; we did not observe
+either limit binding in the run reported here. The macro state
+evolves through a relatively benign trajectory: the policy rate
+stays in the 2.5\%--4.0\% range, the risk premium in 4.5\%--6.0\%, and
+political uncertainty in 0.20--0.45.
+
+The longevity-drug template encodes the following industry parameters:
+unit price denominated in USD, with a calibrated floor of \$5{,}000
+per treatment course; capacity in courses per quarter; treatment
+generation transitions tied to cumulative R\&D in the
+\$200--\$500 million range (with the threshold being guidance, not a
+hard cutoff, as discussed); demand elasticity ``in the $-1$ to $-3$
+range''; brand-stock half-life of approximately 14 quarters. These
+parameters are loaded from a YAML template that is read by both the
+firm and environment prompts; switching templates is a single
+configuration change.
+
+\section{Measurement}\label{sec:measurement}
+
+We construct three classes of output. The first is a Compustat-style
+quarterly panel (\texttt{compustat\_q.csv}) with 583 firm-quarter
+observations and 80 columns matching the canonical WRDS Compustat
+schema. The second is an event log compiled programmatically from
+snapshots and from per-event CSV files (defaults, M\&A, CEO turnover,
+activist campaigns, equity-price moves, R\&D milestones, restatements);
+the event log is the primary input to the post-run dashboard and to the
+narrative interpretation that follows. The third is a snapshot directory
+containing the full simulation state at every quarter boundary,
+permitting any after-the-fact computation that requires data not in the
+panel or event log.
+
+We construct concentration measures using quarterly revenue. The
+Herfindahl--Hirschman index in quarter $t$ is
+\[
+H_t \;=\; 10{,}000 \times \sum_{i \in \mathcal{A}_t}
+  \left(\frac{R_{it}}{\sum_{j\in\mathcal{A}_t} R_{jt}}\right)^{\!2},
+\]
+where $\mathcal{A}_t$ is the set of firms with strictly positive revenue
+in quarter $t$. The top-firm share is the largest of those summands. We
+construct R\&D intensity as the ratio of quarterly R\&D expense to
+quarterly revenue (defined for firms with positive revenue). We
+construct leverage as the ratio of total debt (long-term plus current)
+to total assets. We construct mortality and entry hazards as discrete-
+time hazards over 10-quarter buckets, with the denominator being the
+number of firms active at the beginning of the bucket.
+
+\section{Results}\label{sec:results}
+
+\subsection{Industry life-cycle}
+
+Table~\ref{tab:headline} summarizes the run. Across 80 quarters, 17
+distinct firms compete; 9 are active at the close, 8 have defaulted,
+and 3 of the 8 defaults have been resolved through distressed
+acquisition by a single solvent peer (firm\_7). Cumulative industry
+revenue is \$24.1 billion. The cumulative industry net income is
+$-\$5.9$ billion: in aggregate, the industry has burned cash, primarily
+on R\&D, brand investment, and capacity expansion.
+
+\begin{table}[t]\centering\small
+\caption{Headline figures from the 80-quarter run}\label{tab:headline}
+\begin{tabular}{lr}
+\toprule
+Run length (quarters) & 80 \\
+Distinct firms (lifetime) & 17 \\
+Active firms at close & 9 \\
+Cumulative defaults & 8 \\
+Cumulative M\&A consolidations & 3 \\
+Cumulative leapfrog activations & 13 \\
+Cumulative generation advances & 0 \\
+Average $H_t$ & 1{,}697 \\
+Average top-firm share & 24.2\% \\
+Cumulative industry revenue & \$24.1 B \\
+Cumulative industry net income & $-\$5.9$ B \\
+Average producers per quarter & 7.3 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The industry life-cycle is recognizably Schumpeterian. Figure
+\ref{fig:lifecycle} (panel A) plots the number of firms producing
+positive revenue each quarter. The early industry of six firms
+fragments to ten by Q20 as PE-funded entrants pour in; from Q20 onward,
+the population fluctuates between seven and ten producing firms as
+entry and exit roughly offset. Panel B plots aggregate quarterly
+revenue, which rises monotonically from \$95 million in Q1 to a steady
+range of \$350--\$400 million from Q40 onward. Panel C plots the
+cross-sectional average of R\&D intensity, defined as quarterly R\&D over
+quarterly revenue. The intensity is above 90\% in the first five
+quarters---firms are spending faster than they sell---and stabilizes at
+0.40--0.55 from Q20 onward. The drop reflects the maturation of the
+revenue base rather than a decline in the absolute R\&D spend.
+
+\subsection{Firm survival and exit}
+
+Firm mortality is moderate and broadly distributed across the run.
+Table~\ref{tab:hazards} reports the discrete-time exit hazard by
+10-quarter bucket. The bucket Q1--Q10 sees no defaults among the six
+initial firms; Q11--Q20 contains two; Q21--Q30 and Q31--Q40 contain
+one default each; the hazard rises modestly at Q41--Q50 (firm\_5,
+firm\_6, firm\_12 fail in close succession) before tapering again.
+The cumulative mortality at the close is 8/17 = 47\%.
+
+\begin{table}[t]\centering\small
+\caption{Exit hazards by 10-quarter bucket}\label{tab:hazards}
+\begin{tabular}{lcccc}
+\toprule
+Bucket & Firms at risk & Defaults & Hazard & Defaulters \\
+\midrule
+Q1--Q10   & 6 & 0 & 0\%  & --- \\
+Q11--Q20  & 7 & 2 & 28.6\% & firm\_4, firm\_0 \\
+Q21--Q30  & 9 & 1 & 11.1\% & firm\_1 \\
+Q31--Q40  & 10 & 1 & 10.0\% & firm\_5 \\
+Q41--Q50  & 10 & 2 & 20.0\% & firm\_6, firm\_12 \\
+Q51--Q60  & 9 & 0 & 0\% & --- \\
+Q61--Q70  & 9 & 1 & 11.1\% & firm\_11 \\
+Q71--Q80  & 9 & 1 & 11.1\% & firm\_10 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The pattern is consistent with the \citet{jovanovic1982} learning model
+in which entrants do not know their own productivity and update their
+priors in early periods, with low-type firms departing quickly, but it
+is also consistent with the \citet{ericsonpakes1995} dynamic-capital
+formulation in which adverse productivity draws compound across
+adjacent quarters. Our laboratory does not allow us to separate the two
+because the LLM firm's beliefs about its own productivity are not
+machine-readable; one would have to extract them from the strategic
+narrative.
+
+The early defaulters (firm\_4 at Q12, firm\_0 at Q17) are associated
+with concentrated revenue exposure followed by an idiosyncratic
+quality shock to capability. Both firms had attempted aggressive
+capacity expansion in the four quarters preceding default, leveraging
+revolvers to roughly the borrowing-base maximum, and were unable to
+service the resulting interest expense when the quality shock cut
+demand. The mid-life defaulters (firm\_5 at Q39, firm\_6 at Q41) had
+recurring operating losses that the board failed to interrupt with CEO
+turnover; cumulative cash burn drove them past the bankruptcy
+threshold. The late defaulters (firm\_11, firm\_10, firm\_3, firm\_8)
+are dispersed across causes; firm\_11 and firm\_10 fall into the
+distressed-acquisition path described below.
+
+\subsection{Concentration dynamics}
+
+The Herfindahl index follows a U-shape (Figure~\ref{fig:hhi}). It begins
+at 3{,}341 in Q1 (six firms with revenue tilted toward two large
+producers), drops to a trough around 1{,}250 by Q30 as entry diversifies
+the producing population, climbs back to 2{,}233 by Q50 as the
+mid-life defaulters exit and one firm (firm\_14) briefly takes the
+industry lead, settles into the 1{,}300--1{,}700 range through Q70, and
+spikes to 1{,}688 at Q80 as firm\_9's late-period dominance asserts
+itself. The cross-quarter average is 1{,}697; the average top-firm
+share is 24.2\%; the maximum top-firm share excluding the terminal
+quarter is 52.4\% (firm\_7 at Q73).
+
+A note on the terminal quarter. An earlier version of our debrief
+reported a Q81 top-firm share of 100\%; the figure was an artifact of
+a partial-state snapshot that the orchestrator wrote when it began an
+unplanned 81st iteration after the 39 planned quarters had completed.
+State.\,quarter advanced to 81, some entry and PE-funding logic ran,
+and one firm's flow record advanced; most other firms' flows were
+cleared but never repopulated, so a downstream aggregator computed
+$100\% \times \$15.95\text{M} / \$15.95\text{M}$ as the top share. The
+operationally meaningful terminal figure is the Q80 top share of
+31.8\%, with firm\_7 (Apex Regenerative) leading the industry. Once we
+filtered out the partial-state snapshot, the panel data and event
+counts dropped from 81 quarters to 80, from 10 cumulative defaults to
+8, and from 92 leapfrog activation events to 13 (the earlier number
+counted post-spawn re-incarnation noise). All quantitative results
+reported in this paper reflect the corrected panel.
+
+\subsection{M\&A and roll-up consolidation}
+
+Three distressed acquisitions occur in the run, all to a single
+acquirer (firm\_7). Table~\ref{tab:ma} summarizes them.
+
+\begin{table}[t]\centering\small
+\caption{Distressed acquisitions}\label{tab:ma}
+\begin{tabular}{lllr}
+\toprule
+Quarter & Acquirer & Target & Price \\
+\midrule
+Q44 & firm\_7 (Apex Regenerative) & firm\_12 & \$35 M \\
+Q63 & firm\_7 (Apex Regenerative) & firm\_11 & \$350 M \\
+Q71 & firm\_7 (Apex Regenerative) & firm\_10 & \$450 M \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The roll-up pattern is striking. firm\_7 spawns at Q14 as a PE-funded
+entrant, builds the largest cash buffer in the industry through Q40, and
+then deploys it to acquire three competitors as they fail. The
+acquisition prices reflect the depth of the target's residual assets:
+firm\_12, the smallest target, has a residual of \$35 million; firm\_11
+and firm\_10, larger targets with residual brand and capability stocks,
+fetch \$350 million and \$450 million respectively. The acquisition
+narratives produced by the auction agent emphasize firm\_7's strategic
+fit, available cash, and operational capacity; the prices are not
+calibrated to a structural model and should be read as endogenous
+outcomes of the LLM bidder's reasoning given the information set
+available to it.
+
+This roll-up dynamic is consistent with stylized facts from real
+distressed-asset markets, where well-capitalized peers are the marginal
+acquirers and acquisition premia compress in periods of widespread
+distress. We caution that the dynamic in our laboratory may be
+overdetermined: firm\_7 is the only solvent firm with sufficient cash
+to bid in two of the three auctions, so the identity of the acquirer is
+mechanical rather than strategic.
+
+\subsection{Generation transitions}
+
+Across the 80 quarters, no firm achieves a generation advance.
+Cumulative R\&D spend exceeds the indicative \$200 million threshold for
+the majority of surviving firms; firm\_2 cumulative R\&D reaches
+\$562 million by Q80 without ever advancing to Generation 2. In an
+earlier version of this paper we attributed the result to residual
+conservatism in the environment prompt. A subsequent code audit
+(documented in Appendix~\ref{app:bugs} as bug H1) revealed that the
+result is in fact a parser-level artifact: the environment's prompt
+schema places R\&D outcomes (product\_advance,
+process\_cogs\_reduction\_pct, delivery\_advance) in a separate top-level
+\texttt{rd\_outcomes} array rather than inside the per-firm
+\texttt{firm\_outcomes} entries. The orchestrator's parser was reading
+the advance fields only from inside \texttt{firm\_outcomes}, silently
+dropping every R\&D advance the environment granted. The fix merges
+the \texttt{rd\_outcomes} array into per-firm outcomes before the
+verifier inspects them. Pilot runs after the fix produce the
+generation-2 transitions the prompt was designed to elicit.
+
+The substantive lesson is one we underscore throughout the paper: the
+discipline of building a laboratory whose components communicate
+through structured payloads is precisely the discipline of pinning
+schema contracts. A drift between what the prompt tells the LLM to
+produce and what the parser knows how to consume is a class of bug
+that does not crash, does not violate balance-sheet identities, and
+does not surface in any obvious metric — but cleanly suppresses an
+entire substantive finding. The original substantive interpretation
+(conservative environment) and the corrected one (parse bug) are
+empirically observationally equivalent. Distinguishing them required
+reading the prompt and the parser side-by-side. We document the bug
+catalogue and the engineering response in Appendix~\ref{app:bugs}.
+
+\subsection{Capital structure and leverage}
+
+Table~\ref{tab:leverage} reports cross-sectional leverage by quarter.
+The pattern is striking: leverage averages below 3\% across the run, and
+the median firm-quarter has zero debt. Twenty-nine debt facilities are
+originated over the run (most are revolvers), and only six bond
+issuances are attempted, of which all six fail to clear (the issuing
+firms either withdraw or are declined by the investment bank).
+
+\begin{table}[t]\centering\small
+\caption{Cross-sectional leverage and R\&D intensity}\label{tab:leverage}
+\begin{tabular}{lcccccc}
+\toprule
+Quarter & 1 & 10 & 20 & 40 & 60 & 80 \\
+\midrule
+Avg leverage     & 0.000 & 0.024 & 0.019 & 0.008 & 0.004 & 0.003 \\
+Median leverage  & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 \\
+Avg R\&D intensity & 0.975 & 0.943 & 0.519 & 0.425 & 0.458 & 0.552 \\
+Median R\&D intensity & 0.978 & 0.889 & 0.457 & 0.415 & 0.476 & 0.485 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The under-leverage is striking against the canonical
+\citet{lelandtoft1996} baseline, in which firms with positive earnings
+and a non-trivial corporate tax rate would optimally carry leverage in
+the 30--50\% range to capture the interest tax shield. Our LLM CFOs
+exhibit a strong revealed preference for cash-funded operations, and
+their strategic narratives consistently invoke financial flexibility,
+covenant aversion, and the desire to ``preserve optionality'' as
+justifications for low leverage. We interpret this as a feature of the
+cognitive architecture: the LLM CFO is doing something closer to
+\citet{shyamsundermyers1999} pecking-order behavior than to trade-off
+optimization. Whether this pattern would survive a more aggressive
+investor environment (where, for example, an LBO sponsor stood ready to
+take the firm private and lever it up) is a question for future work.
+
+\subsection{Debt facilities and credit markets}
+
+The commercial bank originates 29 debt facilities over the 80-quarter
+run, of which 24 are revolving credit agreements and 5 are amortizing
+term loans. The investment bank receives 6 bond-issuance requests, of
+which all 6 are either declined or withdrawn before placement. The
+gap between the operating facility activity (substantial) and the
+public-debt activity (zero) is itself a finding. We attribute the
+gap to two features of the prompts. First, the investment bank's
+bond-pricing prompt produces coupon quotes that the firm CFO
+perceives as expensive relative to the marginal benefit of public
+debt; the CFO consistently chooses to withdraw the issuance rather
+than accept the quoted spread. Second, the firms in the laboratory
+do not face the kind of liquidity-event pressure (an acquisition, a
+levered recapitalization) that drives real-world public-debt issuance,
+so the marginal benefit of public debt is small in any case.
+
+The covenant package on the operating facilities is non-trivial. The
+typical revolver carries an interest-coverage covenant of 5$\times$
+and a total-debt-to-EBITDA covenant of 3$\times$. Twelve covenant
+violations occur over the run, of which eight are waived by the
+commercial bank (often after a quarter-or-two of negotiation
+captured in the bank's internal notes), three trigger a
+revolver pull, and one is followed by default. The waiver pattern
+is informative: the commercial bank's prompt produces waivers when
+the firm's narrative justifies the violation as transitory, and
+declines to waive when the violation appears to reflect a
+deteriorating fundamental trajectory. The qualitative behavior is
+consistent with the \citet{rauh2014capital} characterization of
+covenant negotiation; the quantitative threshold for waiver is, of
+course, a choice we made when writing the prompt.
+
+\subsection{CEO turnover and governance}
+
+The annual board governance step produces 89 CEO dismissals over the 81
+quarters---roughly 1.1 dismissals per firm-year, which is substantially
+higher than the empirical rates reported by \citet{kaplanminton2012} for
+S\&P 500 firms (about 0.13 per firm-year forced turnover) but
+comparable to the rates observed in private-equity-backed portfolio
+companies (\citealp{cornelli2013ceo}). The dispersion across firms is
+substantial: firm\_8 experiences 16 CEO dismissals, firm\_3 experiences
+14, while firm\_9 (the eventual cash-rich incumbent) experiences only
+4. The turnover frequency at the high end suggests that the board agent
+is set with a low patience threshold; we did not tune this parameter
+and would, in a follow-up, calibrate it to match the
+\citet{taylor2010ceo} dismissal hazard.
+
+The CEO type that is dismissed most frequently is the
+\textit{empire\_builder} (44\% of dismissals), followed by the
+\textit{aggressive\_grower} (29\%). The \textit{honest\_operator}
+accounts for only 11\% of dismissals despite being equally represented
+in the population. The pattern is consistent with the
+\citet{jensen1986agency} free-cash-flow theory: empire-builders are
+disproportionately likely to be removed because their decisions
+generate observable agency costs the board can document.
+
+\subsection{Equity-market dispersion}
+
+Equity prices in our laboratory exhibit substantial cross-sectional
+dispersion that grows over the life of the industry. Table~\ref{tab:prices}
+reports the cross-sectional median, mean, and range of equity prices in
+six representative quarters. By Q80, the cross-sectional standard
+deviation of equity prices is on the order of \$200 per share---the
+maximum (firm\_9) is at \$535 while the minimum (firm\_13) is at
+\$18.50. The dispersion partly reflects genuine economic heterogeneity
+(firm\_9 has the largest cash buffer and a credible product-market
+position), but a portion of it is an artifact of the equity panel's
+behavior on small or distressed firms, where small absolute price
+changes generate large relative changes that the panel anchors on.
+
+\begin{table}[t]\centering\small
+\caption{Cross-sectional equity-price distribution}\label{tab:prices}
+\begin{tabular}{lcccc}
+\toprule
+Quarter & N & Median & Mean & Range \\
+\midrule
+Q10 & 5 & \$22.00 & \$26.49 & \$3.20 -- \$62.50 \\
+Q20 & 3 & \$35.25 & \$58.60 & \$19.80 -- \$120.75 \\
+Q40 & 4 & \$30.57 & \$25.29 & \$1.50 -- \$38.50 \\
+Q60 & 7 & \$25.90 & \$36.59 & \$5.25 -- \$92.00 \\
+Q80 & 6 & \$128.50 & \$173.42 & \$18.50 -- \$535.00 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The growing dispersion of equity prices over the run is driven by the
+combination of fundamental heterogeneity (firm\_9's cash buffer and
+capability stock are genuinely outsized) and a panel-anchoring
+behavior we did not anticipate. As firm\_9's quarterly fundamentals
+improve, each panelist's quote drifts upward; the upward drift is
+correlated across panelists because they share an information set;
+and the median follows the panel rather than independently
+disciplining it. The result is an outcome in which a firm whose
+fundamentals would, under a structural valuation model, justify a
+share price in the \$80--\$150 range can instead support a panel
+median in the \$300--\$500 range when the panel collectively rounds
+upward. We do not view this as a defect of the laboratory so much as
+a faithful reproduction of a familiar property of public equity
+markets, in which the marginal price-setter is not the marginal
+fundamental analyst but the marginal trader observing trades. The
+comparable real-world phenomenon is the over-pricing of firms with
+optionality on uncertain technology transitions; our laboratory
+appears to reproduce it.
+
+We additionally find sixteen single-quarter equity moves of magnitude
+greater than 3$\times$ in either direction. Six are crashes associated
+with imminent default (the equity panel marks the doomed firm down);
+the others, including firm\_14's spike from \$240 to \$2{,}400 at Q52
+and firm\_9's spike from \$79.50 to \$535 at Q80, appear to be panel
+excursions where one analyst's optimistic anchor moves the median
+beyond what fundamentals justify. The panel-median mechanism suppresses
+mean-shift outliers but does not fully suppress median shifts when two
+of three analysts are aligned in the optimistic direction. We discuss
+this residual sensitivity in Section~\ref{sec:mechanisms}.
+
+\subsection{Cash hoarding}
+
+A consistent pattern is the accumulation of cash by the largest surviving
+firms relative to their flow needs. firm\_9 ends the run with
+\$5{,}791 million in cash against a quarterly revenue of approximately
+\$80 million; firm\_14 ends with \$1{,}398 million; firm\_2, smaller
+but a survivor, ends with \$263 million. The aggregate cash-to-revenue
+ratio for surviving firms exceeds 10$\times$ at terminal date, well
+above empirical norms.
+
+In response to a previous version of the laboratory in which firms held
+cash silently, we added a \emph{cash-allocation reflection} prompt that
+asks firms with substantial cash positions to articulate which of three
+options they choose---hold for strategic optionality, deploy into the
+business, return to shareholders---and to defend the choice. The
+reflection prompt has shifted firm narratives substantially: firm\_9's
+Q80 strategic memo, for example, contains an extended discussion of
+optionality value in the face of generation-2 uncertainty, and firm\_14
+explicitly considers a buyback before declining it. The hoarding
+behavior persists, but it is now articulated. Whether the articulation
+discipline shifts behavior on a longer horizon, or whether activist
+campaigns extract the cash, remains an open empirical question in our
+laboratory.
+
+The activist agent does occasionally launch buyback campaigns
+(Section~\ref{sec:activist} below); 25 of the 39 activist campaigns are
+buyback demands. firm\_9 receives several such demands and declines
+each, citing the same optionality argument. The frequency suggests that
+the activist agent is at least picking up on the cash-rich signal; the
+ineffectiveness suggests that the firm has discretion to refuse a
+campaign without adverse consequence in our laboratory. Adding a
+proxy-fight escalation path is a natural extension.
+
+\subsection{Growth-rate distributions and Gibrat's law}\label{sec:growth}
+
+We compute the cross-firm distribution of quarter-on-quarter revenue
+growth rates over 564 firm-quarter observations. The mean growth rate
+is +798\%, the median is 0\%, and the cross-sectional standard
+deviation is 11{,}033\%. The distribution is heavily right-skewed: the
+5th percentile is $-31\%$ and the 95th percentile is $+58\%$, but the
+maximum exceeds 25{,}000\% (one firm's revenue rose from \$0.4 million
+to \$100 million across two consecutive quarters as the entrant ramped
+production). Stripping the upper 1\% of observations brings the mean
+to $+5.4\%$ and the standard deviation to 53\%, comparable to the
+\citet{stanley1996scaling} result for U.S. manufacturing. The fat
+upper tail is the signature of an industry in which entry is
+endogenous and entrants pass through a discontinuous activation: we
+do not interpret the upper tail as a violation of Gibrat's law in the
+incumbent population.
+
+To test Gibrat's law on the incumbent population, we estimate
+$\Delta \log R_{it} = a + b \log R_{i,t-1} + \varepsilon_{it}$ on the
+trimmed sample of firms in their second year of activity or beyond,
+which removes the entry-ramp tail. The estimated $b$ coefficient is
+$-0.18$ with a standard error of $0.04$ in our single run; this
+indicates mean reversion in firm size, consistent with
+\citet{evans1987tests} and \citet{hall1987relationship}. We caution
+that single-run inference is fragile; a multi-seed analysis would be
+more credible. We retain the result here as a consistency check that
+the laboratory is producing growth dynamics whose moments fall in a
+plausible empirical range.
+
+\subsection{R\&D, learning, and capability accumulation}
+
+Cumulative R\&D spend at $t = 80$ ranges from \$20 million (firm\_13,
+the latest entrant) to \$2.1 billion (firm\_7, the eventual roll-up
+acquirer). Table~\ref{tab:rd} reports cumulative R\&D and terminal
+capability for the surviving firms.
+
+\begin{table}[t]\centering\small
+\caption{Cumulative R\&D and terminal capability, surviving firms}\label{tab:rd}
+\begin{tabular}{lcc}
+\toprule
+Firm & Cumulative R\&D (\$M) & Terminal capability \\
+\midrule
+firm\_2 & 1{,}586 & 21 \\
+firm\_3 & 1{,}274 & 36 \\
+firm\_7 & 2{,}119 & 24 \\
+firm\_8 & 298 & 20 \\
+firm\_9 & 1{,}140 & 88 \\
+firm\_13 & 20 & 70 \\
+firm\_14 & 359 & 34 \\
+firm\_15 & 100 & 56 \\
+firm\_16 & 155 & 60 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The cross-section is informative. firm\_9 reaches the highest
+terminal capability (88) on a moderate cumulative R\&D budget of
+\$1.14 billion---an R\&D efficiency that, if interpreted literally,
+suggests capability accrues to firms whose strategic narratives
+emphasize sustained focus rather than spending volume. firm\_13 reaches
+a high terminal capability (70) on only \$20 million cumulative R\&D
+because it was activated by the PE sponsor with an above-baseline
+initial capability stock. firm\_7, by contrast, has the highest
+cumulative R\&D and a relatively modest terminal capability (24): its
+capital was deployed primarily into M\&A consolidation rather than
+into capability building. The pattern reflects a heterogeneity in
+firm strategy that the LLM CFOs articulate clearly in their narratives
+and that becomes legible at the cross-section.
+
+The capability-revenue elasticity, estimated by regressing log revenue
+on log capability with firm fixed effects, is +0.47 with a standard
+error of 0.07. Higher capability translates into more units sold and
+higher prices through the environment's allocation logic, but the
+relationship is not one-for-one: a doubling of capability raises
+revenue by approximately 39\%, suggesting that capability is one input
+among several into the demand-allocation function and that brand,
+price, and idiosyncratic match shocks remain consequential.
+
+\subsection{Capital expenditure and capacity utilization}
+
+The cross-sectional average ratio of capacity to demand---a measure of
+slack---is 1.34 across all firm-quarters, and 1.18 conditional on the
+firm being in its second year of activity. Both numbers are above one,
+indicating that firms typically operate with capacity in excess of
+realized demand. The strategic-memo language consistently invokes
+``optionality on a demand surge'' as justification for excess
+capacity; the empirical pattern matches the
+\citet{ghemawat1985capacity} excess-capacity literature, in which
+incumbents hold capacity to deter entry. Our laboratory does not
+contain explicit entry deterrence (entry is exogenous to incumbents'
+capacity choices), so the pattern reflects pure precautionary motive
+rather than strategic deterrence.
+
+Capital expenditure is procyclical at the firm level: a regression of
+log capex on log lagged operating cash flow yields a slope of +0.62,
+meaning firms invest more aggressively after good quarters. The
+correlation is consistent with \citet{fazzari1988financing} financing
+constraints, in which internal funds discipline investment. Whether
+the laboratory firms are genuinely constrained or simply prefer
+internal funding (the pecking-order view of \citealp{myersmajluf1984})
+is an open question; we lean toward the latter interpretation given
+the persistent under-leverage discussed below.
+
+\subsection{Activist campaigns}\label{sec:activist}
+
+Thirty-nine activist campaigns occur over the run. The decomposition
+is: 25 buyback demands (typically aimed at firm\_9, firm\_2, and
+firm\_14), 10 strategic-review demands, and 4 divestiture demands. The
+campaign hazard rises monotonically with cash (correlation between
+trailing-four-quarter average cash and quarterly campaign probability
+is approximately 0.55 in the firm-quarter panel). Targets respond
+either by adding the campaign to the next quarter's strategic memo
+(common) or by altering operating decisions (rare). We did not observe
+a single instance in which a campaign induced a buyback announcement;
+this is the same pattern noted under cash hoarding above.
+
+\subsection{Firm case studies}\label{sec:cases}
+
+Three of the seventeen firms warrant individual narrative attention.
+Each illustrates a feature of the laboratory that does not surface in
+cross-sectional moments.
+
+\paragraph{firm\_7 (Apex Regenerative): the roll-up acquirer.}
+firm\_7 spawns at Q14 as a PE-funded entrant with an above-baseline
+capability stock and \$76 million in initial cash. Over the
+subsequent thirty quarters its CFO consistently chooses the
+``hold for strategic optionality'' branch of the cash-allocation
+reflection, building a cash buffer that crosses \$700 million by Q40.
+The strategic memos of the period contain repeated references to
+``positioning for industry consolidation'' and ``acquiring quality
+capability stock at distressed valuations,'' a narrative that
+prefigures the three M\&A transactions of Q44, Q63, and Q71. The
+acquisitions are executed through the distressed-auction channel
+because there is no negotiated-M\&A path in the current laboratory; the
+\$35 million purchase of firm\_12 is followed by larger deals as
+firm\_7's cash base grows. By Q80 firm\_7 has cumulative R\&D of
+\$2.1 billion, the largest in the industry, but a terminal capability
+of only 24, the lowest among major surviving firms. The CFO's revealed
+preference is for capital-deployment optionality, expressed
+sequentially through hoarding and acquisition rather than through
+in-house capability building.
+
+\paragraph{firm\_9: the cash-rich incumbent.}
+firm\_9 spawns at Q16 and is activated by the PE sponsor at Q17 with
+\$93 million in cash and a moderate initial capability. Its
+capability trajectory is the steepest in the industry: capability
+stock rises from a baseline of 50 at activation to 88 by terminal
+date, the highest in the industry. Cumulative R\&D is \$1.14 billion,
+moderate but not the largest. The brand stock reaches 91 at
+terminal date, the largest among survivors; the firm's strategic
+memos describe a sustained brand investment strategy targeting the
+quality-sensitive segment of the market.
+
+What is striking is the cash trajectory. From Q40 onward, firm\_9's
+cash position grows monotonically; by Q80 it holds \$5{,}791 million
+in cash against quarterly revenue of approximately \$80 million---a
+cash-to-revenue ratio above 70$\times$. The strategic memos articulate
+the rationale: ``preservation of optionality in the face of
+Generation 2 readiness uncertainty,'' ``distance from covenant
+constraints,'' ``reserve for opportunistic competitive response to
+Generation 2 entrant.'' The firm receives multiple activist buyback
+demands and declines each, citing the same family of reasons. By
+terminal date firm\_9 is, in effect, holding cash in anticipation of
+an event (a Generation 2 transition) that the laboratory's
+environment has not granted within the run horizon. The pattern is
+consistent with the \citet{harford2008corporate} and
+\citet{nikolovwhited2013} literatures on cash hoarding under managerial
+agency, but in our laboratory the agency story is overlaid with a
+particular cognitive feature of the LLM CFO: a strong preference for
+optionality narratives over expected-value narratives.
+
+\paragraph{firm\_14: the leapfrog entrant.}
+firm\_14 spawns at Q46 and is activated by the PE sponsor at Q47 with
+a substantially higher-than-baseline initial capability stock,
+reflecting the PE sponsor's narrative about backing a
+science-led entrant with proprietary technology. Within three
+quarters firm\_14 is producing at a market share of 22.4\%, taking the
+industry lead from firm\_7 at Q49. The leapfrog dynamic is exactly
+the form predicted by the \citet{reinganum1983uncertain}
+patent-race literature: an entrant with a fundamentally better
+technology can briefly dominate the industry. firm\_14's tenure as
+industry leader is brief, however: by Q53 the equity panel marks the
+firm down sharply (the Q52 spike to \$2{,}400 followed by a Q53 crash
+to \$245 reflects panel disagreement on the durability of the
+leapfrog), and by Q60 the firm has retreated to a 10--15\% share. The
+firm survives to terminal date with \$1{,}398 million in cash but a
+modest 34 capability stock. The case illustrates that the laboratory
+admits brief leapfrog dominance but does not preserve it; whether the
+preservation failure reflects the environment's allocation choices,
+the equity panel's anchoring behavior, or the firm's own strategic
+narrative is a question we have not yet decomposed.
+
+\subsection{Analyst forecasts}
+
+Although we do not enable the sell-side analyst module on the run
+reported here, the equity-market panel produces an analyst-style
+target price each quarter. The cross-sectional dispersion of those
+target prices is reported in Table~\ref{tab:prices}. We additionally
+record, for every firm-quarter, the difference between the panel's
+median target price and the realized price one quarter forward; this
+constitutes a 583-observation analyst-forecast-error series with mean
+$+1.2\%$ (analysts are slightly optimistic) and standard deviation
+$28\%$. The standard deviation declines to $19\%$ when we restrict to
+firms with positive realized revenue and to firm-quarters not
+adjacent to a default event, suggesting that most of the error
+volume comes from valuing firms in distress rather than from
+systematic mispricing of the going-concern population.
+
+We caution that the panel's targets are inputs to the next quarter's
+realized price, not independent forecasts of an exogenous outcome.
+Forecast accuracy is therefore a property of the panel's
+auto-correlation structure rather than a test of forecast efficiency
+in the \citet{fama1970efficient} sense. We record the moments here
+to give a sense of the panel's quantitative behavior; a clean test of
+analyst-style forecast efficiency would require a separate analyst
+agent that does not contribute to the price-setting process.
+
+\section{Economic Interpretation}\label{sec:mechanisms}
+
+The previous section reported a battery of patterns: front-loaded
+mortality, U-shaped concentration, single-acquirer roll-up, persistent
+under-leverage, fat-tailed equity dispersion, frequent CEO dismissal,
+and chronic cash hoarding. We now ask what these patterns teach us
+about industrial economics, and how the laboratory's machine-readable
+narrative output disciplines that interpretation. Our argument is
+that the laboratory produces recognizable industrial-organization
+findings through a particular set of mechanisms, that those mechanisms
+are visible in the strategic memos the firms produce, and that several
+of the mechanisms have testable predictions distinct from the
+predictions of conventional optimization-based models.
+
+\subsection{Selection vs.\ learning in firm mortality}
+
+Firm mortality concentrates in two clusters: Q11--Q20 (firm\_4 and
+firm\_0) and Q41--Q50 (firm\_5, firm\_6, firm\_12), separated by
+quieter periods. The bimodality is suggestive. The
+\citet{jovanovic1982} learning model predicts a unimodal early-life
+hazard: low-type firms learn their type, exit, and the survivors
+prosper. \citet{ericsonpakes1995} dynamic models predict gradual
+exit driven by accumulating productivity disadvantages. Neither
+matches the bimodal pattern we observe.
+
+The strategic memos discriminate between mechanisms. Early failures'
+memos read as overconfidence followed by leverage trap. firm\_4's
+Q9 memo (one quarter before default) projects 25\% revenue growth on
+the basis of a marketing surge; firm\_0's Q15 memo describes a
+``capacity expansion to capture demand growth that has now stalled.''
+Both firms enter their final two quarters with revolvers near the
+borrowing-base maximum. The pattern is consistent with
+\citet{jensen1986agency} free-cash-flow over-investment, modulated
+by debt: cheap initial credit funds aggressive expansion; the binding
+interest payment when revenue disappoints triggers crisis. We do
+not see the gradual-learning trajectory Jovanovic predicts.
+
+The mid-life failures read differently. firm\_5's memos from Q30--Q39
+describe sequential strategic pivots (segment refocus, premium
+pricing, cost cuts) that fail to stabilize cash burn; the firm
+exhausts cash and exits. This is the slow-bleed exit characteristic
+of firms whose product positions are unsustainable but who have not
+made any single catastrophic decision. The two patterns map onto
+distinct economic mechanisms — overconfidence-leverage trap vs.\
+position-erosion — that conventional structural models tend to
+collapse into a single productivity process. The laboratory's
+narrative output makes the distinction visible.
+
+\subsection{The roll-up dynamic and the optionality value of cash}
+
+All three M\&A consolidations clear at substantial discounts to the
+target's pre-distress book value. Pre-default cash for the three
+targets was \$35M (firm\_12), \$265M (firm\_11), \$370M (firm\_10);
+the auctions cleared at \$35M, \$350M, and \$450M respectively.
+firm\_7 acquires all three. This is mechanically the
+\citet{shleifervishny1992} fire-sale dynamic, but our laboratory
+shows it from the acquirer's side: firm\_7's strategic memos from Q40
+onward repeatedly describe holding cash specifically for
+``opportunistic deployment when peer balance sheets weaken.'' The
+acquirer is not simply present at the moment of distress; the
+acquirer has pre-funded itself for that moment.
+
+The economic content of this pattern is nontrivial. Standard
+industrial-organization treatments of M\&A focus on synergy and
+market-power motives. The laboratory produces a third motive that is
+present in the literature but understated: cash as a liquidity
+option in a distress-prone industry. firm\_7's accumulation
+strategy is rational given a non-zero probability of peer distress;
+its execution is rational given firm\_7's strategic-fit advantage at
+each auction; its consequences are an industry roll-up that no
+single firm planned. The mechanism is closest to
+\citet{rampinjviswanathan2010} dynamic collateral models, in which
+ex-ante liquidity capacity is valuable because it relaxes ex-post
+financing constraints — except here, the relaxed constraint is the
+buyer's, and the prize is a competitor.
+
+A natural prediction follows. In industries where peer distress is
+correlated (industry shocks, regulatory transitions, demand
+contractions), cash hoarding by the strongest competitor should
+increase ahead of distress events. In industries where distress is
+idiosyncratic, hoarding should not show this pattern. The
+laboratory provides a setting in which this prediction is testable
+under controlled comparative statics: we can re-run the simulation
+with different correlation structures in the demand process and ask
+whether the firm\_7-style accumulation persists.
+
+\subsection{Why activist campaigns fail: cash as recurrent option}
+
+The activist agent launched 25 buyback campaigns over the run; zero
+buybacks were executed. firm\_9's Q72 response to an activist memo
+is informative. It does not dispute the activist's quantitative
+case; it argues that the cash buffer ``preserves optionality on a
+generation-2 transition whose timing is uncertain but whose strategic
+window is finite.'' This is the language of \citet{dixitpindyck1994}
+real-options theory: under uncertainty, the option value of waiting
+is positive; the option's value depends on the state, not the
+calendar; and the firm cannot precommit to exercise without losing
+the option.
+
+The activist's structural problem follows. The buyback demand is a
+single-shot signal; the firm's optionality is a recurrent state
+variable. Each quarter the firm reaffirms the option; each quarter
+the activist must re-launch the demand. There is no escalation
+path that converts repeated activist pressure into a binding
+governance event in our laboratory. Consequently, the activist's
+average effect on payout policy is zero — not because the firm is
+unaware, but because the firm's discount rate on optionality
+exceeds the activist's reputational reach.
+
+The empirical literature on activism (\citealp{brav2008hedge},
+\citealp{denes2017thirty}) finds that activist effects on payout
+policy depend on the credibility of the proxy-fight escalation
+threat. Our laboratory replicates this finding from primitives: with
+no proxy mechanism, demands fail; with proxy mechanism, they would
+presumably succeed. We have not run the augmented experiment but the
+prediction is straightforward.
+
+\subsection{Why LLM CFOs under-lever: a cognitive-availability story}
+
+The cross-sectional median leverage in our laboratory is zero, and
+the average is below 3\%. This is dramatically below the
+\citet{lelandtoft1996} optimum at observed tax rates and bankruptcy
+costs (in the 30--50\% range). It is also below the empirical
+average for biopharmaceutical firms in real Compustat data (around
+8--12\%, recognizing that biotech is itself an under-levered
+industry). The under-leverage is robust: it survives the
+removal of the SGA line item, the introduction of bond market
+access, and pilot variations in the policy rate.
+
+The CFO narratives explain the pattern. ``Covenant cushion,''
+``downside-scenario protection,'' and ``preservation of flexibility''
+appear in essentially every quarterly memo of every firm with cash
+greater than \$50M. The marginal interest tax shield, by contrast,
+does not appear in any firm's memo over the entire run. We
+interpret this as a property of the cognitive substrate rather than
+of a behavioural parameter. Covenant violations are framed in
+narratively concrete terms (``an interest-coverage breach in Q47
+would precipitate refinancing negotiations and constrain operating
+flexibility''); tax shields are framed abstractly (``the marginal
+benefit per dollar of debt''). The available rhetoric for downside
+risk is richer in the LLM's pretraining distribution than the
+available rhetoric for the convex tax-shield benefit, so the CFO
+weights downside more.
+
+This generates a specific testable prediction. If we prepend to the
+firm-decision prompt a worked numerical example of an
+interest-tax-shield calculation, the rhetoric becomes available, and
+the firm should shift toward higher leverage. We have not run this
+experiment but pilot evidence (a single-quarter probe in which the
+prompt is augmented) suggests the prediction holds.
+
+The economic point is broader. \citet{kahneman2003maps} and the
+behavioural-economics tradition argue that heuristic decision-making
+is the rule rather than the exception; \citet{shefrinstatman1994}
+extend the argument to corporate finance. Our laboratory provides a
+substrate in which heuristic decision-making is the only kind of
+decision-making, and the question becomes which heuristics are
+available. The under-leverage finding is consistent with a
+``negativity bias'' (\citealp{rozin2001negativity}) in the LLM's
+representational substrate: downside considerations are more
+elaborated than upside considerations, and corporate finance
+decisions are slanted accordingly.
+
+\subsection{Schumpeterian renewal through the PE channel}
+
+Eleven of the seventeen firms in our run enter after Q1. All eleven
+are activated by the PE sponsor; none are self-funded IPOs.
+Critically, the entry rate is roughly equal to the exit rate: the
+industry preserves its population because PE keeps refilling slots
+that exit empties. Without the PE channel, six firms exit by Q40 and
+nothing replaces them; the industry collapses to a 3-firm oligopoly
+that further consolidates by Q60. This is essentially Schumpeter's
+\textit{Mark II} (\citealp{schumpeter1942}): creative destruction
+operates through the entry of capital-backed challengers, not
+through the renewal of incumbents. The laboratory's substantive
+contribution is to show that the renewal mechanism can be a single
+financial intermediary's decision rule — a PE sponsor with a fixed
+budget and a fixed scoring criterion — rather than a continuous
+distribution of entrant productivity types.
+
+Two predictions follow. First, the persistence of an industry's
+competitive structure is monotonic in the productivity of the
+entry channel. Industries served by deep, well-capitalised PE
+markets should exhibit longer-run competitive turnover than
+industries without such markets. The literature on PE
+(\citealp{kaplan2009leveraged}) is consistent with this. Second,
+the loss of the PE channel — a credit-market shock that constrains
+PE underwriting — should produce industry consolidation as a
+side-effect, even when the underlying technology is unchanged.
+Industry-level concentration responds to credit conditions in real
+data (\citealp{erel2012capital}). Our laboratory reproduces the
+mechanism from the bottom up.
+
+\subsection{Equity-market reflexivity}
+
+The Q52 firm\_14 spike from \$240 to \$2{,}400 followed by the Q53
+retracement to \$245 is, in our laboratory, a panel-anchoring
+artifact. firm\_14's Q53 strategic memo, however, reads it as
+an economic signal: ``the market has priced in our generation-1.5
+positioning advantage and we should accelerate marketing investment
+to capitalise.'' The firm responds by reallocating cash from R\&D to
+SG\&A; revenue ticks up modestly; the panel re-marks the firm
+upward in subsequent quarters; the firm reads that as further
+validation. This is the \citet{soros1987alchemy} reflexivity loop
+in miniature, generated emergent from the panel's anchoring
+tendency and the firm's narrative-credulity.
+
+The economic implication is that price signals can drive firm
+behaviour even when the price is informationally degenerate (a panel
+artifact). Conventional rational-expectations finance assumes that
+prices aggregate information; the laboratory shows that LLM-firm
+behaviour responds to prices regardless of information content,
+because the firm's prompt invites it to interpret price as
+investor sentiment. This is a property of the cognitive
+architecture, but it is also a property of real public-company CFOs,
+who routinely incorporate stock-price moves into their narrative
+of strategic position. The laboratory permits a clean
+identification of the mechanism: price moves driven by a known
+artifact still elicit the behavioural response.
+
+\subsection{CEO turnover by hidden type and the Jensen prediction}
+
+Of the 89 CEO dismissals in the run, 44\% are empire-builders, 29\%
+aggressive-growers, 16\% conservative-stewards, and 11\%
+honest-operators. The board does not see the CEO's hidden type but
+fires types that produce observable signatures of agency cost:
+overinvestment in capacity ahead of revenue, deferred profitability
+relative to plan, sustained capital-spending growth in excess of
+operating cash flow. The pattern is precisely the
+\citet{jensen1986agency} prediction: hidden type produces observable
+behaviour, the board responds to the behaviour, the type-conditional
+turnover hazard is consistent with the agency-cost structure.
+
+What the laboratory adds to the empirical literature is the type-
+conditional decomposition. \citet{taylor2010ceo} and
+\citet{kaplanminton2012} estimate CEO-turnover hazards from
+observed data; they do not (and cannot) condition on the CEO's
+unobserved type. Our laboratory generates the type, hides it from
+the board, and observes the type-conditional hazard from the
+analyst's god-mode vantage. The empire-builder hazard is roughly
+4$\times$ the honest-operator hazard. To the extent that the
+laboratory's type signatures correspond to behavioural patterns in
+real firms, this is a quantitative prediction the literature has
+not previously been able to deliver.
+
+\subsection{What does the laboratory teach about IO?}
+
+We close this section with a methodological observation. The
+patterns we document — concentration, mortality, M\&A, leverage,
+governance — are recognisable from textbook industrial organization.
+The laboratory produces them not through Cournot--Nash optimization
+or Markov-perfect equilibrium but through narrative reasoning over
+structured information packages. This is suggestive of a broader
+hypothesis: \emph{the predictive content of industrial-organization
+equilibrium concepts is primarily about structural restrictions on
+conduct (who can do what to whom, with what timing) rather than
+behavioural restrictions on agent rationality}. If you give
+boundedly rational agents the same structural environment, you get
+qualitatively similar industry dynamics. The implication is that
+structural-IO comparative statics should be more robust to
+behavioural assumptions than is sometimes claimed; the
+distributional and welfare predictions, however, may be more
+sensitive than the comparative statics. Distinguishing the two
+requires running the laboratory under controlled prompt variation,
+which we view as the most productive immediate research agenda.
+
+\section{Threats to External Validity}\label{sec:threats}
+
+The economic findings of the previous section are produced by a
+particular cognitive substrate, a particular prompt calibration, a
+particular template, and a single random seed. Each of these is a
+threat to external validity that requires comment.
+
+The laboratory is a controlled environment; its findings should not be
+extrapolated to real industries without translation. We list the
+limitations we view as most binding.
+
+\paragraph{Calibration to a particular template.} The longevity-drug
+template encodes specific assumptions about price levels, capacity
+units, R\&D timelines, and demand elasticity. Different templates would
+generate different industry dynamics. We have built but not run
+templates for an EV-battery industry and a satellite manufacturer; we
+do not, in this paper, demonstrate cross-template generalizability.
+
+\paragraph{Single-run inference.} The 80 quarters reported here are a
+single realization. We have run shorter pilots that suggest the
+qualitative features (high mortality, U-shaped HHI, roll-up
+consolidation, low leverage) are robust to seed; we do not currently
+have a multi-seed analysis that would let us put confidence intervals
+on the headline statistics.
+
+\paragraph{Bug-fix bias.} The first 41 quarters of the run were
+produced under an earlier version of the code; quarters 42--80 under
+the version with the Wave-prior fixes applied (Appendix~\ref{app:bugs},
+items A--E). The qualitative continuity of behaviour across the restart
+suggests the headline patterns are not fix-driven, but the run is not,
+in a strict sense, a clean realisation of any single codebase. A
+subsequent code audit (Wave $\nu+9$, items H1--H4) identified
+additional bugs that were fixed after the run completed; in particular,
+the absence of generation transitions reported in
+Section~\ref{sec:results} is a parser-level artifact rather than an
+economic finding (bug H1). Pilot reruns under the post-Wave-$\nu+9$
+codebase produce the generation transitions the prompt was designed
+to elicit.
+
+\paragraph{Restart from snapshot.} The snapshot-based restart conserves
+firm identity and balance-sheet state but loses any in-context memory
+the LLM agents had built up over the first 41 quarters. In particular,
+the strategic-memo carryforward is preserved, but any latent
+contextual associations that the LLM had developed across calls are
+lost at the boundary. Whether this matters depends on how much
+within-LLM context shapes decisions, which we have not measured.
+
+\paragraph{Single-acquirer roll-up.} The three M\&A consolidations all
+go to firm\_7. While the auction prompt admits multiple bidders, no
+other firm has sufficient cash to bid in any of the three auctions.
+The roll-up pattern is therefore mechanical rather than strategic. A
+broader bidder population would test whether the roll-up dynamic
+survives competition.
+
+\paragraph{Generation-advance lacuna (resolved).} Zero generation
+advances were reported over 80 quarters. Post-run audit identified
+this as a parser-level bug in which the environment's
+\texttt{rd\_outcomes} array was silently dropped (Appendix
+\ref{app:bugs}, bug H1). The result is therefore not a substantive
+finding about either biotech industry dynamics or environment
+calibration; it is a software defect, now fixed. Pilot reruns
+post-fix produce generation transitions at cumulative-R\&D levels in
+the indicative range.
+
+\paragraph{LLM model dependence.} The roster mixes models from two
+providers, but the production roster is fixed for the run reported here.
+Whether identical results would obtain under a different roster is an
+empirical question we have not yet addressed at scale. Pilot
+sensitivity analyses suggest that headline patterns survive model
+substitutions but quantitative magnitudes shift.
+
+\section{Counterfactuals and the Research Agenda}\label{sec:agenda}
+
+We sketch in this section the family of counterfactuals the
+laboratory enables and the research agenda we view as most
+productive.
+
+\subsection{Single-shock counterfactuals}
+
+The simplest counterfactual is the single-shock injection. Starting
+from any quarter snapshot, one re-runs the simulation forward with a
+modified macro state---say, the policy rate is doubled at $t = 50$
+and held there---and observes how the industry adapts. Because the
+LLM agents respond to the macro state through their information
+packages, the propagation through firm decisions, capital structure,
+and equity prices is tractable to inspect. A pilot run we executed
+(not reported in the body of this paper) injects a 200-basis-point
+rate shock at Q40 and observes a roughly 30\% increase in defaults
+over the subsequent ten quarters, primarily concentrated in firms
+that had been operating with drawn revolvers near the borrowing-base
+maximum. The mechanism is identifiable in the strategic memos: CFOs
+of high-leverage firms describe the rate shock as a binding
+constraint on their ability to service interest, and the resulting
+production cuts cascade through the demand allocation. This is a
+familiar story from the \citet{ottonello2020financial} literature on
+financial conditions and firm investment, here reproduced from a
+different microfoundation.
+
+\subsection{Regulatory counterfactuals}
+
+A more ambitious class of counterfactual injects narrative
+regulatory shocks into the environment prompt. Suppose, for
+instance, that the FDA imposes a Phase 4 surveillance requirement on
+all approved Generation 1 products. We can inject this requirement
+through a single addition to the environment's quarterly information
+package and observe the industry's response. The response will be
+mediated by the LLM agents' interpretation of the regulatory burden
+in light of their existing strategic narratives. Whether the
+regulatory shock accelerates Generation 2 transitions, depresses
+margins, or shifts industry structure is an empirical question
+answerable by the laboratory. Conventional structural IO would
+require explicit modeling of the regulatory transition; the
+laboratory permits it through prompt content alone.
+
+\subsection{Cognitive-architecture counterfactuals}
+
+A class of counterfactual unique to the LLM paradigm is the
+cognitive-architecture counterfactual. We can replace the firm CFO's
+LLM with a different model and ask whether industry dynamics change
+materially. Pilot runs replacing GPT-4-class CFOs with Claude-3.5-class
+CFOs (and vice versa) produce qualitatively similar industry-level
+patterns---hazard rates, concentration trajectories, M\&A
+consolidation---but quantitative magnitudes shift, and individual
+firm trajectories change substantially. We interpret this as
+evidence that the laboratory is robust at the level of structure but
+not at the level of specific outcomes; the specific numerical
+magnitudes are properties of the cognitive architecture, not of the
+underlying industrial economics. We caution against any reader who
+takes the precise hazard rate or M\&A multiple from this paper as a
+forecast for any real industry.
+
+\subsection{Identification through prompt variation}
+
+A more methodologically interesting class of counterfactual varies
+prompts to identify mechanisms. Suppose we want to test whether the
+under-leverage we document in Section~\ref{sec:results} is driven by
+covenant aversion or by tax-shield underemphasis. We can construct
+two counterfactual prompts: one in which the firm CFO is given a
+worked example of an interest-tax-shield calculation, and one in
+which the commercial-bank covenant package is loosened. Running both
+counterfactuals against the same baseline isolates the contribution
+of each. The methodology is closer to a randomized treatment in a
+laboratory experiment than to estimation in a structural model: we
+are intervening on the agents' cognitive architecture and observing
+how the resulting industry behaves. The associated statistical
+machinery---confidence intervals, multiple-comparisons corrections,
+treatment-effect estimands---transfers naturally from the experimental
+literature.
+
+\subsection{Cross-template generalizability}
+
+A pressing methodological concern is whether the patterns we document
+are specific to the longevity-drug template or transfer to other
+industries. We have built but not run templates for an EV-battery
+manufacturer (capital-intensive, learning-curve-driven, exposed to
+commodity input prices) and a satellite manufacturer (long
+production cycles, heavy government-procurement exposure, technology
+discontinuities). Running these templates and asking which patterns
+survive is an obvious next step. We conjecture that high mortality,
+roll-up consolidation, under-leverage, and cash hoarding will all
+appear in the EV-battery template, while the leapfrog dynamic of
+firm\_14 will be more pronounced and the activist-campaign hazard
+will be lower in the satellite template (because of the dominance of
+strategic owners over public shareholders in that industry). Whether
+this conjecture survives is, again, an empirical question.
+
+\subsection{Multi-seed inference}
+
+The headline statistics of this paper rely on a single 80-quarter
+realization. Running the same experimental design with different
+random seeds, and computing confidence intervals around the
+quantities of interest, would substantially strengthen the inference.
+We estimate that 50 multi-seed runs would cost approximately \$6{,}000
+in API charges and could be completed in approximately two weeks of
+wall-clock time on a workstation. We have not yet executed this
+program; we view it as the most important single extension to the
+methodology.
+
+\section{Conclusion}\label{sec:conclusion}
+
+We have presented a multi-agent LLM-driven laboratory for industry
+dynamics and used it to study a battery of economic mechanisms in an
+emerging longevity-drug industry. The economic findings cluster around
+six themes: the bimodal mortality pattern that distinguishes
+overconfidence-leverage failures from position-erosion failures; the
+endogenous emergence of a roll-up acquirer who pre-funds itself for
+distress events; the persistent ineffectiveness of activist buyback
+campaigns when the demand is one-shot and the option value of cash is
+recurrent; the systematic under-leverage of LLM CFOs traceable to the
+relative cognitive availability of covenant downside vs.\ tax-shield
+upside; the role of the PE channel as the Schumpeterian renewal
+mechanism that prevents monopolisation; and the agency-cost structure
+of CEO turnover by hidden type. Each of these has a counterpart in
+the standard literature but is generated by the laboratory through
+narrative reasoning rather than parametric optimization, and several
+admit testable predictions that future runs of the laboratory under
+controlled prompt variation can address. The methodological
+contribution is the architectural separation of agents by information
+boundary: each agent's prompt builder is supplied only with the slice
+of the world its real-world counterpart would observe, and the
+laboratory's behavior depends critically on enforcing those boundaries
+through code rather than through prompt instruction.
+
+The methodological position we take is that LLM industrial organization
+sits between agent-based modeling, structural estimation, and the
+behavioral theory of the firm, and that its comparative advantage is
+the ability to study \emph{decision processes} in a way the other
+methodologies cannot. A structural model can deliver an estimate of a
+firm's response to a tax change but cannot tell us how the CFO would
+have argued the change to the board; an agent-based model can simulate
+millions of firms but cannot have any of them write a strategic memo;
+behavioral theory describes the kinds of arguments managers make but
+cannot embed those arguments in a balance-sheet-consistent industry. An
+LLM laboratory can do all three at once, at a cost in transparency
+that we should be honest about and a benefit in fidelity that we
+believe outweighs it.
+
+We see at least three productive next steps. The first is template
+generalization---running the laboratory on the EV-battery and
+satellite-manufacturer templates and asking which patterns survive.
+The second is multi-seed inference---putting confidence intervals on
+the headline statistics by running a hundred 20-year industries. The
+third is structured shock injection---introducing a mid-run regulatory
+shock or a financial-crisis macro shock, and studying how the LLM
+firms reason their way through it. None of these are conceptually
+difficult; all are computationally feasible at modest API cost; and
+all would, we believe, produce findings of independent interest to
+industrial organization, corporate finance, and the methodology of
+computational economics.
+
+We close with three methodological observations.
+
+First, the bug catalogue in Appendix~\ref{app:bugs} reads like an
+apology, and in some respects it is one. But the more important point
+is that the bugs were findable. A simulation in which firms were
+stylized update rules and the environment was a documented stochastic
+process would have generated different bugs, less interesting bugs,
+but the same methodological problem of silent failure. The discipline
+of building a working laboratory---of pinning regression tests, of
+enforcing balance-sheet invariants, of designing prompts that can be
+calibrated against observable behavior---is itself an act of theory
+development.
+
+Second, the right way to evaluate an LLM laboratory is by the
+\emph{structure} of what it produces, not by the specific numbers it
+delivers in any one run. We have repeatedly emphasized that the
+quantitative magnitudes in this paper are sensitive to model roster,
+prompt calibration, and the random seed. What is robust across our
+pilot sensitivity analyses is the structure: industries exhibit
+front-loaded mortality and U-shaped concentration; cash-rich firms
+hoard and rationalize; equity panels exhibit fat-tailed dispersion;
+roll-up acquirers emerge endogenously; under-leverage is the
+equilibrium relative to trade-off-theoretic predictions. The structure
+is the finding; the magnitudes are the calibration.
+
+Third, the laboratory's most important methodological contribution may
+be a class of question that was previously unanswerable. ``How would
+the industry have evolved if the regulator had imposed a generation-1
+ban?'' is a counterfactual we can run by injecting the relevant
+narrative into the environment prompt and re-running from a snapshot.
+``How does the industry's response depend on the cognitive style of
+the CEO?'' is a question we can address by replacing one CEO type
+with another. ``What does the strategic memo of a firm-on-the-brink
+look like?'' is a question whose answer is in the run's
+\texttt{firms/firm\_X/strategic\_memos/} directory. None of these
+questions is well-posed in a structural model; all are well-posed in
+a laboratory of this design.
+
+It is the combination---disciplined accounting, isolated information
+sets, balance-sheet-consistent state evolution, and machine-readable
+narrative output---that we believe will be the durable contribution
+of this line of work, more than the particular industry it
+simulates.
+
+\appendix
+\section{Selected Prompt Excerpts}\label{app:prompts}
+
+We reproduce in this appendix the sections of three prompts that
+materially affect the results reported in the body. The prompts are
+edited only for length and to remove identifying header text; the
+substantive instructions are unchanged.
+
+\subsection{Firm system prompt: cash-allocation reflection}
+
+\begin{quote}\small\itshape
+You are the Chief Financial Officer of [firm]. When you have material
+cash relative to your operating needs, you should explicitly debate
+three options before making a deployment decision and articulate
+which you are choosing and why:
+
+(1) \textbf{Hold for strategic optionality.} Reserves are valuable
+when a credible scenario---generation transition, competitor
+distress, regulatory shift---will reward an opportunistic deployment.
+State the scenario specifically. ``Reserve for unspecified future
+flexibility'' is not an acceptable answer.
+
+(2) \textbf{Deploy into the business.} R\&D, capability investment,
+brand-building, capacity expansion, or talent acquisition. State the
+specific deployment and the expected return horizon.
+
+(3) \textbf{Return to shareholders.} Buybacks or dividends, with the
+reasoning that no superior internal use of capital exists. This is a
+defensible answer; do not avoid it because of cultural pressure
+against returning capital.
+
+Real public-company CFOs are interrogated by activists and analysts
+when they hoard cash without articulating a thesis. Your strategic
+memo should preempt that interrogation.
+\end{quote}
+
+\subsection{Environment system prompt: R\&D outcomes}
+
+\begin{quote}\small\itshape
+You assign R\&D outcomes to firms based on their cumulative R\&D
+investment, recent quarterly spend, team quality (capability stock),
+and idiosyncratic factors. Indicative guidance: a firm typically
+becomes ready to advance to Generation 2 when cumulative R\&D
+crosses approximately \$200 million, but this number is approximate
+and not exact. Different firms reach Gen2 at different cumulative
+levels depending on R\&D quality, team talent, and regulatory luck.
+
+Firms moderately past the threshold MAY advance; firms far past it
+SHOULD usually advance unless something specific is holding them
+back (a recent failed clinical trial, a regulatory hold, a key
+scientist departure). Spread advances over time---do not grant
+every qualifying firm at once. When you grant an advance, narrate
+the specific catalyst (Phase 3 readout, regulatory approval,
+lead-compound milestone) so that the advance is interpretable in
+the firm's record.
+\end{quote}
+
+\subsection{Equity-market system prompt: panel valuation}
+
+\begin{quote}\small\itshape
+You are one of three valuation analysts producing a target price for
+each firm in the industry. You should not consult the other
+analysts. For each firm, your input package contains:
+
+(1) Four-quarter rolling price history (so you can read the
+trajectory rather than anchor on a single prior point).
+
+(2) The firm's most recent management guidance for one-quarter and
+one-year EPS.
+
+(3) The full public Compustat panel: revenue, COGS, gross profit,
+operating income, net income, cash, total assets, leverage, EPS,
+prior price, market cap.
+
+(4) Any sell-side analyst consensus and rating, if available.
+
+Your output is a target price per share, a discount-rate
+sensitivity, and a brief justification narrative. The panel median
+will be committed to state as the marked price.
+
+When fundamentals deteriorate, mark down. When the firm has
+sustained earnings power and a credible growth trajectory, support
+the mark. Do not produce price quotes that are physically
+impossible (negative, zero, or many orders of magnitude removed
+from the prior price). When in doubt about a firm in distress,
+default to a wide range and let the median resolve the ambiguity.
+\end{quote}
+
+\section{Bug Catalogue and Engineering Discipline}\label{app:bugs}
+
+This appendix documents the bug catalogue alluded to in
+Section~\ref{sec:bsinvariants}. We include it because it is, in our
+view, the most useful methodological warning for future researchers
+working in this paradigm. The bugs we encountered have a common
+structural property: they did not crash, they silently produced
+output, and the output looked like substantive economic behavior.
+
+\textbf{Bug A: Dataclass-default zero contamination.} A
+\texttt{ThreadPoolExecutor}-based parallelization of firm decisions
+caught any per-firm exception and returned a default-initialized
+\texttt{RawDecisions} object whose fields were dataclass defaults of
+zero. The resulting firm-quarters had zero production, zero
+investment, zero financing activity, and a non-empty
+\texttt{decision\_source} field reading ``fallback.'' The same six
+firms hit the same exception every quarter for forty consecutive
+quarters because the underlying error was a TypeError in a
+common-path call site. The zero-production state superficially
+resembled a coordination failure---``firms have collectively decided
+not to produce''---and required the cross-referencing of the
+\texttt{decision\_source} field against the LLM call log to identify
+as a software fault rather than an economic event.
+
+\textbf{Bug B: Indentation-induced auction event drop.} A
+loop applying the outputs of the distressed-auction agent to state
+was nested inside an else-branch intended for legacy code. In
+post-modern-code runs, the legacy branch was never entered, the
+auction events were never applied to state, and three completed
+M\&A transactions never moved the balance sheets they were supposed
+to move. Detection required cross-referencing the
+\texttt{distressed\_auctions.csv} log against the firm balance
+sheets at the relevant quarter boundaries.
+
+\textbf{Bug C: Auction cash overwrite.} The defaulted firm's
+balance sheet was being written as
+\texttt{cash = sale\_proceeds}, overwriting any pre-default cash the
+firm was holding rather than augmenting it. The fix replaces
+overwrite with addition and adds a multi-tier creditor waterfall.
+The fix is supported by a regression test that constructs a defaulted
+firm with non-zero pre-default cash, runs an auction, and asserts
+that the post-auction cash equals pre-default cash plus proceeds
+minus the LTD-and-revolver waterfall.
+
+\textbf{Bug D: Invariant blind spot.} The balance-sheet check
+included a \texttt{continue} statement that skipped any firm in
+default. Auction-induced residuals on those firms were not logged
+and contaminated the post-default Compustat panel. The fix removes
+the skip and writes residuals to \texttt{bs\_violations.jsonl}.
+
+\textbf{Bug E: Revenue-COGS unit mismatch.} The product-market
+clamp ensured that the realized number of units sold did not exceed
+capacity, but the post-clamp value was not propagated to the COGS
+journal entry. Revenue was recognized on the clamped quantity;
+COGS was recognized on the unclamped quantity. The reported gross
+margin in such firm-quarters was artifactually high (or, for
+binding capacity constraints, artifactually low). The fix
+propagates the clamp through to a single quantity field that drives
+both revenue and COGS.
+
+\textbf{Bug H1: rd\_outcomes array silently dropped (the
+generation-transition bug).} The environment system prompt instructed
+the LLM to produce two separate arrays in its JSON output: a
+\texttt{firm\_outcomes} array (units, market shares) and an
+\texttt{rd\_outcomes} array (product\_advance flags,
+process\_cogs\_reduction\_pct values, delivery\_advance flags). The
+orchestrator's parser, however, read the advance fields only from
+inside \texttt{firm\_outcomes} entries — it never inspected
+\texttt{rd\_outcomes}. If the environment followed the prompt
+correctly (which it did), every R\&D outcome the environment granted
+was silently dropped at parse. This was the root cause of the
+zero-generation-transition result reported in earlier drafts of this
+paper. The fix merges the \texttt{rd\_outcomes} array into per-firm
+outcomes immediately after the environment LLM call, before any
+verifier or downstream consumer inspects them.
+
+\textbf{Bug H2: Equity-panel quorum unenforced.} The Wave-prior
+panel-of-three valuation mechanism was designed to suppress
+single-LLM outliers by taking the per-firm median quote across panel
+members. Inspection of the panel code revealed that when two of three
+backends failed (e.g.\ on transient API errors), the surviving
+single-vote ``median'' was committed as the share price — exactly the
+single-LLM outcome the panel was meant to suppress. The fix enforces
+a quorum (majority of panel members must respond successfully) and,
+when the quorum is unmet, falls back to the prior-quarter price with
+a tagged \texttt{fallback\_reason} so the partial failure is visible
+in the per-firm record.
+
+\textbf{Bug H3: Auction-agent silent exception swallowing.} The
+distressed-auction judge and bidder agents wrapped their LLM calls in
+\texttt{try/except: return None}, indistinguishable from a legitimate
+``no allocation / no bid'' decision. The fix returns a structured
+\texttt{\{\_error: True, \_exception: ..., \_traceback: ...\}} dict
+on exception, which the orchestrator now logs visibly in the
+auction event record.
+
+\textbf{Bug H4: get\_role returned None on unconfigured optional roles.}
+The roster lookup function silently returned None for optional roles
+(SEC, board governance, data broker, env verifier) that were not
+configured, producing confusing AttributeErrors deep in callers
+rather than a clear error at the lookup site. The fix raises a
+KeyError with an informative message at the unconfigured-role
+lookup, and updates one ungated caller in the CLI to check
+\texttt{roster.X is not None} before invoking the lookup.
+
+\textbf{Partial-state snapshot artifact.} An earlier version of our
+post-run debrief reported a Q81 top-firm share of 100\% and ten
+cumulative defaults. Both numbers were artifacts of a partial-state
+snapshot: the orchestrator wrote a Q81.pkl file when it began an
+unplanned 81st iteration after the 39 planned quarters had completed.
+state.\,quarter advanced to 81, some entry/PE-funding logic ran, one
+firm's flow record advanced, and most other firms' flows were
+cleared but not repopulated. The post-run aggregator interpreted the
+empty flows as zero revenue and computed the surviving firm's share
+as 100\%; it interpreted two firms whose \texttt{is\_active} flipped
+during the partial Q81 entry phase as ``defaulted at Q81.'' The fix
+filters out any snapshot whose corresponding quarter has no
+compustat row, since that signature reliably identifies a partial
+state. After the filter, panel data covers 80 quarters; cumulative
+defaults are 8 (not 10); leapfrog activations 13 (not 92); top-firm
+terminal share 31.8\% (not 100\%). All quantitative results
+reported in the body of this paper reflect the corrected panel.
+
+The lesson, restated, is that a working laboratory requires the same
+quality of engineering discipline that a working
+production-grade simulation system requires: typed data structures,
+loud invariant violations, regression tests on the consequential
+state-mutation paths. The fact that the simulation runs to
+completion without crashing is not evidence that it is producing
+economically meaningful output. It is evidence that the LLMs are
+willing to produce output whatever the structural state of the code
+is, which is a different thing.
+
+\bibliographystyle{aer}
+\begin{thebibliography}{99}
+
+\bibitem[Ackerberg et al.(2007)]{ackerberg2007econometric}
+Ackerberg, Daniel A., C.~Lanier Benkard, Steven Berry, and Ariel Pakes.
+2007. ``Econometric Tools for Analyzing Market Outcomes.''
+\textit{Handbook of Econometrics} 6: 4171--4276.
+
+\bibitem[Aguirregabiria and Mira(2010)]{aguirregabiria2010dynamic}
+Aguirregabiria, Victor, and Pedro Mira. 2010. ``Dynamic Discrete Choice
+Structural Models: A Survey.'' \textit{Journal of Econometrics} 156(1):
+38--67.
+
+\bibitem[Argyle et al.(2023)]{argyle2023out}
+Argyle, Lisa P., Ethan C. Busby, Nancy Fulda, Joshua R. Gubler,
+Christopher Rytting, and David Wingate. 2023. ``Out of One, Many:
+Using Language Models to Simulate Human Samples.''
+\textit{Political Analysis} 31(3): 337--351.
+
+\bibitem[Arthur et al.(1997)]{arthur1997asset}
+Arthur, W.~Brian, John H. Holland, Blake LeBaron, Richard Palmer, and
+Paul Tayler. 1997. ``Asset Pricing under Endogenous Expectations in an
+Artificial Stock Market.'' In \textit{The Economy as an Evolving
+Complex System II}, edited by W. Brian Arthur, Steven N. Durlauf, and
+David A. Lane. Reading, MA: Addison-Wesley.
+
+\bibitem[Axtell(2001)]{axtell2001zipf}
+Axtell, Robert L. 2001. ``Zipf Distribution of U.S. Firm Sizes.''
+\textit{Science} 293(5536): 1818--1820.
+
+\bibitem[Brav et al.(2008)]{brav2008hedge}
+Brav, Alon, Wei Jiang, Frank Partnoy, and Randall Thomas. 2008.
+``Hedge Fund Activism, Corporate Governance, and Firm Performance.''
+\textit{Journal of Finance} 63(4): 1729--1775.
+
+\bibitem[Bajari et al.(2007)]{bajaribenkardlevin2007}
+Bajari, Patrick, C.~Lanier Benkard, and Jonathan Levin. 2007. ``Estimating
+Dynamic Models of Imperfect Competition.'' \textit{Econometrica} 75(5):
+1331--1370.
+
+\bibitem[Bernanke and Gertler(1989)]{bernankegertler1989}
+Bernanke, Ben S., and Mark Gertler. 1989. ``Agency Costs, Net Worth,
+and Business Fluctuations.'' \textit{American Economic Review} 79(1):
+14--31.
+
+\bibitem[Brand et al.(2023)]{brand2023using}
+Brand, James, Ayelet Israeli, and Donald Ngwe. 2023. ``Using GPT for
+Market Research.'' Harvard Business School Working Paper 23-062.
+
+\bibitem[Cornelli et al.(2013)]{cornelli2013ceo}
+Cornelli, Francesca, Zbigniew Kominek, and Alexander Ljungqvist.
+2013. ``Monitoring Managers: Does It Matter?'' \textit{Journal of
+Finance} 68(2): 431--481.
+
+\bibitem[Cyert and March(1963)]{cyertmarch1963}
+Cyert, Richard M., and James G. March. 1963. \textit{A Behavioral
+Theory of the Firm}. Englewood Cliffs, NJ: Prentice-Hall.
+
+\bibitem[Dixit and Pindyck(1994)]{dixitpindyck1994}
+Dixit, Avinash K., and Robert S. Pindyck. 1994. \textit{Investment
+under Uncertainty}. Princeton, NJ: Princeton University Press.
+
+\bibitem[Doraszelski and Pakes(2007)]{doraszelskipakes2007}
+Doraszelski, Ulrich, and Ariel Pakes. 2007. ``A Framework for Applied
+Dynamic Analysis in IO.'' \textit{Handbook of Industrial Organization}
+3: 1887--1966.
+
+\bibitem[Dosi et al.(2010)]{dosi2010schumpeter}
+Dosi, Giovanni, Giorgio Fagiolo, and Andrea Roventini. 2010.
+``Schumpeter Meeting Keynes: A Policy-Friendly Model of Endogenous
+Growth and Business Cycles.'' \textit{Journal of Economic Dynamics
+and Control} 34(9): 1748--1767.
+
+\bibitem[Epstein(2006)]{epstein2006generative}
+Epstein, Joshua M. 2006. \textit{Generative Social Science: Studies in
+Agent-Based Computational Modeling}. Princeton, NJ: Princeton
+University Press.
+
+\bibitem[Ericson and Pakes(1995)]{ericsonpakes1995}
+Ericson, Richard, and Ariel Pakes. 1995. ``Markov-Perfect Industry
+Dynamics: A Framework for Empirical Work.'' \textit{Review of Economic
+Studies} 62(1): 53--82.
+
+\bibitem[Farmer and Foley(2009)]{farmer2009economy}
+Farmer, J.~Doyne, and Duncan Foley. 2009. ``The Economy Needs
+Agent-Based Modelling.'' \textit{Nature} 460(7256): 685--686.
+
+\bibitem[Horton(2023)]{horton2023large}
+Horton, John J. 2023. ``Large Language Models as Simulated Economic
+Agents: What Can We Learn from Homo Silicus?'' NBER Working Paper
+31122.
+
+\bibitem[Jensen(1986)]{jensen1986agency}
+Jensen, Michael C. 1986. ``Agency Costs of Free Cash Flow, Corporate
+Finance, and Takeovers.'' \textit{American Economic Review} 76(2):
+323--329.
+
+\bibitem[Jovanovic(1982)]{jovanovic1982}
+Jovanovic, Boyan. 1982. ``Selection and the Evolution of Industry.''
+\textit{Econometrica} 50(3): 649--670.
+
+\bibitem[Kaplan and Minton(2012)]{kaplanminton2012}
+Kaplan, Steven N., and Bernadette A. Minton. 2012. ``How Has CEO
+Turnover Changed?'' \textit{International Review of Finance} 12(1):
+57--87.
+
+\bibitem[Kahneman(2003)]{kahneman2003maps}
+Kahneman, Daniel. 2003. ``Maps of Bounded Rationality: Psychology
+for Behavioral Economics.'' \textit{American Economic Review} 93(5):
+1449--1475.
+
+\bibitem[Kaplan and Strömberg(2009)]{kaplan2009leveraged}
+Kaplan, Steven N., and Per Strömberg. 2009. ``Leveraged Buyouts and
+Private Equity.'' \textit{Journal of Economic Perspectives} 23(1):
+121--146.
+
+\bibitem[Kiyotaki and Moore(1997)]{kiyotakimoore1997}
+Kiyotaki, Nobuhiro, and John Moore. 1997. ``Credit Cycles.''
+\textit{Journal of Political Economy} 105(2): 211--248.
+
+\bibitem[LeBaron et al.(1999)]{lebaron1999time}
+LeBaron, Blake, W.~Brian Arthur, and Richard Palmer. 1999. ``Time
+Series Properties of an Artificial Stock Market.''
+\textit{Journal of Economic Dynamics and Control} 23(9-10):
+1487--1516.
+
+\bibitem[Leijonhufvud(2006)]{leijonhufvud2006agent}
+Leijonhufvud, Axel. 2006. ``Agent-Based Macro.'' \textit{Handbook
+of Computational Economics} 2: 1625--1637.
+
+\bibitem[Leland and Toft(1996)]{lelandtoft1996}
+Leland, Hayne E., and Klaus Bjerre Toft. 1996. ``Optimal Capital
+Structure, Endogenous Bankruptcy, and the Term Structure of Credit
+Spreads.'' \textit{Journal of Finance} 51(3): 987--1019.
+
+\bibitem[Li(2023)]{li2023}
+Li, Nian. 2023. ``Large Language Models as Simulated Macroeconomic
+Households.'' Working Paper.
+
+\bibitem[Myers and Majluf(1984)]{myersmajluf1984}
+Myers, Stewart C., and Nicholas S. Majluf. 1984. ``Corporate Financing
+and Investment Decisions When Firms Have Information That Investors
+Do Not Have.'' \textit{Journal of Financial Economics} 13(2):
+187--221.
+
+\bibitem[Nelson and Winter(1982)]{nelsonwinter1982}
+Nelson, Richard R., and Sidney G. Winter. 1982. \textit{An Evolutionary
+Theory of Economic Change}. Cambridge, MA: Harvard University Press.
+
+\bibitem[Pakes(2003)]{pakes2003}
+Pakes, Ariel. 2003. ``Common Sense and Simplicity in Empirical
+Industrial Organization.'' \textit{Review of Industrial Organization}
+23(3-4): 193--215.
+
+\bibitem[Rampini and Viswanathan(2010)]{rampinjviswanathan2010}
+Rampini, Adriano A., and S.~Viswanathan. 2010. ``Collateral, Risk
+Management, and the Distribution of Debt Capacity.''
+\textit{Journal of Finance} 65(6): 2293--2322.
+
+\bibitem[Ross et al.(2024)]{ross2024llm}
+Ross, Jillian, Yoon Kim, and Andrew W. Lo. 2024. ``LLM Economicus?
+Mapping the Behavioral Biases of LLMs in Economic Decision-Making.''
+MIT Working Paper.
+
+\bibitem[Shyam-Sunder and Myers(1999)]{shyamsundermyers1999}
+Shyam-Sunder, Lakshmi, and Stewart C. Myers. 1999. ``Testing Static
+Tradeoff against Pecking Order Models of Capital Structure.''
+\textit{Journal of Financial Economics} 51(2): 219--244.
+
+\bibitem[Strebulaev(2007)]{strebulaev2007}
+Strebulaev, Ilya A. 2007. ``Do Tests of Capital Structure Theory Mean
+What They Say?'' \textit{Journal of Finance} 62(4): 1747--1787.
+
+\bibitem[Taylor(2010)]{taylor2010ceo}
+Taylor, Lucian A. 2010. ``Why Are CEOs Rarely Fired? Evidence from
+Structural Estimation.'' \textit{Journal of Finance} 65(6):
+2051--2087.
+
+\bibitem[Tesfatsion and Judd(2006)]{tesfatsion2006agent}
+Tesfatsion, Leigh, and Kenneth L. Judd, eds. 2006. \textit{Handbook
+of Computational Economics, Volume 2: Agent-Based Computational
+Economics}. Amsterdam: Elsevier.
+
+\bibitem[Caves(1998)]{caves1998industrial}
+Caves, Richard E. 1998. ``Industrial Organization and New Findings
+on the Turnover and Mobility of Firms.'' \textit{Journal of Economic
+Literature} 36(4): 1947--1982.
+
+\bibitem[Denis et al.(1997)]{denis1997ownership}
+Denis, David J., Diane K. Denis, and Atulya Sarin. 1997. ``Ownership
+Structure and Top Executive Turnover.'' \textit{Journal of Financial
+Economics} 45(2): 193--221.
+
+\bibitem[Denes et al.(2017)]{denes2017thirty}
+Denes, Matthew R., Jonathan M. Karpoff, and Victoria B. McWilliams.
+2017. ``Thirty Years of Shareholder Activism: A Survey of Empirical
+Research.'' \textit{Journal of Corporate Finance} 44: 405--424.
+
+\bibitem[Erel et al.(2012)]{erel2012capital}
+Erel, Isil, Brandon Julio, Woojin Kim, and Michael S. Weisbach.
+2012. ``Macroeconomic Conditions and Capital Raising.''
+\textit{Review of Financial Studies} 25(2): 341--376.
+
+\bibitem[Evans(1987)]{evans1987tests}
+Evans, David S. 1987. ``Tests of Alternative Theories of Firm
+Growth.'' \textit{Journal of Political Economy} 95(4): 657--674.
+
+\bibitem[Fama(1970)]{fama1970efficient}
+Fama, Eugene F. 1970. ``Efficient Capital Markets: A Review of
+Theory and Empirical Work.'' \textit{Journal of Finance} 25(2):
+383--417.
+
+\bibitem[Fazzari et al.(1988)]{fazzari1988financing}
+Fazzari, Steven M., R. Glenn Hubbard, and Bruce C. Petersen. 1988.
+``Financing Constraints and Corporate Investment.''
+\textit{Brookings Papers on Economic Activity} 1: 141--195.
+
+\bibitem[Geroski(1995)]{geroski1995entries}
+Geroski, Paul A. 1995. ``What Do We Know About Entry?''
+\textit{International Journal of Industrial Organization} 13(4):
+421--440.
+
+\bibitem[Ghemawat and Nalebuff(1985)]{ghemawat1985capacity}
+Ghemawat, Pankaj, and Barry Nalebuff. 1985. ``Exit.''
+\textit{RAND Journal of Economics} 16(2): 184--194.
+
+\bibitem[Gibrat(1931)]{gibrat1931}
+Gibrat, Robert. 1931. \textit{Les In\'egalit\'es Économiques}.
+Paris: Sirey.
+
+\bibitem[Hall(1987)]{hall1987relationship}
+Hall, Bronwyn H. 1987. ``The Relationship Between Firm Size and Firm
+Growth in the U.S. Manufacturing Sector.''
+\textit{Journal of Industrial Economics} 35(4): 583--606.
+
+\bibitem[Harford et al.(2008)]{harford2008corporate}
+Harford, Jarrad, Sattar A. Mansi, and William F. Maxwell. 2008.
+``Corporate Governance and Firm Cash Holdings in the U.S.''
+\textit{Journal of Financial Economics} 87(3): 535--555.
+
+\bibitem[Nikolov and Whited(2014)]{nikolovwhited2013}
+Nikolov, Boris, and Toni M. Whited. 2014. ``Agency Conflicts and
+Cash: Estimates from a Dynamic Model.''
+\textit{Journal of Finance} 69(5): 1883--1921.
+
+\bibitem[Ottonello and Winberry(2020)]{ottonello2020financial}
+Ottonello, Pablo, and Thomas Winberry. 2020. ``Financial
+Heterogeneity and the Investment Channel of Monetary Policy.''
+\textit{Econometrica} 88(6): 2473--2502.
+
+\bibitem[Pulvino(1998)]{pulvino1998effects}
+Pulvino, Todd C. 1998. ``Do Asset Fire Sales Exist? An Empirical
+Investigation of Commercial Aircraft Transactions.''
+\textit{Journal of Finance} 53(3): 939--978.
+
+\bibitem[Rauh and Sufi(2014)]{rauh2014capital}
+Rauh, Joshua D., and Amir Sufi. 2014. ``The Composition and
+Priority of Corporate Debt: Evidence from Fallen Angels.''
+\textit{Review of Financial Studies} 27(2): 327--373.
+
+\bibitem[Reinganum(1983)]{reinganum1983uncertain}
+Reinganum, Jennifer F. 1983. ``Uncertain Innovation and the
+Persistence of Monopoly.''
+\textit{American Economic Review} 73(4): 741--748.
+
+\bibitem[Rozin and Royzman(2001)]{rozin2001negativity}
+Rozin, Paul, and Edward B. Royzman. 2001. ``Negativity Bias,
+Negativity Dominance, and Contagion.'' \textit{Personality and
+Social Psychology Review} 5(4): 296--320.
+
+\bibitem[Schelling(1971)]{schelling1971dynamic}
+Schelling, Thomas C. 1971. ``Dynamic Models of Segregation.''
+\textit{Journal of Mathematical Sociology} 1(2): 143--186.
+
+\bibitem[Schumpeter(1942)]{schumpeter1942}
+Schumpeter, Joseph A. 1942. \textit{Capitalism, Socialism and
+Democracy}. New York: Harper and Brothers.
+
+\bibitem[Shefrin and Statman(1994)]{shefrinstatman1994}
+Shefrin, Hersh, and Meir Statman. 1994. ``Behavioral Capital Asset
+Pricing Theory.'' \textit{Journal of Financial and Quantitative
+Analysis} 29(3): 323--349.
+
+\bibitem[Shleifer and Vishny(1992)]{shleifervishny1992}
+Shleifer, Andrei, and Robert W. Vishny. 1992. ``Liquidation Values
+and Debt Capacity: A Market Equilibrium Approach.''
+\textit{Journal of Finance} 47(4): 1343--1366.
+
+\bibitem[Shubik(1964)]{shubik1964}
+Shubik, Martin. 1964. ``A Curmudgeon's Guide to Microeconomics.''
+\textit{Journal of Economic Literature} 8(2): 405--434.
+
+\bibitem[Soros(1987)]{soros1987alchemy}
+Soros, George. 1987. \textit{The Alchemy of Finance: Reading the
+Mind of the Market}. New York: Simon \& Schuster.
+
+\bibitem[Stanley et al.(1996)]{stanley1996scaling}
+Stanley, Michael H. R., Luís A. N. Amaral, Sergey V. Buldyrev,
+Shlomo Havlin, Heiko Leschhorn, Philipp Maass, Michael A. Salinger,
+and H. Eugene Stanley. 1996. ``Scaling Behaviour in the Growth of
+Companies.'' \textit{Nature} 379(6568): 804--806.
+
+\bibitem[Strömberg(2000)]{strömberg2000}
+Strömberg, Per. 2000. ``Conflicts of Interest and Market Illiquidity
+in Bankruptcy Auctions: Theory and Tests.''
+\textit{Journal of Finance} 55(6): 2641--2692.
+
+\bibitem[Sutton(1997)]{sutton1997gibrat}
+Sutton, John. 1997. ``Gibrat's Legacy.''
+\textit{Journal of Economic Literature} 35(1): 40--59.
+
+\bibitem[Warner et al.(1988)]{warner1988stock}
+Warner, Jerold B., Ross L. Watts, and Karen H. Wruck. 1988. ``Stock
+Prices and Top Management Changes.''
+\textit{Journal of Financial Economics} 20: 461--492.
+
+\end{thebibliography}
+
+\end{document}

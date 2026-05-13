@@ -1,0 +1,51 @@
+name: distressed
+description: |
+  Distressed industry: firms IPO'd on hype and are burning cash rapidly.
+  Most will need to raise rescue capital or default within a year.
+
+firms:
+  - firm_id: firm_0
+    founding_cash: 40_000_000
+    ipo_price: 8.00
+    ipo_shares: 8_000_000
+    founding_ppe_gross: 15_000_000
+    founding_capability: 5.0
+    founding_brand: 3.0
+    base_unit_cost: 17_000
+    ceo_base_salary: 600_000
+  - firm_id: firm_1
+    founding_cash: 55_000_000
+    ipo_price: 9.50
+    ipo_shares: 8_500_000
+    founding_ppe_gross: 18_000_000
+    founding_capability: 7.0
+    founding_brand: 4.0
+    base_unit_cost: 16_500
+    ceo_base_salary: 700_000
+  - firm_id: firm_2
+    founding_cash: 45_000_000
+    ipo_price: 8.50
+    ipo_shares: 7_500_000
+    founding_ppe_gross: 16_000_000
+    founding_capability: 6.5
+    founding_brand: 3.5
+    base_unit_cost: 17_200
+    ceo_base_salary: 650_000
+  - firm_id: firm_3
+    founding_cash: 35_000_000
+    ipo_price: 7.00
+    ipo_shares: 7_000_000
+    founding_ppe_gross: 12_000_000
+    founding_capability: 4.5
+    founding_brand: 2.5
+    base_unit_cost: 18_000
+    ceo_base_salary: 550_000
+  - firm_id: firm_4
+    founding_cash: 60_000_000
+    ipo_price: 10.00
+    ipo_shares: 9_000_000
+    founding_ppe_gross: 20_000_000
+    founding_capability: 8.0
+    founding_brand: 5.0
+    base_unit_cost: 16_000
+    ceo_base_salary: 750_000

@@ -1,0 +1,47 @@
+I have a question about the 'data'; many of these tasks will require to inspect the data, and examine it, but these cannot be sent to LLM (too large data). What is it right now and what do you recommend; what I do not want is decisions to complete ignore data. Here are alternatives:
+
+(1) some well-structured RAG for LLM to use, but will it handle quantative analysis? How do LLM on different machines (which cold be an implementation in the long-term) do it?
+
+(2) there is data on local machines: LLM write code and execute it, then look at teh results; but there needs to be back-and-forth calls by LLMs (write a code, execute locally, get results, analyze) AND must make sure that they understand what data is available for decision-making, their code works or they get to retry, what if the LLM is not good at writing code, and finally make sure the data is properly gated so they access public data and the data they should see
+
+(3) a 'data' analyst consulted for any deciion-making that needs input; this could be 1 or more LLM good at writing code, but still LLM must know what to ask and that data analyst must be able to execute locally and only use data that's accessible; what if the firm wants the data analyst to analyze some private data -> I guess we would probably want the data analyst(s) to rely on only public data and have the LLM directly process in prompt their own private data.
+
+(4) Same as (3) but let Claude code do the back-end of all data anlysis tasks. But, do we need one different claude per machine, and it may be worrying that claude code running the simulation (if it does) may use information that should not be known to others
+
+(5) Some implementation with standardized py that run regressions and correlations on a template, with minimal code writing; shuold be flexible enough so that it does not contaminate LLMs with decisions that are too stiff.
+
+---
+## Resolution (as of Wave theta+, April 2026)
+
+A hybrid of options (3) and (5) was implemented:
+
+- **Data Broker** (`src/data_broker.py`) — three modes controlled by
+  `data_broker_mode`:
+    - `template_only`  : pre-built templates (DuPont, RNOA, residual
+      income, peer multiples), no code writing.
+    - `freeform`       : LLM writes pandas code that executes in a
+      sandbox.
+    - `combo` (default): template if one matches, code otherwise.
+  Max queries per agent per quarter configurable
+  (`data_broker_max_queries_per_agent_per_quarter`).
+
+- **Data Analyst** (`src/data_analyst.py`) — called on-demand when a
+  board discussion emits an `ANALYSIS_REQUEST`. Separate LLM, executes
+  code locally on that run's compustat data + accumulated cross-run
+  panel.
+
+- **Information gating** — at source via
+  `orchestrator._build_firm_info_package`. Firms see PUBLIC peer data
+  only (w/ optional Gaussian noise); PRIVATE is their own state.
+  Env agent is the only omniscient reader.
+
+- **Private-data gap** — firm's own private data is injected directly
+  into the firm prompt (not passed through the broker), so the broker
+  never touches private fields. Exactly the gating logic the question
+  worried about.
+
+All data-broker queries are logged to `outputs/<run>/broker_queries.jsonl`
+with agent role + query text + hypothesis + returned analysis, for full
+audit traceability.
+
+See also: [[../docs/architecture]], [[../docs/datasets]].

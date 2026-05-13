@@ -1,0 +1,22 @@
+# Test config: all expansion toggles ON, mock backend
+# Usage: python -m src run --config config/test_expansion.yaml --mock --quarters 8
+
+n_firms_initial: 3
+n_quarters: 8
+seed: 42
+
+default_llm:
+  backend: mock
+  model: mock
+
+# All expansion toggles ON
+earnings_management_enabled: true
+sec_enabled: true
+sellside_analysts_enabled: true
+sellside_analyst_count: 3
+auditor_enabled: true
+governance_enabled: true
+earnings_announcement_enabled: true
+restatements_enabled: true
+ma_enabled: true
+macro_expansion_enabled: true

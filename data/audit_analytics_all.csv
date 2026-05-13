@@ -1,0 +1,7 @@
+run_id,firm_id,fyear,auditor_id,auditor_name,audit_opinion,going_concern_flag,audit_fee,auditor_tenure_years,auditor_change_flag,prior_auditor_id
+run_1776455700,firm_1,2032,auditor_2,,adverse,0,600000.0,0,0,
+run_1776455700,firm_2,2032,auditor_3,,qualified,0,750000.0,0,0,
+run_1776455700,firm_3,2032,auditor_4,,qualified,0,750000.0,0,0,
+run_1776455700,firm_4,2032,auditor_1,,adverse,0,639969.4813927877,0,0,
+run_1776455700,firm_2,2033,auditor_3,,qualified,0,750000.0,0,0,
+run_1776455700,firm_4,2033,auditor_1,,adverse,0,1084676.7076699438,0,0,

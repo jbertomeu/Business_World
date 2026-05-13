@@ -1,0 +1,264 @@
+# ============================================================================
+# MODEL ROSTER — all model-role assignments in one place
+# ============================================================================
+#
+# API keys are in .env (loaded automatically). Do NOT put keys here.
+#
+# HOW IT WORKS:
+#   Firms are numbered firm_1, firm_2, ... firm_N.
+#   The simulation picks firm_1 through firm_{n_firms} based on --firms N.
+#   Default N=5 → uses firm_1 to firm_5.
+#   Swap any model by editing its line. All S-tier models are listed below.
+#
+# Backends:  openrouter | minimax | aihorde | ollama | mock
+# ============================================================================
+
+# ── Firm Agents ─────────────────────────────────────────────────────────
+# All S-tier models not assigned to env/financial. Ordered:
+# 3 AI Horde (free) → MiniMax (KEEP) → DeepSeek R1 (KEEP) → remaining S-tier.
+# With --firms 5, the simulation uses firm_1 through firm_5.
+
+firms:
+
+  firm_1:
+    model:    "koboldcpp/gemma-4-26B-A4B-it-heretic.IQ4_XS"
+    backend:  "aihorde"
+    temperature: 0.30
+    note:     "S-tier 100% | free | 46s | best horde model"
+
+  firm_2:
+    model:    "koboldcpp/Dark-Nexus-24B-v2.0.i1-Q5_K_M"
+    backend:  "aihorde"
+    temperature: 0.35
+    note:     "S-tier 100% | free | 104s | solid all-around"
+
+  firm_3:
+    model:    "aphrodite/TheDrummer/Behemoth-R1-123B-v2-w4a16"
+    backend:  "aihorde"
+    temperature: 0.40
+    note:     "S-tier 100% | free | 231s | largest horde model"
+
+  firm_4:
+    model:    "minimax/minimax-m2.5"
+    backend:  "openrouter"
+    temperature: 0.45
+    note:     "A-tier 97% | $0.554/M | KEEP — strong reasoning"
+
+  firm_5:
+    model:    "deepseek/deepseek-r1-0528"
+    backend:  "openrouter"
+    temperature: 0.50
+    note:     "S-tier 100% | $1.325/M | KEEP — best reasoning, slow"
+
+  firm_6:
+    model:    "z-ai/glm-4-32b"
+    backend:  "openrouter"
+    temperature: 0.55
+    note:     "S-tier 100% | $0.100/M | 21s | surprise performer"
+
+  firm_7:
+    model:    "microsoft/phi-4"
+    backend:  "openrouter"
+    temperature: 0.60
+    note:     "S-tier 100% | $0.103/M | 36s | revalidate in full sim"
+
+  firm_8:
+    model:    "google/gemini-2.0-flash-001"
+    backend:  "openrouter"
+    temperature: 0.65
+    note:     "S-tier 100% | $0.250/M | 10s | fastest model tested"
+
+# ── Environment Agent ───────────────────────────────────────────────────
+# Best narrative + demand realism. NOT in firm list.
+
+environment:
+  model:    "deepseek/deepseek-v3.2"
+  backend:  "openrouter"
+  temperature: 0.40
+  note:     "S-tier 100% | $0.320/M | best env narrative + realism"
+
+# ── Financial Institutions ──────────────────────────────────────────────
+# Precision roles (low temp). Each uses a different S-tier model, NOT in firm list.
+
+equity_market:
+  model:    "qwen/qwen3-235b-a22b-2507"
+  backend:  "openrouter"
+  temperature: 0.20
+  note:     "S-tier 100% | $0.085/M | excellent reasoning, very cheap"
+
+investment_bank:
+  model:    "qwen/qwen3-235b-a22b-2507"
+  backend:  "openrouter"
+  temperature: 0.20
+  note:     "Upgraded from llama-4-scout: stronger covenant-feasibility reasoning needed for negative-EBITDA firms (validation v2 showed scout still picked debt/EBITDA covenants on pre-revenue biotechs despite F8 prompt guidance)"
+
+# Wave ν+10 item 7: optional second investment bank for competitive
+# bidding. When present, both ibanks quote on every firm-quarter; firms
+# pick the best terms (lowest rate for debt, highest price for equity).
+investment_bank_2:
+  model:    "google/gemma-3-12b-it"
+  backend:  "openrouter"
+  temperature: 0.30
+  note:     "Second investment bank for multi-bank competition. Different model + slightly higher temperature to produce genuinely different quotes."
+
+commercial_bank:
+  model:    "google/gemma-3-12b-it"
+  backend:  "openrouter"
+  temperature: 0.20
+  note:     "A-tier 95% | $0.085/M | proven best credit risk in full sim"
+
+# Wave ν+10 item 7: optional second commercial bank for competitive
+# bidding on revolver facilities.
+commercial_bank_2:
+  model:    "mistralai/mistral-small-24b-instruct-2501"
+  backend:  "openrouter"
+  temperature: 0.30
+  note:     "Second commercial bank — different model + temperature to produce non-degenerate competitive quotes."
+
+# ── Data Analyst (on-demand) ────────────────────────────────────────────
+
+data_analyst:
+  model:    "mistralai/mistral-small-24b-instruct-2501"
+  backend:  "openrouter"
+  temperature: 0.10
+  note:     "S-tier 100% | $0.065/M | 15s | cheapest + fastest"
+
+# ── Sell-Side Analysts (when sellside_analysts_enabled, default ON) ─────
+# Wave ν+10 item 9: 4 analysts with different methodologies. Notes are
+# PUBLIC — read by the equity panel as a price-formation input. Cheap
+# S-tier models so the 4 quarterly calls are budget-cheap.
+
+analysts:
+  analyst_1:
+    model:    "mistralai/mistral-small-24b-instruct-2501"
+    backend:  "openrouter"
+    temperature: 0.30
+    note:     "DCF-focused analyst | $0.065/M | publishes Q1,Q3"
+
+  analyst_2:
+    model:    "z-ai/glm-4-32b"
+    backend:  "openrouter"
+    temperature: 0.35
+    note:     "Comparables analyst | $0.100/M | publishes Q2,Q4"
+
+  analyst_3:
+    model:    "microsoft/phi-4"
+    backend:  "openrouter"
+    temperature: 0.40
+    note:     "Contrarian/event analyst | $0.103/M | publishes Q1,Q4"
+
+  analyst_4:
+    model:    "google/gemma-3-12b-it"
+    backend:  "openrouter"
+    temperature: 0.45
+    note:     "Quant/momentum analyst | $0.085/M | publishes every Q (always-on coverage)"
+
+# ── SEC (when sec_enabled) ──────────────────────────────────────────────
+
+sec:
+  model:    "google/gemma-3-12b-it"
+  backend:  "openrouter"
+  temperature: 0.15
+  note:     "SEC enforcement | $0.085/M | low temp for consistency"
+
+# ── Auditors (when auditor_enabled, annual Q4 only) ────────────────────
+# Pool of 4 named firms. Each firm assigned one auditor at creation.
+
+auditors:
+  auditor_1:
+    model:    "mistralai/mistral-small-24b-instruct-2501"
+    backend:  "openrouter"
+    temperature: 0.10
+    note:     "Hartley & Moran | $0.065/M"
+
+  auditor_2:
+    model:    "z-ai/glm-4-32b"
+    backend:  "openrouter"
+    temperature: 0.10
+    note:     "Kaplan Pierce | $0.100/M"
+
+  auditor_3:
+    model:    "microsoft/phi-4"
+    backend:  "openrouter"
+    temperature: 0.10
+    note:     "Eastwood Young | $0.103/M"
+
+  auditor_4:
+    model:    "google/gemma-3-12b-it"
+    backend:  "openrouter"
+    temperature: 0.10
+    note:     "Nakamura Global | $0.085/M"
+
+# ── Board Governance (when governance_enabled, annual Q4 only) ──────────
+
+board_governance:
+  model:    "qwen/qwen3-235b-a22b-2507"
+  backend:  "openrouter"
+  temperature: 0.25
+  note:     "Board governance | $0.085/M | annual CEO review"
+
+# ── Data Broker (when data_broker_enabled) ──────────────────────────────
+# Research assistant for all agents: answers NL queries with templates.
+# Needs to reliably read column names and pick templates; low temp.
+
+data_broker:
+  model:    "minimax/minimax-m2.5"
+  backend:  "openrouter"
+  temperature: 0.10
+  note:     "Data Broker | MiniMax M2.5 | template selection + code generation"
+
+# Environment output verifier — only invoked when deterministic anomaly check
+# trips. Uses a stronger reasoning model than the env itself (qwen-235b) so
+# the verifier can credibly judge "is this a hallucination or a legitimate
+# big move?" If omitted, falls back to using the environment model.
+env_verifier:
+  model:    "qwen/qwen3-235b-a22b-2507"
+  backend:  "openrouter"
+  temperature: 0.10
+  note:     "Env Verifier | qwen3-235b | called only on anomaly trigger; cap on env hallucinations"
+
+# Wave ν+11 E9: independent second-env validator. Distinct from env_verifier
+# (which uses deterministic heuristics + direct rewrite). The validator runs
+# every quarter (when env_validator_enabled), reads env-1's output, and
+# either ratifies it or sends it back with notes for env-1 to retry once.
+# High bar — only sends back on clear narrative/numerical inconsistencies,
+# so emergent randomness is preserved. If omitted, falls back to env model.
+env_validator:
+  model:    "qwen/qwen3-235b-a22b-2507"
+  backend:  "openrouter"
+  temperature: 0.10
+  note:     "Env Validator | qwen3-235b | second env, judges env-1 each quarter, sends back only on clear inconsistency"
+
+# Wave ν+12: per-firm investor / market-analyst voice. Cheap model — fires
+# once per active firm per quarter (so cost scales with firm count). The
+# note is rendered into next quarter's firm decision prompt as a soft
+# market-view input. If omitted, falls back to the data_analyst model.
+investor_voice:
+  model:    "mistralai/mistral-small-24b-instruct-2501"
+  backend:  "openrouter"
+  temperature: 0.25
+  note:     "Investor Voice | mistral-small | per-firm market commentary each Q; cheap"
+
+# ============================================================================
+# REFERENCE: All S-tier models (2026-04-15 sweep)
+# ============================================================================
+#
+# OpenRouter:
+#   mistralai/mistral-small-24b-instruct-2501  $0.065/M  15s  → data_analyst
+#   qwen/qwen3-235b-a22b-2507                  $0.085/M  33s  → equity_market
+#   z-ai/glm-4-32b                             $0.100/M  21s  → firm_6
+#   microsoft/phi-4                             $0.103/M  36s  → firm_7
+#   meta-llama/llama-4-scout                    $0.190/M  20s  → investment_bank
+#   google/gemini-2.0-flash-001                 $0.250/M  10s  → firm_8
+#   deepseek/deepseek-v3.2                      $0.320/M 115s  → environment
+#   deepseek/deepseek-r1-0528                   $1.325/M 426s  → firm_5 (KEEP)
+#
+# AI Horde (free):
+#   koboldcpp/gemma-4-26B-A4B-heretic           46s  → firm_1
+#   koboldcpp/Dark-Nexus-24B-v2.0               104s → firm_2
+#   aphrodite/Behemoth-R1-123B-v2               231s → firm_3
+#
+# A-tier kept:
+#   minimax/minimax-m2.5                        $0.554/M 109s → firm_4 (KEEP)
+#   google/gemma-3-12b-it                       $0.085/M  35s → commercial_bank
+# ============================================================================

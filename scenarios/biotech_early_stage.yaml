@@ -1,0 +1,53 @@
+name: biotech_early_stage
+description: |
+  Classic early-stage biotech industry. All five firms raised similar
+  founding rounds but differ in initial capabilities and management pedigree.
+  Think late-1990s Genentech / Amgen / Chiron -- same size, different
+  specializations.
+
+firms:
+  - firm_id: firm_0
+    founding_cash: 150_000_000
+    ipo_price: 17.50
+    ipo_shares: 10_000_000
+    founding_ppe_gross: 25_000_000
+    founding_capability: 12.0
+    founding_brand: 6.0
+    base_unit_cost: 14_000
+    ceo_base_salary: 1_100_000
+  - firm_id: firm_1
+    founding_cash: 150_000_000
+    ipo_price: 17.50
+    ipo_shares: 10_000_000
+    founding_ppe_gross: 25_000_000
+    founding_capability: 9.0
+    founding_brand: 5.0
+    base_unit_cost: 14_500
+    ceo_base_salary: 900_000
+  - firm_id: firm_2
+    founding_cash: 150_000_000
+    ipo_price: 17.50
+    ipo_shares: 10_000_000
+    founding_ppe_gross: 25_000_000
+    founding_capability: 11.0
+    founding_brand: 7.0
+    base_unit_cost: 13_800
+    ceo_base_salary: 1_050_000
+  - firm_id: firm_3
+    founding_cash: 150_000_000
+    ipo_price: 17.50
+    ipo_shares: 10_000_000
+    founding_ppe_gross: 25_000_000
+    founding_capability: 8.5
+    founding_brand: 4.5
+    base_unit_cost: 14_800
+    ceo_base_salary: 850_000
+  - firm_id: firm_4
+    founding_cash: 150_000_000
+    ipo_price: 17.50
+    ipo_shares: 10_000_000
+    founding_ppe_gross: 25_000_000
+    founding_capability: 10.0
+    founding_brand: 5.5
+    base_unit_cost: 14_200
+    ceo_base_salary: 1_000_000

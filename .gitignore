@@ -1,0 +1,90 @@
+# LLM Firm Lab — gitignore
+#
+# Strategy: track code + configs + docs + analysis. Exclude generated artifacts
+# (runs are 3.5GB and fully reproducible from configs). Track small accumulated
+# research datasets but exclude the per-run gazettes / dashboards / firm
+# minutes that bloat to gigabytes.
+
+# ── Python ─────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+.hypothesis/
+
+# Virtual envs
+.venv/
+venv/
+env/
+ENV/
+
+# ── Editor / OS ────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Claude Code temp backups (harness writes these on every edit)
+*.tmp.*
+
+# ── LLM Firm Lab outputs ───────────────────────────────────────────────
+# Per-run artifacts (3.5GB+ across 173 completed runs). Fully reproducible
+# from configs in config/*.yaml. Cleanup script: re-run with same seed.
+outputs/
+
+# Cross-run accumulated tables — regenerable via scripts/rebuild_database.py
+data/compustat_all.csv
+data/compustat_a_all.csv
+data/run_index.csv
+data/scores.csv
+data/runs/
+data/memory/
+data/agent_memory/
+
+# Console logs piped at top level
+run*_console.log
+*.log
+
+# Snapshot binaries
+snapshots/
+*.snapshot.json
+
+# Prompt logs (per-run)
+**/prompt_logs/
+
+# ── Build artifacts ────────────────────────────────────────────────────
+dist/
+build/
+*.spec
+
+# ── Graphify ───────────────────────────────────────────────────────────
+graphify-out/
+graphify-vault/
+
+# ── Misc large artifacts ───────────────────────────────────────────────
+*.zip
+*.tar.gz
+prepared/*.zip
+prepared/*.tar.gz
+
+# Generated dashboards at top level
+dashboard.html
+Untitled.canvas
+
+# ── Secrets ────────────────────────────────────────────────────────────
+.env
+.env.*
+config/secrets.yaml
+**/api_keys.txt

@@ -1,0 +1,43 @@
+# Example configs for the three Data Broker modes.
+# Switch `data_broker_mode` to try each.
+
+n_firms_initial: 3
+n_quarters: 4
+seed: 42
+
+default_llm:
+  backend: openrouter
+  model: mistralai/mistral-small-24b-instruct-2501
+
+agents:
+  firm_0:
+    model: "mistralai/mistral-small-24b-instruct-2501"
+    backend: openrouter
+    temperature: 0.30
+  firm_1:
+    model: "qwen/qwen3-235b-a22b-2507"
+    backend: openrouter
+    temperature: 0.35
+  firm_2:
+    model: "z-ai/glm-4-32b"
+    backend: openrouter
+    temperature: 0.40
+
+# Broker configuration
+data_broker_enabled: true
+data_broker_max_queries_per_agent_per_quarter: 3
+
+# MODE OPTIONS (pick one):
+#   template_only — broker only uses the 10 pre-built statistical functions.
+#                   Rejects queries no template matches. Fastest, most reliable.
+#   combo         — broker tries templates first, falls back to custom pandas
+#                   code when no template matches. Balanced.
+#   freeform      — broker always writes custom pandas code. Most flexible,
+#                   slowest, highest variance. Uses MiniMax subscription well.
+data_broker_mode: combo
+
+# Features that benefit from broker
+sec_enabled: true
+earnings_management_enabled: true
+sellside_analysts_enabled: true
+earnings_announcement_enabled: true
