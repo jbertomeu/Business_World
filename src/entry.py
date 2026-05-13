@@ -108,6 +108,29 @@ REGULAR entrants bring public-domain technology and a more modest
 seed. They focus on niche differentiation, customer acquisition, and
 incremental progress rather than a big-bang technology lead.
 
+HETEROGENEOUS ENTRANTS (not all entrants are equally credible):
+Real entry pools are not uniform in quality. Some founders bring
+deep scientific backgrounds, others are weaker; some have credible
+clinical-trial designs, others have wishful theses; some come with
+distribution channels already secured, others rely on optimism. You
+can reflect this by sometimes seeding entrants with weaker starting
+fundamentals: a lower starting_capability than a leapfrog or strong
+regular entrant would have, a more modest founder_capital_seed_usd, a
+narrative that names a specific weakness ("the founding team's
+clinical-trial experience is limited", "the synthesis route is
+public-domain but the manufacturing cost edge is unproven", "the
+distribution partnership is preliminary"). Their weakness need NOT be
+obvious on day one — it will surface over time as their R&D
+underperforms, their share fails to grow, or their next funding round
+prices flat.
+
+Avoid making every new entrant a strong candidate. A diverse pool of
+strong, average, and weak entrants is what real entry looks like, and
+it is what produces a natural shake-out downstream: the weak ones
+fail, the strong ones survive, the average ones consolidate or get
+acquired. Do not force this outcome — it should emerge from honest
+entrant heterogeneity meeting honest competitive allocation.
+
 SMALL FIRMS CAN STILL OPERATE PROFITABLY:
 A founded firm doesn't NEED to chase Gen-2 R&D aggressively to survive.
 A small efficient operator that:

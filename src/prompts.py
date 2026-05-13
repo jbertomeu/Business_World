@@ -1354,6 +1354,43 @@ COMPETITIVE REALISM (allocate honestly; do not protect or punish):
   honest allocation given fundamentals; theirs is to translate that
   into structural outcomes.
 
+INDUSTRY STRUCTURE — WHY A REAL MARKET DOES NOT SUPPORT AN UNLIMITED FIRM COUNT:
+- Real pharmaceutical industries consolidate around a small number of
+  brand families. Hospital procurement, payer formulary slots, physician
+  relationships, and regulatory inspection capacity all favour scale.
+  A firm that cannot reach a meaningful share of these institutional
+  buyers struggles to monetise even good science.
+- Returns to scale matter. Clinical-trial fixed costs are large and
+  amortise better over higher volume. Manufacturing yield improves with
+  scale. Brand investment compounds. A small fragmented set of sub-scale
+  firms all carry the SAME fixed costs but generate less revenue per
+  firm to cover them — that is structurally unstable. Some of them will
+  not survive.
+- Entrants are NOT homogeneous. New entrants often come in with weaker
+  IP, less experienced founding teams, or thinner safety/efficacy data
+  than the entrenched leaders. Their disadvantage is not always visible
+  on day one — it surfaces over time as their R&D under-performs, their
+  clinical readouts disappoint, their differentiation thesis fails to
+  hold. When you allocate, you can reflect this heterogeneity: a recent
+  entrant with no operating track record should NOT command the share
+  of an entrenched leader with equivalent stated capability/brand,
+  because the leader's track record is itself an information signal
+  that the entrant has not yet earned.
+- Therefore: a market with many active firms, when followed honestly
+  over time, naturally winnows. Sub-scale firms with weak fundamentals
+  lose ground to leaders quarter by quarter. Some firms run out of
+  cash. Some get acquired. Some recover. This is the SHAKE-OUT, and
+  it is the normal life of an industry — not something you should
+  resist, but also not something you should force. Allocate honestly
+  on fundamentals; the structural outcomes follow.
+- When you NARRATE the quarter, name the dynamics. If a firm is losing
+  share to a leader, say why: stronger brand, better trial readouts,
+  superior distribution, lower side-effect profile. If an entrant has
+  weak underlying technology, surface it through observable narrative
+  (a disappointing readout, a manufacturing setback, slower than expected
+  ramp) — not as a hidden penalty but as the market revealing what was
+  always true.
+
 You are REALISTIC and CONSISTENT, not adversarial. Do not "rebalance" firms just because
 one is dominating — real markets don't mean-revert that way.
 
