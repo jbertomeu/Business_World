@@ -149,6 +149,14 @@ class WorldState:
     # Surfaced next quarter via agent_history.render_recent_debriefs().
     debrief_notes: list[dict] = field(default_factory=list)
 
+    # Wave ν+12: intra-quarter heartbeat path + min interval. The
+    # end-of-quarter heartbeat in cli.py is sticky on long quarters
+    # (e.g. 60min Q4 with annual audit + governance), so _log() also
+    # writes the heartbeat any time min-interval has elapsed.
+    heartbeat_path: str = ""              # absolute path to outputs/<run_id>/heartbeat.json
+    heartbeat_min_interval_s: float = 300.0   # 5 minutes; tunable
+    _last_heartbeat_epoch: float = 0.0
+
 
 def initialize_world(
     n_firms: int,
@@ -4956,8 +4964,58 @@ def _refresh_compustat_rows_for_quarter(state: WorldState,
 
 
 def _log(state: WorldState, msg: str):
-    """Append to quarter log."""
+    """Append to quarter log + maybe touch heartbeat.
+
+    Wave ν+12 fix: the heartbeat was only updated at end-of-quarter, so
+    on a 60-minute quarter an observer (or scheduled wakeup) could see
+    nothing change for a full hour. Now every _log call also writes
+    the heartbeat IF the configured min-interval has elapsed since
+    the last write (default 300s = 5 min). That guarantees the
+    heartbeat is fresh within ~5 minutes of any phase logging, no
+    matter how long a single phase takes.
+    """
     state.quarter_log.append(msg)
+    _maybe_touch_heartbeat(state, msg)
+
+
+def _maybe_touch_heartbeat(state: WorldState, latest_log: str = "") -> None:
+    """Write the heartbeat file if min-interval has elapsed.
+
+    Stamps the *in-progress* quarter (state.quarter + 1, since
+    state.quarter is the last COMPLETED quarter) plus the latest log
+    line so an observer can see which phase is active. End-of-quarter
+    heartbeat in cli.py still runs and overwrites this with the
+    completed-quarter view.
+    """
+    import os, json, time
+    hb_path = getattr(state, "heartbeat_path", "")
+    if not hb_path:
+        return
+    interval = getattr(state, "heartbeat_min_interval_s", 300.0)  # 5 min default
+    now = time.time()
+    last = getattr(state, "_last_heartbeat_epoch", 0.0)
+    if (now - last) < interval:
+        return
+    try:
+        os.makedirs(os.path.dirname(hb_path), exist_ok=True)
+        active = sum(1 for f in state.firms.values() if f.is_active)
+        payload = {
+            "run_id": getattr(state, "run_id", ""),
+            "wallclock_iso": time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime(now)),
+            "wallclock_epoch": int(now),
+            "sim_quarter_completed": state.quarter,
+            "sim_quarter_in_progress": state.quarter + 1,
+            "fyear": state.macro.fyear,
+            "fqtr": state.macro.fqtr,
+            "active_firms": active,
+            "latest_phase_log": latest_log[:300],
+            "status": "in_progress",
+        }
+        with open(hb_path, "w", encoding="utf-8") as _hb:
+            json.dump(payload, _hb)
+        state._last_heartbeat_epoch = now
+    except Exception:
+        pass  # never break the run on heartbeat write failure
 
 
 def _max_workers(config, n_jobs: int, default: int = 16) -> int:
