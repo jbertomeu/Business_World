@@ -379,6 +379,19 @@ def make_env_agent(backend: LLMBackend, state_ref: list, world_secrets: str = ""
             }
         # Wave ν+5: pull most-recent demand-calibrator estimate from state
         calibrator_est = getattr(world_state, "demand_calibrator_last", None) if world_state else None
+
+        # Wave ν+12: render the comprehensive history block (cross-firm
+        # Compustat with compression, per-firm action log, cumulative R&D,
+        # capital raises, M&A/default events, prior env debrief notes).
+        # Empty string if no world_state (mock paths).
+        extended_history = ""
+        if world_state is not None:
+            try:
+                from .agent_history import render_environment_full_history
+                extended_history = render_environment_full_history(world_state, macro)
+            except Exception:
+                extended_history = ""
+
         system, user = build_environment_prompt(
             firms=firms,
             actions=actions,
@@ -397,6 +410,7 @@ def make_env_agent(backend: LLMBackend, state_ref: list, world_secrets: str = ""
             industry_character=industry_character_dict,
             demand_calibrator_estimate=calibrator_est,
             regional_markets_enabled=regional_markets_enabled,
+            extended_history_block=extended_history,
         )
 
         # Inject world secrets into system prompt (env only)

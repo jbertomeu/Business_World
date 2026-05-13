@@ -1430,6 +1430,7 @@ def build_environment_prompt(
     industry_character: dict | None = None,
     demand_calibrator_estimate: dict | None = None,  # Wave ν+5
     regional_markets_enabled: bool = True,           # Wave ν+6 toggle
+    extended_history_block: str = "",                # Wave ν+12: full-history render from agent_history
 ) -> tuple[str, str]:
     """Build (system, user) prompts for the environment's market resolution.
 
@@ -1649,12 +1650,11 @@ Empty lists when nothing to moderate."""
             cum_deliv = float(getattr(firm, "rd_cumulative_delivery", 0.0) or 0.0)
         except (TypeError, ValueError):
             cum_deliv = 0.0
-        founded_q = getattr(firm, "founded_quarter", None)
-        if founded_q is not None and getattr(macro, "quarter", None) is not None:
-            tenure_q = max(0, macro.quarter - founded_q)
-        else:
-            tenure_q = None
-        tenure_str = f"{tenure_q}Q active" if tenure_q is not None else "tenure unknown"
+        # Tenure: count this firm's compustat rows (one per quarter active)
+        tenure_q = 0
+        if compustat_rows:
+            tenure_q = sum(1 for r in compustat_rows if r.firm_id == fid)
+        tenure_str = f"{tenure_q}Q active" if tenure_q > 0 else "new this quarter"
 
         firm_lines.append(f"""{fid} ({name})
   Price: ${price:,}
@@ -1756,7 +1756,24 @@ Empty lists when nothing to moderate."""
             f"under-estimate).\n"
         )
 
-    user = f"""=== QUARTER: Q{macro.fqtr} {macro.fyear} ==={calibrator_block}
+    # Wave ν+12: an extensive "everything you need to know" history block,
+    # produced by src.agent_history.render_environment_full_history and
+    # passed in by the caller. If empty, the prompt falls back to the
+    # legacy compact panel + 6Q trajectory block below.
+    history_section = ""
+    if extended_history_block:
+        history_section = (
+            "\n\n=== HISTORICAL CONTEXT (everything that has happened so far) ===\n"
+            "Read these tables carefully — they are the basis for evaluating\n"
+            "which firms have invested consistently, which have a viable\n"
+            "trajectory, and which firms' R&D track record now justifies a\n"
+            "generation advance. The compression rule: every 4th quarter for\n"
+            "older history, every quarter for the last 8. THIS IS YOUR LONG-\n"
+            "RUN MEMORY OF WHAT HAS HAPPENED — USE IT.\n\n"
+            f"{extended_history_block}\n"
+        )
+
+    user = f"""=== QUARTER: Q{macro.fqtr} {macro.fyear} ==={calibrator_block}{history_section}
 
 MACRO: Risk-free {macro.risk_free_rate*400:.1f}% annual, Awareness {macro.awareness_rate:.0%}, Shock {macro.macro_shock:+.2f}
 
@@ -1769,7 +1786,7 @@ DEMAND BASELINE (from logit model): {baseline_demand} units total
 PRICE COMPARISON (lower price should gain share, higher price should lose share):
 {price_comparison_text}
 
-FIRM ACTIONS:
+FIRM ACTIONS THIS QUARTER (last quarter's full detail):
 
 {firms_text}
 {trajectory_block}
