@@ -103,8 +103,13 @@ Output JSON:
 ```"""
 
 
-def build_bank_prompt(firms, flows, macro, gazette, portfolio_history=None):
-    """Build the commercial bank's evaluation prompt."""
+def build_bank_prompt(firms, flows, macro, gazette, portfolio_history=None, world=None):
+    """Build the commercial bank's evaluation prompt.
+
+    Wave ν+12: optional `world` arg lets us append a comprehensive history
+    block (full Compustat panel across all firms × compressed history,
+    past debt facilities industry-wide, prior bank debrief notes).
+    """
     sections = []
     for fid in sorted(firms):
         firm = firms[fid]
@@ -123,11 +128,29 @@ def build_bank_prompt(firms, flows, macro, gazette, portfolio_history=None):
             f"  Assets: ${firm.total_assets:,.0f} | PP&E: ${firm.ppe_net:,.0f}\n"
             f"  Current revolver: ${firm.revolver_balance:,.0f} / ${firm.revolver_commitment:,.0f} committed"
         )
+
+    # Wave ν+12: append comprehensive history.
+    history_section = ""
+    if world is not None:
+        try:
+            from .agent_history import render_intermediary_history
+            ext = render_intermediary_history(world, macro, role="bank")
+            if ext:
+                history_section = (
+                    "\n\n=== EXTENDED INDUSTRY HISTORY YOU HAVE ACCESS TO ===\n"
+                    "Anchor your revolver underwriting on the actual track\n"
+                    "record below — not just this-quarter snapshots.\n\n"
+                    f"{ext}\n"
+                )
+        except Exception:
+            pass
+
     user = (
         f"=== CREDIT EVALUATION — Q{macro.fqtr} {macro.fyear} ===\n"
         f"Risk-free rate: {macro.risk_free_rate*400:.1f}% annual\n\n"
         + "\n\n".join(sections)
         + f"\n\nGAZETTE: {gazette[:300] if gazette else '(none)'}"
+        + history_section
     )
     return SYSTEM_PROMPT, user
 
@@ -138,7 +161,7 @@ def make_commercial_bank(backend: LLMBackend, state_ref: list):
         world = state_ref[0] if state_ref else None
         flows = world.last_quarter_flows if world else {}
         gazette = world.gazettes[-1] if world and world.gazettes else ""
-        sys, user = build_bank_prompt(firms, flows, macro, gazette)
+        sys, user = build_bank_prompt(firms, flows, macro, gazette, world=world)
         result = backend.complete_json(sys, user)
         if result is None:
             return None

@@ -313,8 +313,17 @@ def make_pitch_agent(backend: LLMBackend):
 
 # ── PE fund evaluation agent ───────────────────────────────────────────
 
-def make_pe_eval_agent(backend: LLMBackend, fund: PEFund):
-    """Factory: evaluate a firm's pitch from this specific fund's perspective."""
+def make_pe_eval_agent(backend: LLMBackend, fund: PEFund, state_ref: list | None = None):
+    """Factory: evaluate a firm's pitch from this specific fund's perspective.
+
+    Wave ν+12: when state_ref is provided, the eval prompt's user message
+    includes a comprehensive history block (full Compustat panel across
+    all firms × compressed history, this firm's full BS/IS/CF and action
+    log, past PE rounds industry-wide, and prior PE debrief notes). This
+    lets the evaluator anchor on actual past behavior — multiple prior
+    rounds at falling valuations, plan-vs-actual variance, etc. — rather
+    than only the pitch deck and current-state summary.
+    """
     def eval_fn(
         firm: FirmState, pitch: dict, industry_character: dict | None,
     ) -> dict | None:
@@ -331,7 +340,35 @@ def make_pe_eval_agent(backend: LLMBackend, fund: PEFund):
             firm_state_summary=_format_firm_state_summary(firm),
             industry_context=_format_industry_context(industry_character),
         )
-        user = f"Evaluate {firm.firm_id}'s pitch. Output JSON only."
+
+        # Wave ν+12: render comprehensive history for the evaluator.
+        history_block = ""
+        if state_ref and state_ref[0] is not None:
+            try:
+                from .agent_history import render_intermediary_history
+                ws = state_ref[0]
+                history_block = render_intermediary_history(
+                    ws, ws.macro, role="pe", client_firm_id=firm.firm_id,
+                )
+            except Exception:
+                history_block = ""
+
+        if history_block:
+            user = (
+                f"Evaluate {firm.firm_id}'s pitch.\n\n"
+                "=== INDUSTRY HISTORY YOU HAVE ACCESS TO ===\n"
+                "You are a sophisticated PE evaluator and should be reading\n"
+                "the historical data below carefully, NOT just the pitch.\n"
+                "Look for: multiple prior rounds at falling valuations\n"
+                "(strongest negative signal — they're stuck), plan-vs-\n"
+                "actual revenue variance from past PE rounds, R&D investment\n"
+                "vs operational result, peer firms that raised at similar\n"
+                "stages and what happened to their trajectory.\n\n"
+                f"{history_block}\n\n"
+                "Now: based on this evidence, evaluate the pitch. Output JSON only."
+            )
+        else:
+            user = f"Evaluate {firm.firm_id}'s pitch. Output JSON only."
         try:
             return backend.complete_json(system, user)
         except Exception:

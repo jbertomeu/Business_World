@@ -725,6 +725,7 @@ def build_firm_prompt(
     governance_enabled: bool = False,
     legal_reserves_enabled: bool = False,
     pension_enabled: bool = False,
+    extended_history_block: str = "",   # Wave ν+12: full firm self-history from agent_history
 ) -> tuple[str, str]:
     """Build (system, user) prompts for a firm's quarterly decision.
 
@@ -1070,7 +1071,23 @@ YOUR LAST QUARTER RESULTS
   Do not refer to this as your "first board meeting" or "first quarter" if quarter > 1.
 """
 
-    user = f"""{ground_truth_header}=== QUARTER: Q{macro.get('fqtr', '?')} {macro.get('fyear', '?')} (Quarter {macro.get('quarter', '?')}) ==={env_notes_block}{investor_note_block}{ibank_feedback_block}{consensus_block}{activist_block}
+    # Wave ν+12: full firm self-history rendered by agent_history. Empty
+    # string if caller didn't compute it (e.g. mock paths). Inserted right
+    # after the ground-truth header so the CFO sees memory before private state.
+    firm_history_section = ""
+    if extended_history_block:
+        firm_history_section = (
+            "\n\n=== YOUR HISTORICAL CONTEXT (everything since you were founded) ===\n"
+            "Read your own financials, decisions, and recent debrief notes\n"
+            "carefully. The compression rule: every 4th quarter for older\n"
+            "history, every quarter for the last 8. Use this memory to ground\n"
+            "this quarter's decision — what worked, what failed, what your\n"
+            "trajectory looks like, where the cumulative R&D and SG&A actually\n"
+            "stand vs your peers' visible behaviour.\n\n"
+            f"{extended_history_block}\n"
+        )
+
+    user = f"""{ground_truth_header}=== QUARTER: Q{macro.get('fqtr', '?')} {macro.get('fyear', '?')} (Quarter {macro.get('quarter', '?')}) ==={env_notes_block}{investor_note_block}{ibank_feedback_block}{consensus_block}{activist_block}{firm_history_section}
 
 ===== PRIVATE INFORMATION (only you and the market environment know this) =====
 

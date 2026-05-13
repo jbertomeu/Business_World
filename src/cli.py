@@ -185,6 +185,19 @@ def make_firm_agent(backends: dict[str, LLMBackend], last_flows: dict,
         )
 
         # ── Step 2: Decision (informed by board discussion) ──
+        # Wave ν+12: render the firm's own full historical context
+        # (compressed BS/IS/CF since inception, action log, cumulative
+        # R&D/tenure, recent debriefs). Empty when no state_ref.
+        firm_history = ""
+        if state_ref and state_ref[0]:
+            try:
+                from .agent_history import render_firm_self_history
+                firm_history = render_firm_self_history(
+                    firm, state_ref[0], state_ref[0].macro,
+                )
+            except Exception:
+                firm_history = ""
+
         system, user = build_firm_prompt(
             firm, public_info, params, flows, gazette, rd_report, brand_report,
             earnings_management_enabled=earnings_management_enabled,
@@ -195,6 +208,7 @@ def make_firm_agent(backends: dict[str, LLMBackend], last_flows: dict,
             governance_enabled=governance_enabled,
             legal_reserves_enabled=legal_reserves_enabled,
             pension_enabled=pension_enabled,
+            extended_history_block=firm_history,
         )
         # Append board minutes to the decision prompt
         board_context = format_minutes_for_decision_prompt(minutes)
@@ -987,6 +1001,7 @@ def run_simulation(config: RunConfig, use_mock: bool = False,
                 pe_eval_fns[fund.fund_id] = make_pe_eval_agent(
                     _tag(be, f"pe_eval_{fund.fund_id}"),
                     fund,
+                    state_ref=state_ref,
                 )
             print(f"  pe_lifecycle: {len(_default_funds)} PE funds "
                   f"(distributed across {len(_backend_pool)} backends), "

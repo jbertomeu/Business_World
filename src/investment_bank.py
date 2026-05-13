@@ -273,11 +273,37 @@ def build_ibank_prompt(firms, flows, macro, raw_decisions, gazette, world=None):
             f"  YOUR PRIOR ISSUANCE DECISIONS FOR THIS FIRM ({n_issuances} issuances, ${total_raised/1e6:.0f}M total):\n"
             f"{issuance_block}"
         )
+    # Wave ν+12: append a comprehensive history block from agent_history.
+    # The bank sees: full Compustat panel across all firms × compressed
+    # history, past debt facilities industry-wide, prior bank debrief
+    # notes. The per-firm sections above remain as the focused view of
+    # each applicant.
+    extended_history_block = ""
+    if world is not None:
+        try:
+            from .agent_history import render_intermediary_history
+            extended_history_block = render_intermediary_history(
+                world, macro, role="ibank",
+            )
+        except Exception:
+            extended_history_block = ""
+
+    history_section = ""
+    if extended_history_block:
+        history_section = (
+            "\n\n=== EXTENDED INDUSTRY HISTORY YOU HAVE ACCESS TO ===\n"
+            "You are an investment-bank credit committee. Use the data\n"
+            "below to anchor your underwriting on actual prior behavior:\n"
+            "issuance patterns, dilution history, peer comparables.\n\n"
+            f"{extended_history_block}\n"
+        )
+
     user = (
         f"=== INVESTMENT BANK EVALUATION — Q{macro.fqtr} {macro.fyear} ===\n"
         f"Risk-free rate: {macro.risk_free_rate*400:.1f}% annual\n\n"
         + "\n\n".join(sections)
         + f"\n\nGAZETTE: {gazette[:300] if gazette else '(none)'}"
+        + history_section
         + "\n\nEvaluate each firm's requests. Deny if too risky. Price debt by risk."
     )
     return SYSTEM_PROMPT, user
