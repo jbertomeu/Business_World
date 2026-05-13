@@ -194,8 +194,17 @@ def render_firm_action_log(
     compress_quarters().
     """
     actions = getattr(state, "action_log", []) or []
-    # action_log rows look like: {"firm_id": ..., "quarter": ..., "action": {...}, "result": {...}}
-    firm_actions = [a for a in actions if a.get("firm_id") == firm_id]
+    # action_log rows are written by engine.ActionLog.record() with shape:
+    # {"proposal_id", "actor_id", "actor_class", "action_type", "quarter",
+    #  "source", "accepted", "partially_accepted", "enforcement_rules",
+    #  "rejections", "mutations", "payload", "justification"}
+    # The firm's quarterly decision uses action_type="set_quarterly_decisions"
+    # with actor_id=firm_id and the decision dict as `payload`.
+    firm_actions = [
+        a for a in actions
+        if a.get("actor_id") == firm_id
+        and a.get("action_type") == "set_quarterly_decisions"
+    ]
     if not firm_actions:
         return "  (no decisions recorded)"
     threshold = current_quarter - full_recent_q
@@ -210,23 +219,24 @@ def render_firm_action_log(
         return "  (no decisions in this window)"
     lines = [
         f"  {'Q':<4} {'price':>9} {'prod':>6} {'capex':>9} "
-        f"{'R&D':>9} {'SG&A':>9} {'equity':>9} {'debt':>9} "
-        f"{'divs':>8} {'bbk':>8}"
+        f"{'R&D':>9} {'SG&A':>9} {'eqReq':>9} {'dbtReq':>9} "
+        f"{'divs':>8} {'bbk':>8} {'accept':>6}"
     ]
     for a in kept:
         q = a.get("quarter", 0)
-        act = a.get("action", {}) or {}
-        res = a.get("result", {}) or {}
+        pl = a.get("payload", {}) or {}
+        accepted = a.get("accepted", True)
         lines.append(
-            f"  Q{q:<3} ${act.get('price', 0):>8,.0f} "
-            f"{act.get('production', 0):>6} "
-            f"{_fmt_money(act.get('capex', 0)):>9} "
-            f"{_fmt_money(act.get('rd_spend', 0)):>9} "
-            f"{_fmt_money(act.get('sga_spend', 0)):>9} "
-            f"{_fmt_money(res.get('equity_raised', 0)):>9} "
-            f"{_fmt_money(res.get('debt_raised', 0)):>9} "
-            f"{_fmt_money(act.get('dividends', 0)):>8} "
-            f"{_fmt_money(act.get('buybacks', 0)):>8}"
+            f"  Q{q:<3} ${pl.get('price', 0):>8,.0f} "
+            f"{pl.get('production', 0):>6} "
+            f"{_fmt_money(pl.get('capex', 0)):>9} "
+            f"{_fmt_money(pl.get('rd_spend', 0)):>9} "
+            f"{_fmt_money(pl.get('sga_spend', 0)):>9} "
+            f"{_fmt_money(pl.get('equity_issuance_request', 0)):>9} "
+            f"{_fmt_money(pl.get('debt_request', 0)):>9} "
+            f"{_fmt_money(pl.get('dividends', 0)):>8} "
+            f"{_fmt_money(pl.get('buybacks', 0)):>8} "
+            f"{'OK' if accepted else 'REJ':>6}"
         )
     return "\n".join(lines)
 
@@ -389,6 +399,9 @@ def render_environment_full_history(
     macro: MacroState,
     lt_memory_enabled: bool = False,
     data_dir: str = "data",
+    compress_every: int = 8,          # sparser than firm self-view: cross-firm panel × 80Q × 40F otherwise blows past 50k tokens
+    full_recent_q: int = 4,           # last 4Q in full (was 8) — keep env's view in cheaper model context windows
+    active_only_action_log: bool = True,  # action log only for currently-active firms (defaulted firms still in Compustat panel)
 ) -> str:
     """God-mode historical context for the environment LLM.
 
@@ -411,20 +424,43 @@ def render_environment_full_history(
             + lt.strip()
         )
 
-    # B. Cross-firm Compustat (public part of the panel)
+    # B. Cross-firm Compustat (public part of the panel) — sparser
+    # compression than the firm self-view to keep env prompt size under
+    # ~30k tokens even at Q80 × 40 firms.
     rows = state.compustat_rows or []
-    compressed_panel = compress_quarters(rows, macro.quarter)
+    compressed_panel = compress_quarters(
+        rows, macro.quarter,
+        full_recent_q=full_recent_q,
+        compression_every=compress_every,
+        compress_after_q=compress_every * 2,
+    )
     parts.append(
         "=== PUBLIC COMPUSTAT PANEL — ALL FIRMS × COMPRESSED HISTORY ===\n"
+        f"(compression: every {compress_every}Q for older history, "
+        f"last {full_recent_q}Q in full)\n"
         + render_public_compustat_compact(compressed_panel)
     )
 
-    # C. Per-firm action log
+    # C. Per-firm action log — same sparser rule; defaulted firms filtered out
     action_lines = []
-    seen_firms = sorted({a.get("firm_id", "") for a in (state.action_log or []) if a.get("firm_id")})
+    seen_firms = sorted({
+        a.get("actor_id", "") for a in (state.action_log or [])
+        if a.get("action_type") == "set_quarterly_decisions"
+        and a.get("actor_id", "").startswith("firm_")
+    })
+    if active_only_action_log:
+        seen_firms = [
+            fid for fid in seen_firms
+            if state.firms.get(fid) is not None
+            and state.firms[fid].is_active
+        ]
     for fid in seen_firms:
         action_lines.append(f"  -- {fid} --")
-        action_lines.append(render_firm_action_log(fid, state, macro.quarter))
+        action_lines.append(render_firm_action_log(
+            fid, state, macro.quarter,
+            full_recent_q=full_recent_q,
+            compression_every=compress_every,
+        ))
     if action_lines:
         parts.append(
             "=== PER-FIRM ACTION LOG (compressed) ===\n"
@@ -506,6 +542,8 @@ def render_intermediary_history(
     client_firm_id: str = "",
     lt_memory_enabled: bool = False,
     data_dir: str = "data",
+    compress_every: int = 8,          # sparser cross-firm panel for intermediaries
+    full_recent_q: int = 4,
 ) -> str:
     """History block for an intermediary (PE evaluator, bank, etc.).
 
@@ -526,13 +564,22 @@ def render_intermediary_history(
         )
 
     rows = state.compustat_rows or []
-    compressed_panel = compress_quarters(rows, macro.quarter)
+    compressed_panel = compress_quarters(
+        rows, macro.quarter,
+        full_recent_q=full_recent_q,
+        compression_every=compress_every,
+        compress_after_q=compress_every * 2,
+    )
     parts.append(
         "=== PUBLIC COMPUSTAT PANEL — ALL FIRMS × COMPRESSED HISTORY ===\n"
+        f"(compression: every {compress_every}Q for older history, "
+        f"last {full_recent_q}Q in full)\n"
         + render_public_compustat_compact(compressed_panel)
     )
 
     if client_firm_id:
+        # Client firm gets DENSER history (every 4Q + last 8 full) — the
+        # intermediary specifically cares about this firm's trajectory.
         client_rows = [r for r in rows if r.firm_id == client_firm_id]
         compressed_client = compress_quarters(client_rows, macro.quarter)
         parts.append(
