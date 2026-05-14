@@ -1,0 +1,103 @@
+# Wave ν+13 run-6: 80Q with STRICT mandatory-Gen advances + LLM swaps.
+#
+# Changes vs run-5:
+#   - Wave ν+13: env prompt now has a STRICT mandatory-Gen-advance block
+#     at the very TOP, with concrete thresholds (Gen 1→2 at gen_2_rd_threshold
+#     ≈ $500M + 4Q tenure, Gen 2→3 at 2× + 8Q, Gen 3→4 at 4× + 12Q).
+#     Validator runs a deterministic check after env returns and SENDS BACK
+#     the output if any firm meets criteria but product_advance wasn't set
+#     (without a named blocker).
+#   - Firm prompts remain qualitative only — no numerical thresholds leaked.
+#   - LLM swaps for rate-limited models:
+#       * mistralai/mistral-small-24b-instruct-2501 → meta-llama/llama-3.3-70b-instruct
+#       * google/gemini-2.0-flash-001 → google/gemini-flash-1.5
+#   - Independent seed 2222.
+
+n_firms_initial: 6           # smaller initial cohort — leave room for entry
+n_firms_max: 20              # 20-firm cap per user direction
+n_quarters: 80
+seed: 2222
+
+scenario: well_capitalized
+
+default_llm:
+  backend: openrouter
+  model: meta-llama/llama-3.3-70b-instruct   # swap from mistral-small (rate-limited)
+
+agents:
+  firm_0:  { model: "meta-llama/llama-3.3-70b-instruct", backend: openrouter, temperature: 0.30 }
+  firm_1:  { model: "qwen/qwen3-235b-a22b-2507",                backend: openrouter, temperature: 0.35 }
+  firm_2:  { model: "google/gemini-flash-1.5",              backend: openrouter, temperature: 0.40 }
+  firm_3:  { model: "z-ai/glm-4-32b",                           backend: openrouter, temperature: 0.45 }
+  firm_4:  { model: "google/gemma-3-12b-it",                    backend: openrouter, temperature: 0.50 }
+  firm_5:  { model: "meta-llama/llama-3.3-70b-instruct", backend: openrouter, temperature: 0.32 }
+  firm_6:  { model: "qwen/qwen3-235b-a22b-2507",                backend: openrouter, temperature: 0.38 }
+  firm_7:  { model: "google/gemini-flash-1.5",              backend: openrouter, temperature: 0.42 }
+  firm_8:  { model: "z-ai/glm-4-32b",                           backend: openrouter, temperature: 0.47 }
+  firm_9:  { model: "google/gemma-3-12b-it",                    backend: openrouter, temperature: 0.52 }
+  firm_10: { model: "meta-llama/llama-3.3-70b-instruct", backend: openrouter, temperature: 0.28 }
+  firm_11: { model: "qwen/qwen3-235b-a22b-2507",                backend: openrouter, temperature: 0.33 }
+  firm_12: { model: "google/gemini-flash-1.5",              backend: openrouter, temperature: 0.38 }
+  firm_13: { model: "z-ai/glm-4-32b",                           backend: openrouter, temperature: 0.43 }
+  firm_14: { model: "google/gemma-3-12b-it",                    backend: openrouter, temperature: 0.48 }
+  firm_15: { model: "meta-llama/llama-3.3-70b-instruct", backend: openrouter, temperature: 0.30 }
+  firm_16: { model: "qwen/qwen3-235b-a22b-2507",                backend: openrouter, temperature: 0.36 }
+  firm_17: { model: "google/gemini-flash-1.5",              backend: openrouter, temperature: 0.41 }
+  firm_18: { model: "z-ai/glm-4-32b",                           backend: openrouter, temperature: 0.46 }
+  firm_19: { model: "google/gemma-3-12b-it",                    backend: openrouter, temperature: 0.51 }
+
+# All expansion + theta + iota + kappa + lambda + nu features ON
+earnings_management_enabled: true
+sec_enabled: true
+sellside_analysts_enabled: true
+earnings_announcement_enabled: true
+auditor_enabled: true
+governance_enabled: true
+restatements_enabled: true
+macro_expansion_enabled: true
+ma_enabled: true
+
+data_broker_enabled: true
+data_broker_mode: combo
+data_broker_max_queries_per_agent_per_quarter: 2
+
+debt_covenants_enabled: true
+convertible_debt_enabled: true
+working_capital_decisions: true
+bad_debt_enabled: true
+
+annual_reports_enabled: true
+env_verification_enabled: true
+env_validator_enabled: true       # Wave ν+11 E9 — second-env validator each Q
+investor_voice_enabled: true      # Wave ν+12 — per-firm market commentary
+
+# Wave ν+12 step 3 — per-quarter debrief notes (firm + env + intermediaries).
+# Adds ~(N_firms + 7) cheap LLM calls per quarter. Toggle OFF if cost matters.
+debriefs_enabled: true
+# Wave ν+12 step 3 — cross-run LT memory file. OFF per user direction.
+lt_memory_enabled: false
+
+restructuring_enabled: true
+env_decision_overrides_enabled: true
+
+stock_comp_enabled: true
+
+legal_reserves_enabled: true
+pension_enabled: true
+deferred_taxes_enabled: true
+activist_investors_enabled: true
+
+noisy_signals_enabled: true
+noisy_signals_sd: 0.15
+directors_enabled: true
+director_lifecycle_enabled: true
+three_llm_board_enabled: true
+cost_telemetry_enabled: true
+
+strategic_planning_enabled: true
+pe_lifecycle_enabled: true
+
+endogenous_entry_enabled: true
+
+snapshots_enabled: true
+parallel_firm_decisions: true

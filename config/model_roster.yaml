@@ -110,7 +110,7 @@ commercial_bank:
 # Wave ν+10 item 7: optional second commercial bank for competitive
 # bidding on revolver facilities.
 commercial_bank_2:
-  model:    "mistralai/mistral-small-24b-instruct-2501"
+  model:    "meta-llama/llama-3.3-70b-instruct"
   backend:  "openrouter"
   temperature: 0.30
   note:     "Second commercial bank — different model + temperature to produce non-degenerate competitive quotes."
@@ -118,7 +118,7 @@ commercial_bank_2:
 # ── Data Analyst (on-demand) ────────────────────────────────────────────
 
 data_analyst:
-  model:    "mistralai/mistral-small-24b-instruct-2501"
+  model:    "meta-llama/llama-3.3-70b-instruct"
   backend:  "openrouter"
   temperature: 0.10
   note:     "S-tier 100% | $0.065/M | 15s | cheapest + fastest"
@@ -130,7 +130,7 @@ data_analyst:
 
 analysts:
   analyst_1:
-    model:    "mistralai/mistral-small-24b-instruct-2501"
+    model:    "meta-llama/llama-3.3-70b-instruct"
     backend:  "openrouter"
     temperature: 0.30
     note:     "DCF-focused analyst | $0.065/M | publishes Q1,Q3"
@@ -166,7 +166,7 @@ sec:
 
 auditors:
   auditor_1:
-    model:    "mistralai/mistral-small-24b-instruct-2501"
+    model:    "meta-llama/llama-3.3-70b-instruct"
     backend:  "openrouter"
     temperature: 0.10
     note:     "Hartley & Moran | $0.065/M"
@@ -234,7 +234,7 @@ env_validator:
 # note is rendered into next quarter's firm decision prompt as a soft
 # market-view input. If omitted, falls back to the data_analyst model.
 investor_voice:
-  model:    "mistralai/mistral-small-24b-instruct-2501"
+  model:    "meta-llama/llama-3.3-70b-instruct"
   backend:  "openrouter"
   temperature: 0.25
   note:     "Investor Voice | mistral-small | per-firm market commentary each Q; cheap"
@@ -244,7 +244,7 @@ investor_voice:
 # sentence narrative notes that get fed back next quarter via the
 # render_recent_debriefs() block. If omitted, falls back to data_analyst.
 debrief:
-  model:    "mistralai/mistral-small-24b-instruct-2501"
+  model:    "meta-llama/llama-3.3-70b-instruct"
   backend:  "openrouter"
   temperature: 0.30
   note:     "Debrief Writer | mistral-small | end-of-quarter narrative notes for every agent"

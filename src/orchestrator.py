@@ -1336,6 +1336,9 @@ def run_quarter(
         try:
             verdict = env_validator_fn(
                 env_outcome, recent_revs_v, 0, production_caps_v, state.macro,
+                firms=state.firms,
+                params=state.params,
+                compustat_rows=state.compustat_rows,
             )
         except Exception as e:
             verdict = {"verdict": "ok", "notes": f"(validator threw: {e})"}

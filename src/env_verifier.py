@@ -373,19 +373,125 @@ Output JSON:
 Output ONLY the JSON wrapped in ```json ... ```."""
 
 
+def _check_mandatory_gen_grants(
+    env_outcome: dict,
+    firms: dict,
+    params,
+    compustat_rows: list,
+) -> list[str]:
+    """Deterministic check: for every firm in env_outcome, does it satisfy
+    the strict mandatory-Gen criteria? If yes and product_advance was not
+    set AND no specific blocker is named in the narrative, return a list
+    of violation strings.
+
+    Tiers (must match what build_environment_prompt's strict block tells the env):
+      Tier 1 (Gen 1 → Gen 2): cumulative R&D ≥ params.gen_2_rd_threshold AND tenure ≥ 4
+      Tier 2 (Gen 2 → Gen 3): cumulative R&D ≥ 2× threshold AND tenure ≥ 8 AND was Gen 2
+      Tier 3 (Gen 3 → Gen 4): cumulative R&D ≥ 4× threshold AND tenure ≥ 12 AND was Gen 3
+    """
+    try:
+        gen2_thr = float(getattr(params, "gen_2_rd_threshold", 500_000_000))
+    except (TypeError, ValueError):
+        gen2_thr = 500_000_000.0
+    gen3_thr = gen2_thr * 2.0
+    gen4_thr = gen2_thr * 4.0
+
+    narrative = (env_outcome.get("narrative", "") or "").lower()
+    firm_outcomes = env_outcome.get("firm_outcomes", {}) or {}
+    violations: list[str] = []
+
+    for fid, firm in (firms or {}).items():
+        if not getattr(firm, "is_active", False):
+            continue
+        cum_rd = float(getattr(firm, "rd_cumulative_product", 0.0) or 0.0)
+        gen = int(getattr(firm, "product_generation", 1) or 1)
+        tenure = sum(1 for r in (compustat_rows or []) if r.firm_id == fid)
+
+        # Did env set product_advance for this firm? Check both firm_outcomes
+        # (dict shape) and the top-level rd_outcomes array.
+        granted = False
+        fo = firm_outcomes.get(fid)
+        if isinstance(fo, dict):
+            granted = bool(fo.get("product_advance", False))
+        rd_arr = env_outcome.get("rd_outcomes") or []
+        if not granted and isinstance(rd_arr, list):
+            for rd in rd_arr:
+                if isinstance(rd, dict) and rd.get("firm_id") == fid:
+                    granted = bool(rd.get("product_advance", False))
+                    break
+
+        # Tier logic
+        criterion_met = False
+        tier_label = ""
+        thr_label = ""
+        if gen == 1 and cum_rd >= gen2_thr and tenure >= 4:
+            criterion_met = True
+            tier_label = "Tier 1 (Gen 1→2)"
+            thr_label = f"${gen2_thr/1e6:.0f}M"
+        elif gen == 2 and cum_rd >= gen3_thr and tenure >= 8:
+            criterion_met = True
+            tier_label = "Tier 2 (Gen 2→3)"
+            thr_label = f"${gen3_thr/1e6:.0f}M"
+        elif gen == 3 and cum_rd >= gen4_thr and tenure >= 12:
+            criterion_met = True
+            tier_label = "Tier 3 (Gen 3→4)"
+            thr_label = f"${gen4_thr/1e6:.0f}M"
+
+        if criterion_met and not granted:
+            # Check the narrative for a named blocker mentioning this firm
+            blocker_keywords = [
+                "phase 3 readout", "phase iii readout", "phase 3 failure",
+                "fda hold", "regulatory hold", "regulatory action",
+                "lead compound", "manufacturing failure", "manufacturing process",
+                "safety signal", "scientist departure", "team departure",
+                "adverse event",
+            ]
+            firm_mentioned = fid in narrative
+            blocker_named = any(kw in narrative for kw in blocker_keywords)
+            if not (firm_mentioned and blocker_named):
+                violations.append(
+                    f"{fid} MUST advance: cumulative product R&D ${cum_rd/1e6:.0f}M "
+                    f"(≥ {thr_label}), tenure {tenure}Q (≥ required), "
+                    f"currently Gen {gen} ({tier_label}). product_advance was not "
+                    f"set and no specific blocker named for {fid}."
+                )
+    return violations
+
+
 def make_env_validator(backend: LLMBackend):
     """Factory: returns validator(env_outcome, recent_revs, baseline_demand,
-    production_caps, macro) -> {"verdict": str, "notes": str}.
+    production_caps, macro, firms=None, params=None, compustat_rows=None)
+    -> {"verdict": str, "notes": str}.
 
-    Cheap LLM call (verdict + short notes only). Invoked unconditionally
-    when env_validator_enabled is True.
+    Wave ν+13: deterministic mandatory-Gen-grant check runs FIRST.
+    If any firm satisfies the strict criteria but was not granted, returns
+    send_back immediately with the list of violations. Otherwise falls
+    through to the LLM consistency check (high-bar narrative judgement).
     """
 
     def validate(env_outcome: dict,
                   recent_quarter_revenues: list[float],
                   baseline_demand: int,
                   production_caps: dict[str, int],
-                  macro) -> dict:
+                  macro,
+                  firms: dict | None = None,
+                  params=None,
+                  compustat_rows: list | None = None) -> dict:
+        # Deterministic Gen-tier check (no LLM cost; 100% reliable)
+        if firms is not None and params is not None:
+            gen_violations = _check_mandatory_gen_grants(
+                env_outcome, firms, params, compustat_rows or [],
+            )
+            if gen_violations:
+                notes = (
+                    "MANDATORY GENERATION ADVANCES WERE MISSED. Re-run and "
+                    "grant product_advance=true for each of the following firms "
+                    "(or name a specific blocker — failed Phase 3 readout, FDA "
+                    "hold, named scientist departure, manufacturing failure — "
+                    "for any you intentionally decline):\n  - "
+                    + "\n  - ".join(gen_violations[:8])  # cap notes length
+                )
+                return {"verdict": "send_back", "notes": notes}
         firm_outcomes = env_outcome.get("firm_outcomes", {}) or {}
         proposal_lines: list[str] = [
             f"  total_demand: {env_outcome.get('total_demand', 0):,}",

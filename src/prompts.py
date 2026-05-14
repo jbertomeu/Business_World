@@ -1539,7 +1539,62 @@ def build_environment_prompt(
     demand on price/capability/brand alone (homogeneous market).
     """
 
-    system = ENV_SYSTEM_PROMPT
+    # Wave ν+13: STRICT mandatory-generation-advance rules at the very TOP
+    # of the env prompt. The env is the ONLY agent that sees these numerical
+    # thresholds — firms see only rough qualitative guidance from the scenario.
+    # Validator (env_verifier.make_env_validator) re-checks these criteria
+    # after env returns and sends the output back if any mandatory grant
+    # was missed without a named blocker.
+    try:
+        _gen2_thr = float(getattr(params, "gen_2_rd_threshold", 500_000_000))
+    except (TypeError, ValueError):
+        _gen2_thr = 500_000_000.0
+    _gen3_thr = _gen2_thr * 2.0
+    _gen4_thr = _gen2_thr * 4.0
+    strict_gen_block = (
+        "=== MANDATORY GENERATION ADVANCES — APPLY BEFORE EVERYTHING ELSE ===\n\n"
+        "For each firm in the FIRM PANEL below, run this check FIRST every\n"
+        "quarter, BEFORE allocating demand or writing the narrative. The\n"
+        "rules are STRICT: if a firm satisfies a tier's criteria, you MUST\n"
+        "grant `product_advance: true` for that firm this quarter. Non-\n"
+        "optional. The env validator will check your output and SEND IT\n"
+        "BACK if a mandatory grant is missed without a named blocker.\n\n"
+        "Read the panel field `Cumulative R&D: product=$X.XM` and the\n"
+        "`Operational tenure: NQ active` field together with `Gen: <n>`.\n\n"
+        f"TIER 1 — Gen 1 → Gen 2 (mandatory):\n"
+        f"  * cumulative product R&D ≥ ${_gen2_thr/1e6:,.0f}M\n"
+        f"  * AND operational tenure ≥ 4 quarters\n"
+        f"  * AND firm is currently Gen 1\n"
+        f"  → You MUST set product_advance=true for this firm.\n\n"
+        f"TIER 2 — Gen 2 → Gen 3 (mandatory):\n"
+        f"  * cumulative product R&D ≥ ${_gen3_thr/1e6:,.0f}M\n"
+        f"  * AND operational tenure ≥ 8 quarters\n"
+        f"  * AND firm is currently Gen 2\n"
+        f"  → You MUST set product_advance=true.\n\n"
+        f"TIER 3 — Gen 3 → Gen 4 (mandatory):\n"
+        f"  * cumulative product R&D ≥ ${_gen4_thr/1e6:,.0f}M\n"
+        f"  * AND operational tenure ≥ 12 quarters\n"
+        f"  * AND firm is currently Gen 3\n"
+        f"  → You MUST set product_advance=true.\n\n"
+        "EXCEPTIONS — when you may decline a mandatory grant:\n"
+        "The ONLY valid reasons to decline are a specific, NAMED blocker:\n"
+        "  - A failed Phase 3 readout in the last 4 quarters\n"
+        "  - An active FDA hold or regulatory adverse action\n"
+        "  - A named scientific failure (lead compound failed, manufacturing\n"
+        "    process abandoned, key scientist or named team departed)\n"
+        "  - A safety signal in the firm's own programme\n"
+        "If you decline a mandatory grant, you MUST name the specific blocker\n"
+        "in your narrative or in the firm_notes section. 'Conservative\n"
+        "judgment', 'wait and see', 'no peer has advanced yet', and 'they\n"
+        "should keep investing' are NOT valid blockers and will cause the\n"
+        "validator to send your output back.\n\n"
+        "WHY THIS IS STRICT: prior runs systematically under-granted Gen\n"
+        "advances — every firm sat at Gen 1 for 80 quarters despite some\n"
+        "firms accumulating multi-$B of product R&D. The strict tier\n"
+        "rules above eliminate that failure mode.\n\n"
+        "===================================================================\n\n"
+    )
+    system = strict_gen_block + ENV_SYSTEM_PROMPT
     if not regional_markets_enabled:
         # Strip the regional / horizontal-differentiation block. Markers
         # are placed in the constant for surgical removal.

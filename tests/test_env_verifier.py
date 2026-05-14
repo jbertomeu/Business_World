@@ -424,6 +424,131 @@ def test_env_validator_caps_unknown_verdict_to_ok():
     assert out["verdict"] == "ok"
 
 
+# ── Wave ν+13: STRICT mandatory-Gen-grant deterministic check ────────────
+
+
+def test_validator_sends_back_when_mandatory_gen_grant_missed():
+    """Firm has $500M cumulative R&D, 6Q tenure, Gen 1, but env didn't grant.
+    The deterministic Gen check should fire send_back immediately (no LLM)."""
+    from src.types import FirmState, MacroState, SimParams, CompustatRow
+    macro = MacroState(quarter=6, fyear=2032, fqtr=2)
+    params = SimParams(gen_2_rd_threshold=500_000_000)
+    firms = {
+        "firm_0": FirmState(
+            firm_id="firm_0", is_active=True,
+            product_generation=1,
+            rd_cumulative_product=750_000_000,  # well past Tier-1 threshold
+        ),
+    }
+    # Tenure = 6Q (one compustat row per quarter)
+    compustat_rows = [
+        CompustatRow(firm_id="firm_0", fyearq=2031+i//4, fqtr=(i%4)+1)
+        for i in range(6)
+    ]
+    env_outcome = {
+        "total_demand": 1000,
+        "firm_outcomes": {
+            "firm_0": {"units_sold": 1000, "market_share": 1.0,
+                        "product_advance": False},  # ENV DID NOT GRANT
+        },
+        "narrative": "All firms continued operations this quarter.",
+    }
+    validator = make_env_validator(_MockBackend({"verdict": "ok", "notes": ""}))
+    out = validator(env_outcome, [], 0, {"firm_0": 1000}, macro,
+                     firms=firms, params=params, compustat_rows=compustat_rows)
+    assert out["verdict"] == "send_back", f"got: {out}"
+    assert "firm_0" in out["notes"]
+    assert "MUST advance" in out["notes"] or "MANDATORY" in out["notes"]
+
+
+def test_validator_passes_when_mandatory_gen_grant_was_given():
+    """Same setup, but env DID grant — should pass through (LLM call may add own verdict)."""
+    from src.types import FirmState, MacroState, SimParams, CompustatRow
+    macro = MacroState(quarter=6, fyear=2032, fqtr=2)
+    params = SimParams(gen_2_rd_threshold=500_000_000)
+    firms = {
+        "firm_0": FirmState(firm_id="firm_0", is_active=True,
+                              product_generation=1,
+                              rd_cumulative_product=750_000_000),
+    }
+    compustat_rows = [
+        CompustatRow(firm_id="firm_0", fyearq=2031+i//4, fqtr=(i%4)+1)
+        for i in range(6)
+    ]
+    env_outcome = {
+        "total_demand": 1000,
+        "firm_outcomes": {
+            "firm_0": {"units_sold": 1000, "market_share": 1.0,
+                        "product_advance": True},  # env GRANTED
+        },
+        "narrative": "firm_0 received Phase 3 readout this quarter.",
+    }
+    validator = make_env_validator(_MockBackend({"verdict": "ok", "notes": ""}))
+    out = validator(env_outcome, [], 0, {"firm_0": 1000}, macro,
+                     firms=firms, params=params, compustat_rows=compustat_rows)
+    assert out["verdict"] == "ok"
+
+
+def test_validator_accepts_named_blocker_for_skipped_gen():
+    """Env declined Gen advance for firm_0 but named a specific blocker —
+    should not be sent back."""
+    from src.types import FirmState, MacroState, SimParams, CompustatRow
+    macro = MacroState(quarter=6, fyear=2032, fqtr=2)
+    params = SimParams(gen_2_rd_threshold=500_000_000)
+    firms = {
+        "firm_0": FirmState(firm_id="firm_0", is_active=True,
+                              product_generation=1,
+                              rd_cumulative_product=750_000_000),
+    }
+    compustat_rows = [
+        CompustatRow(firm_id="firm_0", fyearq=2031+i//4, fqtr=(i%4)+1)
+        for i in range(6)
+    ]
+    env_outcome = {
+        "total_demand": 1000,
+        "firm_outcomes": {
+            "firm_0": {"units_sold": 1000, "market_share": 1.0,
+                        "product_advance": False},
+        },
+        # Narrative names blocker AND firm_0 explicitly
+        "narrative": ("firm_0 had a manufacturing failure this quarter. "
+                      "Their Gen 2 candidate was pulled from production "
+                      "pending a process investigation."),
+    }
+    validator = make_env_validator(_MockBackend({"verdict": "ok", "notes": ""}))
+    out = validator(env_outcome, [], 0, {"firm_0": 1000}, macro,
+                     firms=firms, params=params, compustat_rows=compustat_rows)
+    assert out["verdict"] == "ok"
+
+
+def test_validator_skips_gen_check_when_criteria_not_met():
+    """Firm has $200M cumulative R&D (below $500M threshold) — no mandatory grant."""
+    from src.types import FirmState, MacroState, SimParams, CompustatRow
+    macro = MacroState(quarter=6, fyear=2032, fqtr=2)
+    params = SimParams(gen_2_rd_threshold=500_000_000)
+    firms = {
+        "firm_0": FirmState(firm_id="firm_0", is_active=True,
+                              product_generation=1,
+                              rd_cumulative_product=200_000_000),  # below threshold
+    }
+    compustat_rows = [
+        CompustatRow(firm_id="firm_0", fyearq=2031+i//4, fqtr=(i%4)+1)
+        for i in range(6)
+    ]
+    env_outcome = {
+        "total_demand": 1000,
+        "firm_outcomes": {
+            "firm_0": {"units_sold": 1000, "market_share": 1.0,
+                        "product_advance": False},
+        },
+        "narrative": "Normal quarter.",
+    }
+    validator = make_env_validator(_MockBackend({"verdict": "ok", "notes": ""}))
+    out = validator(env_outcome, [], 0, {"firm_0": 1000}, macro,
+                     firms=firms, params=params, compustat_rows=compustat_rows)
+    assert out["verdict"] == "ok"
+
+
 def test_orchestrator_retries_env_on_validator_send_back():
     """When validator says send_back, orchestrator calls env_agent_fn again
     with validator_notes appended, and the retry's output is used."""
@@ -466,8 +591,9 @@ def test_orchestrator_retries_env_on_validator_send_back():
         }
 
     def validator_fn(env_outcome, recent_revs, baseline_demand,
-                      production_caps, macro):
-        # Send back unconditionally for the test
+                      production_caps, macro, **kwargs):
+        # Send back unconditionally for the test. Accepts firms/params/
+        # compustat_rows kwargs added in Wave ν+13 (Gen-tier check).
         return {"verdict": "send_back", "notes": "shares should sum to 100%"}
 
     new_state = run_quarter(state, firm_agent_fn=firm_fn, env_agent_fn=env_fn,
