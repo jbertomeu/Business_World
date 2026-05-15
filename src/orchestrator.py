@@ -1359,6 +1359,24 @@ def run_quarter(
         else:
             _log(state, "  ENV VALIDATOR: ok")
 
+        # Wave ν+13 step 2: AFTER the retry round, run the deterministic
+        # mandatory-Gen check one more time. If env-1 ignored the notes
+        # (run-6 Q24 evidence: firm_0 at $434M, firm_1 at $467M were
+        # never granted despite the directive + retry), FORCE-APPLY the
+        # grants directly. The strict rule is non-negotiable; env retains
+        # authority over allocation + narrative but not over this rule.
+        try:
+            from .env_verifier import force_apply_mandatory_gen_grants
+            env_outcome, forced = force_apply_mandatory_gen_grants(
+                env_outcome, state.firms, state.params,
+                state.compustat_rows,
+            )
+            if forced:
+                _log(state, f"  ENV VALIDATOR FORCE-GRANT: {', '.join(forced)} "
+                            f"(env-1 ignored mandatory directive even after retry)")
+        except Exception as e:
+            _log(state, f"  ENV VALIDATOR force-grant skipped: {e}")
+
     # Wave ν+10 item 2: validate the env response against our published
     # schema. Lenient mode — we log violations to gazettes and continue
     # with whatever fields ARE present, so a malformed response degrades

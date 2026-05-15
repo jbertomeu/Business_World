@@ -521,6 +521,76 @@ def test_validator_accepts_named_blocker_for_skipped_gen():
     assert out["verdict"] == "ok"
 
 
+def test_force_apply_mandatory_gen_grants_mutates_output():
+    """force_apply_mandatory_gen_grants sets product_advance=true on
+    firms that meet criteria but were not granted."""
+    from src.env_verifier import force_apply_mandatory_gen_grants
+    from src.types import FirmState, SimParams, CompustatRow
+
+    params = SimParams(gen_2_rd_threshold=200_000_000)
+    firms = {
+        "firm_0": FirmState(firm_id="firm_0", is_active=True,
+                              product_generation=1,
+                              rd_cumulative_product=434_000_000),
+        "firm_1": FirmState(firm_id="firm_1", is_active=True,
+                              product_generation=1,
+                              rd_cumulative_product=467_000_000),
+        "firm_2": FirmState(firm_id="firm_2", is_active=True,
+                              product_generation=1,
+                              rd_cumulative_product=50_000_000),  # below
+    }
+    compustat_rows = [
+        CompustatRow(firm_id=fid, fyearq=2031+i//4, fqtr=(i%4)+1)
+        for fid in firms for i in range(24)
+    ]
+    env_outcome = {
+        "total_demand": 1000,
+        "firm_outcomes": {
+            "firm_0": {"units_sold": 400, "market_share": 0.4,
+                        "product_advance": False},
+            "firm_1": {"units_sold": 350, "market_share": 0.35,
+                        "product_advance": False},
+            "firm_2": {"units_sold": 250, "market_share": 0.25,
+                        "product_advance": False},
+        },
+        "narrative": "Normal quarter, no specific blockers reported.",
+    }
+    out, forced = force_apply_mandatory_gen_grants(
+        env_outcome, firms, params, compustat_rows,
+    )
+    assert set(forced) == {"firm_0", "firm_1"}, f"forced: {forced}"
+    assert out["firm_outcomes"]["firm_0"]["product_advance"] is True
+    assert out["firm_outcomes"]["firm_1"]["product_advance"] is True
+    assert out["firm_outcomes"]["firm_2"]["product_advance"] is False
+    assert "[VALIDATOR FORCE-GRANT]" in out["narrative"]
+
+
+def test_force_apply_no_op_when_all_compliant():
+    """No-op when no violations."""
+    from src.env_verifier import force_apply_mandatory_gen_grants
+    from src.types import FirmState, SimParams, CompustatRow
+
+    params = SimParams(gen_2_rd_threshold=200_000_000)
+    firms = {
+        "firm_0": FirmState(firm_id="firm_0", is_active=True,
+                              product_generation=1,
+                              rd_cumulative_product=50_000_000),
+    }
+    compustat_rows = [CompustatRow(firm_id="firm_0", fyearq=2031, fqtr=q+1)
+                       for q in range(4)]
+    env_outcome = {
+        "total_demand": 100,
+        "firm_outcomes": {"firm_0": {"units_sold": 100, "market_share": 1.0,
+                                       "product_advance": False}},
+        "narrative": "Normal.",
+    }
+    out, forced = force_apply_mandatory_gen_grants(
+        env_outcome, firms, params, compustat_rows,
+    )
+    assert forced == []
+    assert out["narrative"] == "Normal."  # untouched
+
+
 def test_validator_skips_gen_check_when_criteria_not_met():
     """Firm has $200M cumulative R&D (below $500M threshold) — no mandatory grant."""
     from src.types import FirmState, MacroState, SimParams, CompustatRow

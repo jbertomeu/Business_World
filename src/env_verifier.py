@@ -458,6 +458,71 @@ def _check_mandatory_gen_grants(
     return violations
 
 
+def force_apply_mandatory_gen_grants(
+    env_outcome: dict,
+    firms: dict,
+    params,
+    compustat_rows: list,
+) -> tuple[dict, list[str]]:
+    """Wave ν+13 step 2: if env-1's retry still doesn't grant a mandatory
+    Gen advance, mutate env_outcome to set product_advance=true on the
+    violating firms. Returns (mutated_env_outcome, list_of_forced_firms).
+
+    This is the last-resort enforcement after env-1 has been asked once
+    and refused. The strict rule is non-negotiable; the env retains
+    authority over everything else (allocation, narrative).
+    """
+    violations = _check_mandatory_gen_grants(env_outcome, firms, params, compustat_rows)
+    if not violations:
+        return env_outcome, []
+
+    # Extract firm_ids from violation strings — they all start "firm_id MUST advance:"
+    forced_firms = []
+    for v in violations:
+        fid = v.split(" ", 1)[0]
+        forced_firms.append(fid)
+
+    out = dict(env_outcome)
+    firm_outcomes = dict(out.get("firm_outcomes", {}) or {})
+    for fid in forced_firms:
+        fo = firm_outcomes.get(fid)
+        if isinstance(fo, dict):
+            fo = dict(fo)
+            fo["product_advance"] = True
+            firm_outcomes[fid] = fo
+        elif fo is None:
+            firm_outcomes[fid] = {
+                "units_sold": 0, "market_share": 0.0, "product_advance": True,
+            }
+    out["firm_outcomes"] = firm_outcomes
+
+    # Also update the top-level rd_outcomes array if present
+    rd_arr = out.get("rd_outcomes") or []
+    if isinstance(rd_arr, list):
+        rd_arr = list(rd_arr)
+        firms_in_rd = {rd.get("firm_id") for rd in rd_arr if isinstance(rd, dict)}
+        for fid in forced_firms:
+            if fid in firms_in_rd:
+                for rd in rd_arr:
+                    if isinstance(rd, dict) and rd.get("firm_id") == fid:
+                        rd["product_advance"] = True
+            else:
+                rd_arr.append({"firm_id": fid, "product_advance": True,
+                                "process_cogs_reduction_pct": 0,
+                                "delivery_advance": False})
+        out["rd_outcomes"] = rd_arr
+
+    # Stamp the narrative so the firms see what happened
+    out["narrative"] = (
+        (env_outcome.get("narrative", "") or "")
+        + f"\n\n[VALIDATOR FORCE-GRANT]: env-1 ignored the mandatory-Gen "
+        f"directive on retry. Validator applied product_advance=true for: "
+        f"{', '.join(forced_firms)}. Each of these firms met the cumulative "
+        f"R&D + tenure criteria and env-1 did not name a specific blocker."
+    )
+    return out, forced_firms
+
+
 def make_env_validator(backend: LLMBackend):
     """Factory: returns validator(env_outcome, recent_revs, baseline_demand,
     production_caps, macro, firms=None, params=None, compustat_rows=None)
