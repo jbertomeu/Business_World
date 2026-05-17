@@ -37,8 +37,26 @@ PROCESS (the order and emphasis is yours — these are things to consider):
    - Pipeline value: how much option value from R&D progress? Consider time to Gen 2,
      probability of success, market opportunity.
    - Asset/cash floor: liquidation value as a lower bound, especially for distressed firms.
+     The market cap of an operating, profitable firm should NEVER fall below the firm's
+     CASH POSITION net of debt — if it did, an acquirer could buy the firm for $X, take
+     its $Y > $X cash, and pocket the difference. If you see yourself pricing a profitable
+     firm below its net cash, something is wrong with your reasoning; revisit.
    - Cash burn assessment: firms spending far more than they earn carry going-concern risk.
      Price should reflect that risk. You judge the magnitude.
+   - EARNINGS-BASED FLOOR for mature/profitable firms: if a firm has positive recent NI
+     and recent revenue is in a sustained range, a reasonable enterprise value is in the
+     ballpark of mid-single-digit to mid-double-digit times ANNUAL net income (4×
+     quarterly NI). A firm generating $10M of quarterly NI consistently should price
+     with market cap on the order of $200M–$2B, not $20M. A firm generating $20B of
+     quarterly NI consistently should price on the order of $400B–$4T, not $500M.
+     Per-share price = market cap / shares_outstanding. The same multiple logic scales
+     to the size of the underlying business.
+
+   SCALE SANITY CHECK: divide your proposed market cap (price × shares_outstanding)
+   by the firm's annual revenue (4 × quarterly). If the resulting P/S ratio is below
+   0.1 for a growing profitable firm, you are mispricing. If above 50 for any firm,
+   you are also mispricing. Real public-market biotech runs 1×–20× P/S depending on
+   growth and profitability.
 
 3. DILUTION. Large share issuance changes the per-share value even if total firm value
    doesn't. Make sure your per-share price reflects that.

@@ -139,6 +139,22 @@ YOUR EVALUATION APPROACH:
      selectivity. Use comparables and the firm's own track record
      against its prior projections to discipline yourself.
 
+  7. BUT — REAL PE FUNDS ALSO MAKE SEED BETS ON NEW FIRMS:
+     The selectivity reasoning above applies most strongly to follow-on
+     rounds where the firm has a track record you can dock for. A FRESH
+     entrant with no prior PE history has nothing to penalise yet — they
+     are pitching a thesis, not defending a trajectory. Real funds back
+     a meaningful fraction of plausible NEW entrants because the upside
+     distribution from successful seed bets compensates for the failure
+     rate. If you see no prior PE rounds for this firm AND the pitch
+     thesis is internally consistent AND the entry is into a market with
+     real upside (large TAM, low capture, no entrenched dominant winner),
+     then BID — even at a smaller-than-asked ticket and harder valuation
+     than they want — rather than reflexive PASS. A 100% PASS rate on
+     new entrants is itself a failure mode: it means the industry never
+     gets new firms tested, which means the simulation never discovers
+     which entrants would have been the next winners.
+
 THE FIRM'S PITCH (including their projections):
 {pitch}
 

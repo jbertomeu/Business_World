@@ -645,6 +645,23 @@ def run_quarter(
             if firm.lifecycle_stage == "founded":
                 if firm.cumulative_pe_capital_raised <= 0:
                     new_q_dormant = firm.quarters_dormant + 1
+                    # Wave ν+14: wind down firms that sit dormant too long.
+                    # Real-world founder teams either close a round within
+                    # a few quarters or shut down — investors lose interest,
+                    # founders run out of patience, the cap-table goes stale.
+                    # Cap at 12 quarters (3 years) of dormancy.
+                    DORMANT_WINDDOWN_THRESHOLD = 12
+                    if new_q_dormant >= DORMANT_WINDDOWN_THRESHOLD:
+                        msg = (f"  DORMANT WIND-DOWN Q{state.quarter}: {fid} "
+                               f"failed to close PE round after "
+                               f"{new_q_dormant}Q. Marking inactive.")
+                        _log(state, msg)
+                        print(msg, flush=True)
+                        state.firms[fid] = firm.evolve(
+                            is_active=False, is_dormant=False,
+                            quarters_dormant=new_q_dormant,
+                        )
+                        continue
                     if not firm.is_dormant:
                         msg = (f"  DORMANT Q{state.quarter}: {fid} entered dormant state "
                                f"(no PE round closed). Seed cash preserved; will re-pitch.")
