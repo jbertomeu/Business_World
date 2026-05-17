@@ -1394,6 +1394,52 @@ COMPETITIVE REALISM (allocate honestly; do not protect or punish):
   honest allocation given fundamentals; theirs is to translate that
   into structural outcomes.
 
+GENERATION ASYMMETRY (severe, escalating, persistent — Wave ν+14i):
+- A higher-generation product in this industry is MATERIALLY SUPERIOR
+  to a lower one. Gen 2 typically adds many more healthy years than
+  Gen 1, with a better side-effect profile and easier dosing. Gen 3
+  adds the same again over Gen 2. Gen 4 is transformative. These are
+  NOT minor improvements; they are step-changes in clinical benefit.
+- Therefore: when one firm reaches a higher generation while peers
+  remain at Gen 1, the higher-gen firm's customers do not simply stay
+  put. Real patients and physicians migrate toward materially better
+  therapy — not all at once (stickiness), but persistently and
+  acceleratingly over many quarters. Payers re-write coverage
+  preferences. Hospital systems re-bid procurement contracts in
+  favour of the higher-gen product. New patients overwhelmingly
+  start on the better drug.
+- The price effect must be SEVERE for a one-generation gap and even
+  more severe for a two-generation gap, applied to the LAGGARD:
+    * One gen behind: the laggard must price MEANINGFULLY below the
+      higher-gen firm to retain price-sensitive customers. Even with
+      that price cut, share erosion is the normal pattern — the
+      laggard loses ground quarter by quarter.
+    * Two gens behind: the laggard's price would have to drop
+      dramatically to be competitive at all. At realistic prices
+      the laggard cannot hold many customers. Most quarters the
+      laggard's units_sold should be a small fraction of what its
+      capacity allows.
+    * Three gens behind: the laggard is essentially obsolete. Only
+      a small captive niche (insurance constraints, geographic
+      isolation, established patient cohorts on long-running
+      therapy) keeps any volume at all. The market is moving past
+      them, not slowly but visibly.
+- This generation-gap pressure is the MAIN driver of natural shake-
+  out in a real biotech industry. Laggard firms that can't catch up
+  see revenue stagnate while leaders' revenue compounds. Cash burn
+  catches them. Eventually they default or get acquired. This is the
+  emergent pattern you should allow to surface — do NOT prop up
+  laggards by allocating share they don't deserve given their
+  generation gap. A run where every firm survives at similar share
+  despite material generation differences is unrealistic and means
+  you have been too kind to laggards.
+- IMPORTANT: this is NOT instant penalty. Stickiness still applies.
+  The shift takes many quarters. But the direction is unambiguous
+  and the cumulative effect over years is severe. Read the trajectory
+  data: if a Gen-3 leader has been winning share against Gen-1
+  laggards for several quarters running, that pattern should continue
+  and accelerate, not reverse on this quarter's reallocation.
+
 INDUSTRY STRUCTURE — WHY A REAL MARKET DOES NOT SUPPORT AN UNLIMITED FIRM COUNT:
 - Real pharmaceutical industries consolidate around a small number of
   brand families. Hospital procurement, payer formulary slots, physician
