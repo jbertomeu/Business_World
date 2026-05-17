@@ -102,8 +102,11 @@ def build_bidder_prompt(
     """
     system = f"""You are the CEO of {firm.firm_id} considering whether to make an acquisition.
 
-M&A is a normal strategic-capital-allocation choice. It is not adversarial, it is not casual, and there is no default answer (yes or no). Read your own position and the industry honestly, then decide whether bidding now creates more value than the alternatives (organic growth, capital return, holding cash). Reasons to consider an acquisition:
+M&A is a normal strategic-capital-allocation choice. It is not adversarial, it is not casual, and there is no default answer (yes or no). Read your own position and the industry honestly, then decide whether bidding now creates more value than the alternatives (organic growth, capital return, holding cash).
 
+EVALUATE EACH POTENTIAL TARGET INDIVIDUALLY. Real CEOs do not blanket-refuse to consider any deal — they walk through each candidate and articulate the specific bid / no-bid reasoning. Before you output "no bid", state in your reasoning which targets you considered and which specific factor disqualified each one. A "no bid" with no per-target articulation is a signal you have not actually evaluated the opportunity.
+
+REASONS TO CONSIDER AN ACQUISITION:
   - The target is in genuine distress (cash crisis, multi-quarter performance deterioration, going-concern signals) and you can buy assets at a meaningful discount.
   - The target has a complementary capability or customer base that would meaningfully strengthen your position.
   - You have surplus capital AND a clear integration plan AND a target whose standalone value the market is undervaluing.
@@ -114,11 +117,14 @@ M&A is a normal strategic-capital-allocation choice. It is not adversarial, it i
       * Specialty firms with differentiated segments may be acquired to fill product-line gaps.
     A concentrated industry where nobody ever bids is unusual — there is normally either consolidation by the leader, defensive mergers among the laggards, or both.
 
-Reasons NOT to bid:
+REASONS NOT TO BID:
   - You don't have surplus cash relative to your own runway needs.
   - The target is a brand-new entrant (a firm that has been operating for only a few quarters) — acquiring fresh entrants for fire-sale prices is predatory and undermines the industry's pipeline. Wait for them to either succeed or fail on their own. (Note: a firm that has been operating for many years but never grew is a different case — see "persistent sub-scale incumbents" above.)
   - You don't have an articulable integration thesis.
   - The target's price reflects fair value — there's no bargain and no synergy upside.
+
+PUSHBACK ON PERMANENT DEFENSIVE CROUCH:
+If you have been issuing "no bid" decisions over many consecutive quarters while you possess surplus capital AND there are visible sub-scale incumbents AND no specific dealbreaker applies to any of them, that pattern itself is not realistic CEO behaviour. Real CEOs do not let surplus cash sit forever and let weaker peers persist forever — they eventually deploy. If your honest read of the panel says no target meets the bar today, that's fine; but check yourself: are you defaulting to "no" because of LLM caution rather than because the situation actually warrants it?
 
 WHAT YOU ABSORB IF A DEAL CLOSES:
   - All identifiable assets and liabilities at book value
@@ -159,7 +165,7 @@ Output ONLY JSON wrapped in ```json ... ```."""
 
     user = f"""YOUR POSITION:
   Cash: ${firm.cash:,.0f}
-  Revenue: ${firm.market_cap:,.0f} market cap
+  Market cap: ${firm.market_cap:,.0f}
   Generation: {firm.product_generation}
 
 POTENTIAL TARGETS:

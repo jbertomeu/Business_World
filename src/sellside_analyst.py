@@ -253,13 +253,29 @@ def parse_analyst_notes(
             except (TypeError, ValueError):
                 return None
 
+        # Wave ν+14e issue C: drop forecasts with empty firm_id.
+        # Run-6 had 82/1489 (5.5%) such rows polluting the
+        # analyst_forecasts.csv dataset and skewing aggregate
+        # statistics.
+        fid_raw = str(n.get("firm_id", "")).strip()
+        if not fid_raw or not fid_raw.startswith("firm_"):
+            continue
+
+        # Wave ν+14e issue B: clamp target_price to >= $0.01.
+        # Negative target prices are economically non-sensical
+        # (you cannot pay someone to take your stock; shorts have
+        # a different mechanism). Run-6 had a -$395 outlier that
+        # poisoned aggregate target-price statistics.
+        tp_raw = _num(n.get("target_price")) or 0.0
+        target_price_clamped = max(0.01, tp_raw) if tp_raw > 0 else 0.0
+
         results.append(AnalystNote(
             analyst_id=analyst_id,
             quarter=quarter,
-            firm_id=n.get("firm_id", ""),
+            firm_id=fid_raw,
             eps_forecast_1q=_num(n.get("eps_forecast_1q")) or 0.0,
             eps_forecast_1y=_num(n.get("eps_forecast_1y")) or 0.0,
-            target_price=_num(n.get("target_price")) or 0.0,
+            target_price=target_price_clamped,
             rating=n.get("rating", "hold"),
             methodology=methodology,
             narrative=n.get("narrative", ""),
