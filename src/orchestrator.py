@@ -3728,7 +3728,11 @@ def run_quarter(
             # Firms
             if firm_debrief_fn is not None:
                 for fid, firm in state.firms.items():
-                    if not firm.is_active:
+                    # Wave ν+14b: skip dormant firms — they haven't operated
+                    # so they have nothing meaningful to debrief. Run-6 wasted
+                    # ~1100 LLM calls writing "uneventful quarter" notes for
+                    # firms that never made a decision.
+                    if not firm.is_active or firm.is_dormant:
                         continue
                     summary = build_firm_quarter_summary(fid, state, state.macro)
                     note = firm_debrief_fn(fid, state.quarter, summary)
