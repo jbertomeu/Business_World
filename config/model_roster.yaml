@@ -20,23 +20,29 @@
 
 firms:
 
+  # Wave ν+14e: removed AI Horde models (unreliable on long workloads;
+  # caused the equity panel to silently never run in runs 1-6 because
+  # the panel cycled through firm_1/firm_2/firm_3 = horde models that
+  # timed out every call). All firm slots now use OpenRouter models
+  # with comparable diversity.
+
   firm_1:
-    model:    "koboldcpp/gemma-4-26B-A4B-it-heretic.IQ4_XS"
-    backend:  "aihorde"
+    model:    "meta-llama/llama-3.3-70b-instruct"
+    backend:  "openrouter"
     temperature: 0.30
-    note:     "S-tier 100% | free | 46s | best horde model"
+    note:     "Replaced koboldcpp/gemma-4-26B (AI Horde, unreliable)"
 
   firm_2:
-    model:    "koboldcpp/Dark-Nexus-24B-v2.0.i1-Q5_K_M"
-    backend:  "aihorde"
+    model:    "qwen/qwen3-235b-a22b-2507"
+    backend:  "openrouter"
     temperature: 0.35
-    note:     "S-tier 100% | free | 104s | solid all-around"
+    note:     "Replaced koboldcpp/Dark-Nexus-24B (AI Horde, unreliable)"
 
   firm_3:
-    model:    "aphrodite/TheDrummer/Behemoth-R1-123B-v2-w4a16"
-    backend:  "aihorde"
+    model:    "google/gemini-flash-1.5"
+    backend:  "openrouter"
     temperature: 0.40
-    note:     "S-tier 100% | free | 231s | largest horde model"
+    note:     "Replaced aphrodite/Behemoth-R1-123B (AI Horde, unreliable)"
 
   firm_4:
     model:    "minimax/minimax-m2.5"
@@ -63,10 +69,10 @@ firms:
     note:     "S-tier 100% | $0.103/M | 36s | revalidate in full sim"
 
   firm_8:
-    model:    "google/gemini-2.0-flash-001"
+    model:    "google/gemini-flash-1.5"
     backend:  "openrouter"
     temperature: 0.65
-    note:     "S-tier 100% | $0.250/M | 10s | fastest model tested"
+    note:     "Replaced gemini-2.0-flash-001 (rate-limited in run-5/6)"
 
 # ── Environment Agent ───────────────────────────────────────────────────
 # Best narrative + demand realism. NOT in firm list.

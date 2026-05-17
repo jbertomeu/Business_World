@@ -601,6 +601,26 @@ def run_simulation(config: RunConfig, use_mock: bool = False,
     broker = None   # data broker (optional)
     violation_resolver = None  # Stage 3c covenant violation resolver (LLM mode only)
 
+    # Wave ν+14e: wrap every LLM-call site with a BackupBackend chain so
+    # persistent failures of a primary model fall through to a backup
+    # rather than silently producing None and letting the simulation
+    # move forward with a missing decision. Per user direction: "NEVER
+    # move forward if missing, just move to next AI if repeated failure".
+    from .llm_backends import BackupBackend, build_default_backup_pool
+    def _wrap_backups(backend, model_name: str = "", role_tag: str = ""):
+        """Wrap a backend with the default backup pool.
+        If pool is empty (no API key etc.) returns the unwrapped primary.
+        Excludes `model_name` from the pool to avoid duplicating the primary.
+        """
+        try:
+            backups = build_default_backup_pool(role_tag=role_tag,
+                                                  exclude_model=model_name or "")
+        except Exception:
+            backups = []
+        if not backups:
+            return backend
+        return BackupBackend(backend, backups, role_tag=role_tag)
+
     if use_mock:
         firm_fn = mock_firm_agent
         env_fn = None
@@ -647,14 +667,20 @@ def run_simulation(config: RunConfig, use_mock: bool = False,
             # wraps with LoggingBackend) so per-firm prompts are captured
             # on logged quarters.
             from .telemetry import tag_backend as _firm_tag
-            backends[sim_fid] = _firm_tag(create_backend(llm), sim_fid)
+            backends[sim_fid] = _firm_tag(
+                _wrap_backups(create_backend(llm), llm.model, sim_fid),
+                sim_fid,
+            )
             print(f"  {sim_fid} <- {source}: {llm.model} [{llm.backend}] "
                   f"(temp={llm.temperature:.2f})")
 
         # Environment agent
         env_llm = roster.llm_config_for("environment")
         from .telemetry import tag_backend as _tag_env
-        env_backend = _tag_env(create_backend(env_llm), "environment")
+        env_backend = _tag_env(
+            _wrap_backups(create_backend(env_llm), env_llm.model, "environment"),
+            "environment",
+        )
         print(f"  environment: {env_llm.model} [{env_llm.backend}] (temp={env_llm.temperature:.2f})")
 
         # state_ref allows env agent to access reports from world state
@@ -670,7 +696,7 @@ def run_simulation(config: RunConfig, use_mock: bool = False,
                 )
             broker_llm = roster.llm_config_for("data_broker")
             broker = DataBroker(
-                backend=create_backend(broker_llm),
+                backend=_wrap_backups(create_backend(broker_llm), broker_llm.model, "data_broker"),
                 data_dir=config.data_dir,
                 enforce_hypothesis=True,
                 max_queries_per_agent_per_quarter=config.data_broker_max_queries_per_agent_per_quarter,
@@ -721,7 +747,10 @@ def run_simulation(config: RunConfig, use_mock: bool = False,
         for i in range(1, 6):
             try:
                 cfg = roster.llm_config_for(f"equity_market_panel_{i}")
-                panel_backends.append(_tag(create_backend(cfg), f"equity_market_panel_{i}"))
+                panel_backends.append(_tag(
+                    _wrap_backups(create_backend(cfg), cfg.model, f"equity_market_panel_{i}"),
+                    f"equity_market_panel_{i}",
+                ))
             except Exception:
                 break
         if not panel_backends:
@@ -744,7 +773,10 @@ def run_simulation(config: RunConfig, use_mock: bool = False,
             if not firm_cfgs:
                 # Final fallback: single equity_market backend (legacy)
                 eq_llm = roster.llm_config_for("equity_market")
-                panel_backends = [_tag(create_backend(eq_llm), "equity_market")]
+                panel_backends = [_tag(
+                    _wrap_backups(create_backend(eq_llm), eq_llm.model, "equity_market"),
+                    "equity_market",
+                )]
                 eq_models_str = f"{eq_llm.model}"
             else:
                 # Use a low temperature for valuation (still some variation
@@ -759,7 +791,11 @@ def run_simulation(config: RunConfig, use_mock: bool = False,
                         timeout_seconds=cfg.timeout_seconds,
                     )
                     panel_backends.append(
-                        _tag(create_backend(panel_cfg), f"equity_market_panel_{i+1}")
+                        _tag(
+                            _wrap_backups(create_backend(panel_cfg), panel_cfg.model,
+                                            f"equity_market_panel_{i+1}"),
+                            f"equity_market_panel_{i+1}",
+                        )
                     )
                 eq_models_str = ", ".join(c.model for c in firm_cfgs)
         else:
@@ -771,14 +807,14 @@ def run_simulation(config: RunConfig, use_mock: bool = False,
         # Wave ν+10 item 7: assemble investment-bank panel (1 or 2 banks).
         ib_llm = roster.llm_config_for("investment_bank")
         ib_agents = [make_investment_bank(
-            _tag(create_backend(ib_llm), "investment_bank"), state_ref,
+            _tag(_wrap_backups(create_backend(ib_llm), ib_llm.model, "investment_bank"), "investment_bank"), state_ref,
             debt_covenants_enabled=getattr(config, "debt_covenants_enabled", False),
         )]
         ib_names = ["ibank_1"]
         if roster.investment_bank_2 is not None:
             ib2_llm = roster.llm_config_for("investment_bank_2")
             ib_agents.append(make_investment_bank(
-                _tag(create_backend(ib2_llm), "investment_bank_2"), state_ref,
+                _tag(_wrap_backups(create_backend(ib2_llm), ib2_llm.model, "investment_bank_2"), "investment_bank_2"), state_ref,
                 debt_covenants_enabled=getattr(config, "debt_covenants_enabled", False),
             ))
             ib_names.append("ibank_2")
@@ -795,12 +831,12 @@ def run_simulation(config: RunConfig, use_mock: bool = False,
 
         # Commercial-bank panel (1 or 2 banks).
         cb_llm = roster.llm_config_for("commercial_bank")
-        cb_agents = [make_commercial_bank(_tag(create_backend(cb_llm), "commercial_bank"), state_ref)]
+        cb_agents = [make_commercial_bank(_tag(_wrap_backups(create_backend(cb_llm), cb_llm.model, "commercial_bank"), "commercial_bank"), state_ref)]
         cb_names = ["cbank_1"]
         if roster.commercial_bank_2 is not None:
             cb2_llm = roster.llm_config_for("commercial_bank_2")
             cb_agents.append(make_commercial_bank(
-                _tag(create_backend(cb2_llm), "commercial_bank_2"), state_ref,
+                _tag(_wrap_backups(create_backend(cb2_llm), cb2_llm.model, "commercial_bank_2"), "commercial_bank_2"), state_ref,
             ))
             cb_names.append("cbank_2")
         if len(cb_agents) > 1:
@@ -814,13 +850,13 @@ def run_simulation(config: RunConfig, use_mock: bool = False,
 
         # Emergency bridge lender — reuses commercial bank backend, distinct prompt
         from .commercial_bank import make_emergency_bridge, make_violation_resolver
-        bridge_fn = make_emergency_bridge(_tag(create_backend(cb_llm), "emergency_bridge"), state_ref)
+        bridge_fn = make_emergency_bridge(_tag(_wrap_backups(create_backend(cb_llm), cb_llm.model, "emergency_bridge"), "emergency_bridge"), state_ref)
         print(f"  emergency_bridge: {cb_llm.model} (LLM-judged distressed lending rate)")
 
         # Covenant violation resolver (reuses commercial bank backend)
         violation_resolver = None
         if getattr(config, "debt_covenants_enabled", False):
-            violation_resolver = make_violation_resolver(_tag(create_backend(cb_llm), "violation_resolver"))
+            violation_resolver = make_violation_resolver(_tag(_wrap_backups(create_backend(cb_llm), cb_llm.model, "violation_resolver"), "violation_resolver"))
             print(f"  violation_resolver: {cb_llm.model} (covenant waive/amend/accelerate)")
 
     # ── Wire expansion agents (v0.5, all None when toggles off) ──────────
@@ -858,7 +894,7 @@ def run_simulation(config: RunConfig, use_mock: bool = False,
             # Wave ν+11: wire a regulator that uses the env backend (the
             # env IS the antitrust regulator from the firms' perspective).
             ma_regulator_fn = make_ma_regulator(
-                _tag_env(create_backend(env_llm), "ma_regulator"), state_ref,
+                _tag_env(_wrap_backups(create_backend(env_llm), env_llm.model, "ma_regulator"), "ma_regulator"), state_ref,
             )
             ma_fn = make_ma_agent(backends, state_ref,
                                     regulator_fn=ma_regulator_fn)
@@ -868,7 +904,7 @@ def run_simulation(config: RunConfig, use_mock: bool = False,
         if config.sec_enabled and roster.sec:
             from .sec_agent import make_sec_agent
             sec_llm = roster.llm_config_for("sec")
-            sec_fn_agent = make_sec_agent(_tag(create_backend(sec_llm), "sec"), state_ref, data_broker=broker)
+            sec_fn_agent = make_sec_agent(_tag(_wrap_backups(create_backend(sec_llm), sec_llm.model, "sec"), "sec"), state_ref, data_broker=broker)
             print(f"  sec: {sec_llm.model} [{sec_llm.backend}]"
                   + (" (+broker)" if broker else ""))
 
@@ -894,7 +930,7 @@ def run_simulation(config: RunConfig, use_mock: bool = False,
                     ev_llm = roster.llm_config_for("environment")
             except Exception:
                 ev_llm = roster.llm_config_for("environment")
-            env_verifier_fn = make_env_verifier(_tag(create_backend(ev_llm), "env_verifier"))
+            env_verifier_fn = make_env_verifier(_tag(_wrap_backups(create_backend(ev_llm), ev_llm.model, "env_verifier"), "env_verifier"))
             print(f"  env_verifier: {ev_llm.model} [{ev_llm.backend}] "
                   f"(called only on anomaly trigger)")
 
@@ -911,7 +947,7 @@ def run_simulation(config: RunConfig, use_mock: bool = False,
                     evd_llm = roster.llm_config_for("environment")
             except Exception:
                 evd_llm = roster.llm_config_for("environment")
-            env_validator_fn = make_env_validator(_tag(create_backend(evd_llm), "env_validator"))
+            env_validator_fn = make_env_validator(_tag(_wrap_backups(create_backend(evd_llm), evd_llm.model, "env_validator"), "env_validator"))
             print(f"  env_validator: {evd_llm.model} [{evd_llm.backend}] "
                   f"(every quarter, high bar; one retry on send_back)")
 
@@ -927,7 +963,7 @@ def run_simulation(config: RunConfig, use_mock: bool = False,
             except Exception:
                 iv_llm = roster.llm_config_for("data_analyst")
             investor_voice_fn = make_investor_voice(
-                _tag(create_backend(iv_llm), "investor_voice"), state_ref,
+                _tag(_wrap_backups(create_backend(iv_llm), iv_llm.model, "investor_voice"), "investor_voice"), state_ref,
             )
             print(f"  investor_voice: {iv_llm.model} [{iv_llm.backend}] "
                   f"(per active firm per quarter; soft market view)")
@@ -949,7 +985,7 @@ def run_simulation(config: RunConfig, use_mock: bool = False,
                     dbr_llm = roster.llm_config_for("data_analyst")
             except Exception:
                 dbr_llm = roster.llm_config_for("data_analyst")
-            dbr_backend = _tag(create_backend(dbr_llm), "debrief")
+            dbr_backend = _tag(_wrap_backups(create_backend(dbr_llm), dbr_llm.model, "debrief"), "debrief")
             firm_debrief_fn = make_firm_debrief_writer(dbr_backend)
             env_debrief_fn = make_env_debrief_writer(dbr_backend)
             intermediary_debrief_fns = {
@@ -969,8 +1005,10 @@ def run_simulation(config: RunConfig, use_mock: bool = False,
             analyst_fns = []
             for aid in sorted(roster.analysts.keys()):
                 a_llm = roster.llm_config_for(aid)
-                a_fn = make_sellside_analyst(_tag(create_backend(a_llm), aid),
-                                              aid, state_ref, data_broker=broker)
+                a_fn = make_sellside_analyst(
+                    _tag(_wrap_backups(create_backend(a_llm), a_llm.model, aid), aid),
+                    aid, state_ref, data_broker=broker,
+                )
                 analyst_fns.append(a_fn)
                 print(f"  {aid}: {a_llm.model} [{a_llm.backend}]"
                       + (" (+broker)" if broker else ""))
@@ -984,7 +1022,7 @@ def run_simulation(config: RunConfig, use_mock: bool = False,
                 act_llm = roster.llm_config_for("equity_market")
             except Exception:
                 act_llm = roster.llm_config_for("environment")
-            activist_fn = make_activist_agent(_tag(create_backend(act_llm), "activist"), state_ref)
+            activist_fn = make_activist_agent(_tag(_wrap_backups(create_backend(act_llm), act_llm.model, "activist"), "activist"), state_ref)
             print(f"  activist: {act_llm.model} [{act_llm.backend}]")
 
         # Auditor (annual Q4 only)
@@ -993,7 +1031,10 @@ def run_simulation(config: RunConfig, use_mock: bool = False,
             auditor_backends = {}
             for aud_id in sorted(roster.auditors.keys()):
                 aud_llm = roster.llm_config_for(aud_id)
-                auditor_backends[aud_id] = _tag(create_backend(aud_llm), aud_id)
+                auditor_backends[aud_id] = _tag(
+                    _wrap_backups(create_backend(aud_llm), aud_llm.model, aud_id),
+                    aud_id,
+                )
                 print(f"  {aud_id}: {aud_llm.model} [{aud_llm.backend}] (annual)")
             audit_fn = make_auditor_pool(auditor_backends, state_ref)
 
@@ -1003,10 +1044,10 @@ def run_simulation(config: RunConfig, use_mock: bool = False,
             gov_llm = roster.llm_config_for("board_governance")
             if getattr(config, "three_llm_board_enabled", False):
                 from .governance import make_governance_agent_3llm
-                gov_fn = make_governance_agent_3llm(_tag(create_backend(gov_llm), "board_governance"), state_ref)
+                gov_fn = make_governance_agent_3llm(_tag(_wrap_backups(create_backend(gov_llm), gov_llm.model, "board_governance"), "board_governance"), state_ref)
                 print(f"  board_governance: {gov_llm.model} [{gov_llm.backend}] (annual, 3-LLM committee — 4x cost)")
             else:
-                gov_fn = make_governance_agent(_tag(create_backend(gov_llm), "board_governance"), state_ref)
+                gov_fn = make_governance_agent(_tag(_wrap_backups(create_backend(gov_llm), gov_llm.model, "board_governance"), "board_governance"), state_ref)
                 print(f"  board_governance: {gov_llm.model} [{gov_llm.backend}] (annual)")
 
         # Wave λ: PE + IPO lifecycle agents (pitch, PE eval, IPO decision, prospectus)
@@ -1405,7 +1446,7 @@ def run_simulation(config: RunConfig, use_mock: bool = False,
             except Exception:
                 ltm_llm = roster.llm_config_for("data_analyst")
             ltm_writer = make_lt_memory_writer(
-                _tag(create_backend(ltm_llm), "lt_memory")
+                _tag(_wrap_backups(create_backend(ltm_llm), ltm_llm.model, "lt_memory"), "lt_memory")
             )
             # Build a run summary the writer can synthesise: scorecard +
             # active firm count + final industry rev + key event counts.

@@ -336,6 +336,147 @@ def create_backend(config: LLMConfig) -> LLMBackend:
         raise ValueError(f"Unknown LLM backend: {config.backend}")
 
 
+# ─── Wave ν+14e: BackupBackend chain ─────────────────────────────────────
+#
+# Problem: when an LLM backend fails (rate limit, timeout, malformed),
+# every prior wave's response was either (a) return None and let the
+# caller silently skip, or (b) retry the SAME backend N times then give
+# up. Neither handles "the model has been having a bad hour": the firm
+# decision / equity panel / pitch / etc. effectively goes missing for
+# that quarter, the orchestrator silently moves forward, and the
+# simulation's economic dynamics are subtly wrong.
+#
+# Per user direction (run-6 review): "NEVER move forward if missing,
+# just move to next AI if repeated failure."
+#
+# BackupBackend wraps a PRIMARY backend with one or more BACKUPS.
+# Its complete() / complete_json() try the primary first. On failure
+# (empty string for complete, None for complete_json), it falls through
+# to the next backup. Only returns failure when ALL backends have
+# failed. This eliminates the silent-skip mode for any backend wrapped
+# with backups.
+
+
+class BackupBackend(LLMBackend):
+    """Backend chain: try primary, then each backup in order on failure.
+
+    On every layer's failure, prints a single diagnostic line so the
+    operator can see when fallback activated. The chain itself never
+    raises — it returns empty string from complete() or None from
+    complete_json() ONLY when every backend in the chain has failed.
+
+    Use case: wrap each role's backend with a chain like:
+        BackupBackend(primary=OpenRouter(qwen-235b),
+                      backups=[OpenRouter(llama-70b), OpenRouter(gpt-4o-mini)])
+    """
+
+    def __init__(self, primary: "LLMBackend", backups: list["LLMBackend"],
+                  role_tag: str = ""):
+        self.primary = primary
+        self.backups = list(backups or [])
+        self.role_tag = role_tag
+
+    def _chain(self) -> list["LLMBackend"]:
+        return [self.primary] + self.backups
+
+    def _model_name(self, backend: "LLMBackend") -> str:
+        # Unwrap LoggingBackend / role-tag wrappers if present
+        b = backend
+        for _ in range(5):
+            inner = getattr(b, "wrapped", None) or getattr(b, "_inner", None)
+            if inner is None:
+                break
+            b = inner
+        return getattr(b, "model", b.__class__.__name__)
+
+    def complete(self, system: str, user: str) -> str:
+        for i, backend in enumerate(self._chain()):
+            try:
+                out = backend.complete(system, user)
+            except Exception as e:
+                tag = f"[{self.role_tag}] " if self.role_tag else ""
+                print(f"    {tag}backup tier {i} ({self._model_name(backend)}) raised: {e}; falling to next",
+                      flush=True)
+                continue
+            if out:
+                if i > 0:
+                    tag = f"[{self.role_tag}] " if self.role_tag else ""
+                    print(f"    {tag}backup tier {i} ({self._model_name(backend)}) succeeded",
+                          flush=True)
+                return out
+            # empty string → failure for complete()
+            tag = f"[{self.role_tag}] " if self.role_tag else ""
+            print(f"    {tag}backup tier {i} ({self._model_name(backend)}) returned empty; falling to next",
+                  flush=True)
+        return ""
+
+    def complete_json(self, system: str, user: str, retries: int = 2) -> dict | None:
+        for i, backend in enumerate(self._chain()):
+            try:
+                out = backend.complete_json(system, user, retries=retries)
+            except Exception as e:
+                tag = f"[{self.role_tag}] " if self.role_tag else ""
+                print(f"    {tag}backup tier {i} ({self._model_name(backend)}) raised: {e}; falling to next",
+                      flush=True)
+                continue
+            if out is not None:
+                if i > 0:
+                    tag = f"[{self.role_tag}] " if self.role_tag else ""
+                    print(f"    {tag}backup tier {i} ({self._model_name(backend)}) succeeded",
+                          flush=True)
+                return out
+            tag = f"[{self.role_tag}] " if self.role_tag else ""
+            print(f"    {tag}backup tier {i} ({self._model_name(backend)}) returned None; falling to next",
+                  flush=True)
+        return None
+
+
+def make_backup_chain(primary_cfg: "LLMConfig",
+                       backup_cfgs: list["LLMConfig"] | None = None,
+                       role_tag: str = "") -> "LLMBackend":
+    """Convenience: build a BackupBackend from configs."""
+    primary = create_backend(primary_cfg)
+    backups = [create_backend(c) for c in (backup_cfgs or [])]
+    if not backups:
+        return primary  # no backups configured; just the primary
+    return BackupBackend(primary, backups, role_tag=role_tag)
+
+
+# Default backup pool — reliable OpenRouter models, diverse families,
+# tried in this order whenever a role's primary backend persistently
+# fails. Used by cli.py when wiring roles without explicit backup
+# config. Cheap-ish, fast, and reliable on OpenRouter.
+DEFAULT_BACKUP_MODELS: list[tuple[str, str]] = [
+    # (model, openrouter_api_key_env_default)
+    ("meta-llama/llama-3.3-70b-instruct", "OPENROUTER_API_KEY"),
+    ("google/gemini-flash-1.5", "OPENROUTER_API_KEY"),
+    ("qwen/qwen3-235b-a22b-2507", "OPENROUTER_API_KEY"),
+]
+
+
+def build_default_backup_pool(role_tag: str = "",
+                                exclude_model: str = "") -> list["LLMBackend"]:
+    """Build the default backup pool, optionally excluding a model
+    (avoid duplicating the primary in its own backup chain).
+    """
+    from .config import LLMConfig as _LLMC
+    backups: list["LLMBackend"] = []
+    for model, env_var in DEFAULT_BACKUP_MODELS:
+        if model == exclude_model:
+            continue
+        cfg = _LLMC(
+            backend="openrouter",
+            model=model,
+            api_key_env=env_var,
+            temperature=0.20,
+        )
+        try:
+            backups.append(create_backend(cfg))
+        except Exception:
+            pass  # missing API key etc. — skip silently
+    return backups
+
+
 # ─── JSON extraction ─────────────────────────────────────────────────────
 
 def extract_json(text: str) -> dict | None:
