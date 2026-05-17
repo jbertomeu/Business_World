@@ -1018,6 +1018,15 @@ def run_quarter(
             if err is not None:
                 _log(state, f"  {fid}: planning failed: {err}")
                 continue
+            # Wave ν+14h F6 fix: if LLM returned an empty plan (no
+            # quarterly_lines), don't overwrite the prior plan. Run-6 had
+            # 3 of 4 active firms ending Q80 with current_plan having
+            # lines=0 — caused by re-plan LLM returning empty shells that
+            # silently replaced valid 20-quarter plans.
+            if new_plan is not None and not new_plan.lines:
+                _log(state, f"  {fid}: planning LLM returned empty plan "
+                            f"(no quarterly_lines); KEEPING prior plan unchanged")
+                continue
             if new_plan is not None:
                 state.firms[fid] = firm.evolve(
                     current_plan=new_plan,
@@ -3775,7 +3784,108 @@ def run_quarter(
     _log(state, f"  Summary: {active_firms} active firms, "
                 f"total revenue ${total_rev/1e6:.1f}M")
 
+    # ── Phase 16.5: End-of-quarter completeness check (Wave ν+14h) ──────
+    # Per user direction: "at the end of each Q, there needs to be a
+    # bug check for missing decisions ... One should not move forward
+    # if there is an issue."
+    #
+    # The check is deterministic (no LLM). It verifies that every
+    # operating decision-point that SHOULD have produced a logged
+    # action this quarter actually did. Raises QuarterCompletenessError
+    # on violations so the simulation halts immediately rather than
+    # silently moving forward with missing data.
+    #
+    # What's checked:
+    #   - Every active+non-dormant firm has a set_quarterly_decisions
+    #     action logged for this quarter
+    #   - Every active+public firm has either an equity_market price
+    #     update OR an explicit fallback note this quarter (when
+    #     equity_market_fn was wired)
+    #   - The env produced a market resolution (resolve_market action
+    #     logged) when env_agent_fn was wired
+    violations = _check_quarter_completeness(
+        state, env_agent_fn, equity_market_fn,
+    )
+    if violations:
+        msg = ("QUARTER COMPLETENESS CHECK FAILED — refusing to advance.\n"
+               + "Violations:\n  - " + "\n  - ".join(violations[:30])
+               + f"\n(Total: {len(violations)} violations)")
+        _log(state, msg)
+        print(msg, flush=True)
+        raise QuarterCompletenessError(msg)
+
     return state
+
+
+class QuarterCompletenessError(RuntimeError):
+    """Raised when end-of-quarter checks find missing required decisions.
+
+    Per user direction: the simulation must NOT move forward if any
+    required decision is missing. This exception halts the run so the
+    operator can investigate. Backup chains catch transient LLM
+    failures upstream; if this still fires, something deeper is wrong.
+    """
+
+
+def _check_quarter_completeness(
+    state: WorldState,
+    env_agent_fn=None,
+    equity_market_fn=None,
+) -> list[str]:
+    """Deterministic end-of-quarter sanity check. Returns list of
+    violation strings (empty list = clean).
+    """
+    violations: list[str] = []
+    q = state.quarter
+
+    # 1. Every active+non-dormant firm should have a logged decision this Q
+    have_decisions: set[str] = {
+        a.get("actor_id", "") for a in (state.action_log or [])
+        if a.get("action_type") == "set_quarterly_decisions"
+        and a.get("quarter") == q
+    }
+    for fid, firm in state.firms.items():
+        if not firm.is_active or firm.is_dormant:
+            continue
+        if fid not in have_decisions:
+            violations.append(
+                f"firm {fid} (active, not dormant) has no "
+                f"set_quarterly_decisions action this quarter (Q{q})"
+            )
+
+    # 2. Env must have produced a market resolution when env_agent_fn wired
+    if env_agent_fn is not None:
+        env_actions = [
+            a for a in (state.action_log or [])
+            if a.get("action_type") == "resolve_market"
+            and a.get("quarter") == q
+        ]
+        if not env_actions:
+            violations.append(
+                f"env_agent_fn wired but no resolve_market action this Q{q}"
+            )
+
+    # 3. Every public+active firm should have an equity_market price
+    # update OR an explicit fallback note this quarter (when
+    # equity_market_fn was wired).
+    if equity_market_fn is not None:
+        priced_firms: set[str] = {
+            a.get("payload", {}).get("target_firm", "")
+            for a in (state.action_log or [])
+            if a.get("action_type") == "price_equity"
+            and a.get("quarter") == q
+            and a.get("actor_id") == "equity_market"
+        }
+        for fid, firm in state.firms.items():
+            if not (firm.is_active and getattr(firm, "is_public", False)):
+                continue
+            if fid not in priced_firms:
+                violations.append(
+                    f"firm {fid} (public, active) has no equity price "
+                    f"update this Q{q} — equity panel may have failed silently"
+                )
+
+    return violations
 
 
 # ─── Helpers ─────────────────────────────────────────────────────────────

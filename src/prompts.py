@@ -1156,7 +1156,7 @@ STRATEGIC DASHBOARD
 
 {f'INDUSTRY GAZETTE:{chr(10)}{gazette}' if gazette else ''}
 
-{'EARNINGS MANAGEMENT:' + chr(10) + 'You may choose to adjust reported earnings through legal but aggressive accounting.' + chr(10) + 'Set manipulation_amount: positive = overstate earnings, negative = understate (cookie jar).' + chr(10) + 'Set to 0 for honest reporting. Larger amounts increase detection risk by regulators.' + chr(10) + 'Cumulative manipulation stock: $' + f'{firm.cumulative_manipulation:,.0f}' + chr(10) if earnings_management_enabled else ''}Output your decision as JSON:
+{'EARNINGS MANAGEMENT (Wave ν+14h F1 — explicit articulation required):' + chr(10) + 'You may choose to adjust reported earnings through legal but aggressive accounting.' + chr(10) + 'Set manipulation_amount: positive = overstate earnings, negative = understate (cookie jar).' + chr(10) + 'Set to 0 for honest reporting. Larger amounts increase detection risk by regulators.' + chr(10) + 'Cumulative manipulation stock: $' + f'{firm.cumulative_manipulation:,.0f}' + chr(10) + 'Real public-company CFOs DO sometimes use this lever — to smooth earnings around analyst guidance, to hit a covenant tripwire, to build a cookie-jar reserve in a strong quarter, or to manage a transitory shortfall. Defaulting to 0 quarter after quarter regardless of pressure (a missed guidance, a meaningful variance from plan, a looming covenant) is not realistic CFO behaviour. Each quarter, briefly state in your reasoning WHY 0 is the right answer (e.g., \"comfortably above guidance + no covenant pressure + no incentive\") or WHY a non-zero amount is justified. A bare 0 with no articulation suggests you are not actually evaluating the decision.' + chr(10) if earnings_management_enabled else ''}{'LEGAL RESERVES (Wave ν+14h F2 — explicit articulation):' + chr(10) + 'You may accrue or release legal reserves via legal_reserve_change.' + chr(10) + 'Real public-company CFOs accrue reserves periodically — for litigation in progress, contingent liabilities, product-liability exposure, regulatory settlements. Defaulting to 0 in every quarter when an industry has active litigation patterns (you can see them in peer events) is not realistic. Consider whether your firm has any contingent legal exposure this quarter; if you accrue 0, briefly note why.' + chr(10) if legal_reserves_enabled else ''}{'CEO STOCK SALES (Wave ν+14h F4 — explicit articulation):' + chr(10) + f'Your CEO holds {firm.ceo_vested_shares_held:,} vested shares (currently worth ${firm.ceo_vested_shares_held * firm.equity_price:,.0f} at the current price).' + chr(10) + 'Real public-company CEOs DO sell some stock periodically — typically via 10b5-1 plans for tax-burden coverage, portfolio diversification, or planned wealth events. Permanently holding ALL vested stock with zero sales over many years is not typical CEO behaviour. Each quarter the CEO has meaningful vested holdings, consider whether ceo_sell_shares > 0 is appropriate; if you set it to 0, briefly note why.' + chr(10) if (governance_enabled and firm.ceo_vested_shares_held > 0) else ''}Output your decision as JSON:
 
 ```json
 {{
@@ -1691,7 +1691,22 @@ in distressed periods or stretched-credit firms.
 
 Output a list of write_offs (by firm_id + amount) in the JSON response. If no
 write-offs this quarter, return an empty list. Don't mechanically tie write-offs
-to the allowance — that's the firm's estimate; yours is the reality."""
+to the allowance — that's the firm's estimate; yours is the reality.
+
+WAVE ν+14h F3 EXPLICIT REQUIREMENT — do not skip this decision:
+A real industry will see PERIODIC bad-debt write-offs across firms over time.
+A small fraction of customer AR genuinely becomes uncollectible each year:
+payer disputes, hospital insolvency, individual non-payment, fraud. The
+realistic pattern is occasional small write-offs spread across firms.
+
+If you find yourself returning `write_offs: []` quarter after quarter while
+firms are accruing meaningful bad_debt_expense (>$1M/Q for any firm), that
+pattern means the firms' allowance is growing without ever being realized as
+cash loss — economically unrealistic. Each quarter, briefly think: "which of
+the firms has the kind of customer mix or distressed-credit profile that
+would PLAUSIBLY produce a small write-off this quarter?" and reflect that
+in your write_offs list. The total can be tiny (a few $M industry-wide most
+quarters) but it should not be zero forever."""
 
     if env_decision_overrides_enabled:
         system = system + """
