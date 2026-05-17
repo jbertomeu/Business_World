@@ -4426,7 +4426,14 @@ def _run_pe_round_phase(
         # 1. Firm issues a pitch
         pitch = pitch_fn(firm, next_round, industry_character)
         if pitch is None:
-            _log(state, f"  PE: {fid} pitch LLM failed; skipping round")
+            # Wave ν+14: more diagnostic — distinguish dispatcher miss
+            # (no backend wired for this firm) from real LLM failure.
+            # The dispatcher in cli.py returns None when backends.get(fid)
+            # is None, which is the same as an LLM exception — hard to
+            # debug without distinguishing them.
+            _log(state, f"  PE: {fid} pitch unavailable (None) — "
+                        f"check that a backend exists for this firm in cli.py; "
+                        f"skipping round")
             continue
         ask_amount = _coerce_money(pitch.get("ask_amount"))
         pre_money_ask = _coerce_money(pitch.get("pre_money_valuation_ask"))

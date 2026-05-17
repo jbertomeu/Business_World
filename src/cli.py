@@ -608,10 +608,22 @@ def run_simulation(config: RunConfig, use_mock: bool = False,
         # Create per-firm LLM backends from roster.
         # Roster uses firm_1..firm_N; simulation uses firm_0..firm_{N-1} internally.
         # With --firms 5: sim firm_0 → roster firm_1, ..., sim firm_4 → roster firm_5.
+        #
+        # Wave ν+14 bug fix: build backends for ALL slots up to n_firms_max,
+        # not just n_firms_initial. Run-6 evidence: with n_firms_initial=6
+        # and n_firms_max=20, entry-judge spawned firms 6-19, none of which
+        # had a backend, so pitch_fn silently returned None for them every
+        # quarter (1100+ "pitch LLM failed" messages in run-6 — these were
+        # NOT LLM call failures, they were dispatcher lookup misses). All
+        # 14 entrants stayed dormant for the full 80-quarter run.
+        n_backend_slots = max(
+            int(n_firms),
+            int(getattr(config, "n_firms_max", n_firms) or n_firms),
+        )
         backends = {}
         roster_firm_ids = roster.firm_ids()  # ["firm_1", "firm_2", ...]
         n_roster = len(roster_firm_ids)
-        for i in range(n_firms):
+        for i in range(n_backend_slots):
             sim_fid = f"firm_{i}"           # internal sim ID (firm_0, firm_1, ...)
 
             # Config YAML agent overrides take precedence over roster

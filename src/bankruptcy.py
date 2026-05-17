@@ -151,6 +151,13 @@ def enter_chapter_11(firm: FirmState) -> FirmState:
         public_shares_outstanding=0,
         common_stock=0.0,
         apic=0.0,
+        # Wave ν+14 bug fix: treasury_stock must also be cancelled in
+        # Ch11 reorganisation. Old common stock + treasury are both
+        # cancelled when new shares are issued to creditors. Without
+        # this, treasury_stock retains its pre-default value and keeps
+        # subtracting from equity forever — caused firm_0 in run-6 to
+        # accumulate -$9.95B phantom equity destruction over 65Q.
+        treasury_stock=0.0,
         retained_earnings=new_re,
     )
 
