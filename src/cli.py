@@ -1183,7 +1183,9 @@ def run_simulation(config: RunConfig, use_mock: bool = False,
     # retries that can run >60 min).
     import os as _os
     state.heartbeat_path = _os.path.join(config.output_dir, run_id, "heartbeat.json")
-    state.heartbeat_min_interval_s = 300.0   # 5 minutes
+    state.heartbeat_min_interval_s = float(
+        getattr(config, "heartbeat_min_interval_s", 300.0)
+    )
 
     # Run quarters
     t_start = time.time()

@@ -91,6 +91,7 @@ class RunConfig:
     env_verification_enabled: bool = False   # enables anomaly check + LLM verifier on env output
     env_validator_enabled: bool = False      # Wave ν+11 E9: second-env reviews env-1 output, sends back with notes if inconsistent
     debriefs_enabled: bool = True            # Wave ν+12: per-quarter debrief LLM calls (firm + env + intermediaries); adds N+5 LLM calls per Q
+    heartbeat_min_interval_s: float = 300.0  # Wave ν+12: intra-quarter heartbeat min interval. Default 5min. Set to 3600 for hourly-only updates.
     lt_memory_enabled: bool = False          # Wave ν+12: cross-run LT memory file (data/agent_memory/<role>.md). Default OFF per user direction.
     investor_voice_enabled: bool = False     # Wave ν+12: per-firm market analyst note delivered at start of each quarter
     restructuring_enabled: bool = False      # firm can take restructuring charges (severance, impairments)
@@ -463,6 +464,7 @@ def load_config(path: str | Path | None = None) -> RunConfig:
         env_verification_enabled=raw.get("env_verification_enabled", False),
         env_validator_enabled=raw.get("env_validator_enabled", False),
         debriefs_enabled=raw.get("debriefs_enabled", True),
+        heartbeat_min_interval_s=float(raw.get("heartbeat_min_interval_s", 300.0)),
         lt_memory_enabled=raw.get("lt_memory_enabled", False),
         investor_voice_enabled=raw.get("investor_voice_enabled", False),
         restructuring_enabled=raw.get("restructuring_enabled", False),
