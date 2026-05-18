@@ -33,22 +33,22 @@ default_llm:
 agents:
   firm_0:  { model: "meta-llama/llama-3.3-70b-instruct", backend: openrouter, temperature: 0.30 }
   firm_1:  { model: "qwen/qwen3-235b-a22b-2507",                backend: openrouter, temperature: 0.35 }
-  firm_2:  { model: "google/gemini-flash-1.5",              backend: openrouter, temperature: 0.40 }
+  firm_2:  { model: "openai/gpt-4o-mini",              backend: openrouter, temperature: 0.40 }
   firm_3:  { model: "z-ai/glm-4-32b",                           backend: openrouter, temperature: 0.45 }
   firm_4:  { model: "google/gemma-3-12b-it",                    backend: openrouter, temperature: 0.50 }
   firm_5:  { model: "meta-llama/llama-3.3-70b-instruct", backend: openrouter, temperature: 0.32 }
   firm_6:  { model: "qwen/qwen3-235b-a22b-2507",                backend: openrouter, temperature: 0.38 }
-  firm_7:  { model: "google/gemini-flash-1.5",              backend: openrouter, temperature: 0.42 }
+  firm_7:  { model: "openai/gpt-4o-mini",              backend: openrouter, temperature: 0.42 }
   firm_8:  { model: "z-ai/glm-4-32b",                           backend: openrouter, temperature: 0.47 }
   firm_9:  { model: "google/gemma-3-12b-it",                    backend: openrouter, temperature: 0.52 }
   firm_10: { model: "meta-llama/llama-3.3-70b-instruct", backend: openrouter, temperature: 0.28 }
   firm_11: { model: "qwen/qwen3-235b-a22b-2507",                backend: openrouter, temperature: 0.33 }
-  firm_12: { model: "google/gemini-flash-1.5",              backend: openrouter, temperature: 0.38 }
+  firm_12: { model: "openai/gpt-4o-mini",              backend: openrouter, temperature: 0.38 }
   firm_13: { model: "z-ai/glm-4-32b",                           backend: openrouter, temperature: 0.43 }
   firm_14: { model: "google/gemma-3-12b-it",                    backend: openrouter, temperature: 0.48 }
   firm_15: { model: "meta-llama/llama-3.3-70b-instruct", backend: openrouter, temperature: 0.30 }
   firm_16: { model: "qwen/qwen3-235b-a22b-2507",                backend: openrouter, temperature: 0.36 }
-  firm_17: { model: "google/gemini-flash-1.5",              backend: openrouter, temperature: 0.41 }
+  firm_17: { model: "openai/gpt-4o-mini",              backend: openrouter, temperature: 0.41 }
   firm_18: { model: "z-ai/glm-4-32b",                           backend: openrouter, temperature: 0.46 }
   firm_19: { model: "google/gemma-3-12b-it",                    backend: openrouter, temperature: 0.51 }
 

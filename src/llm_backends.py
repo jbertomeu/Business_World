@@ -446,10 +446,14 @@ def make_backup_chain(primary_cfg: "LLMConfig",
 # tried in this order whenever a role's primary backend persistently
 # fails. Used by cli.py when wiring roles without explicit backup
 # config. Cheap-ish, fast, and reliable on OpenRouter.
+#
+# Wave ν+14k: replaced google/gemini-flash-1.5 with openai/gpt-4o-mini
+# after run-7-short showed gemini-flash-1.5 returning 404 on every call
+# (model deprecated on OpenRouter).
 DEFAULT_BACKUP_MODELS: list[tuple[str, str]] = [
     # (model, openrouter_api_key_env_default)
     ("meta-llama/llama-3.3-70b-instruct", "OPENROUTER_API_KEY"),
-    ("google/gemini-flash-1.5", "OPENROUTER_API_KEY"),
+    ("openai/gpt-4o-mini", "OPENROUTER_API_KEY"),
     ("qwen/qwen3-235b-a22b-2507", "OPENROUTER_API_KEY"),
 ]
 

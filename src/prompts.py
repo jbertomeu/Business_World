@@ -546,34 +546,57 @@ def _format_peer_projections_block(peer_projections: list) -> str:
     """
     if not peer_projections:
         return ""
+
+    # Wave ν+14k bug fix: PE pitch JSON came from an LLM and may carry
+    # numeric fields as strings ("300000000", "$300M", etc.). Run-7-short
+    # crashed with TypeError str/float at line 566 from Q7 onward,
+    # blocking ALL firm decisions (caught by backup chain but very noisy).
+    # Coerce defensively before any arithmetic.
+    def _f(v, default=None):
+        if v is None or v == "":
+            return default
+        if isinstance(v, (int, float)):
+            return float(v)
+        try:
+            # Strip common decorations LLMs add ($ , M B etc.)
+            s = str(v).strip().replace(",", "").replace("$", "")
+            mult = 1.0
+            if s.endswith(("B", "b")):
+                mult, s = 1e9, s[:-1].strip()
+            elif s.endswith(("M", "m")):
+                mult, s = 1e6, s[:-1].strip()
+            elif s.endswith(("K", "k")):
+                mult, s = 1e3, s[:-1].strip()
+            return float(s) * mult
+        except (TypeError, ValueError):
+            return default
+
     lines = ["", "PEER PROJECTIONS FROM RECENT PE RAISES (public record):"]
     for p in peer_projections[-8:]:   # last 8 rounds at most
         fp = p.get("firm_projections") or {}
         lp = p.get("lead_investor_projection") or {}
-        rev_y5 = fp.get("revenue_y5")
-        margin_y5 = fp.get("ebitda_margin_y5")
-        gen_y5 = fp.get("projected_generation_y5")
-        lead_rev_y5 = lp.get("your_revenue_projection_y5")
+        rev_y5 = _f(fp.get("revenue_y5"))
+        margin_y5 = _f(fp.get("ebitda_margin_y5"))
+        gen_y5 = fp.get("projected_generation_y5")  # int — not arithmetic
+        lead_rev_y5 = _f(lp.get("your_revenue_projection_y5"))
+        post_money = _f(p.get("post_money_valuation"), default=0.0)
         method = p.get("lead_valuation_method", "")
         line = (
             f"  {p['firm_id']} ({p.get('round_type','?')} "
             f"@ Q{p.get('round_quarter','?')}, post-money "
-            f"${p.get('post_money_valuation', 0)/1e6:.0f}M):"
+            f"${post_money/1e6:.0f}M):"
         )
         lines.append(line)
         bits = []
-        if rev_y5:
+        if rev_y5 is not None:
             bits.append(f"firm projects Y5 rev ${rev_y5/1e6:.0f}M")
         if margin_y5 is not None:
-            try:
-                bits.append(f"EBITDA margin Y5 {float(margin_y5):.0%}")
-            except (TypeError, ValueError):
-                pass
+            bits.append(f"EBITDA margin Y5 {margin_y5:.0%}")
         if gen_y5:
             bits.append(f"Gen {gen_y5} by Y5")
         if bits:
             lines.append("    " + " | ".join(bits))
-        if lead_rev_y5:
+        if lead_rev_y5 is not None:
             lines.append(
                 f"    lead investor's counter-projection Y5 rev "
                 f"${lead_rev_y5/1e6:.0f}M"
@@ -872,14 +895,30 @@ def build_firm_prompt(
     comp_lines = []
     for cid, cinfo in sorted(public_competitors.items()):
         if cid != firm.firm_id:
-            price_c = cinfo.get("price", 0)
-            share = cinfo.get("market_share", 0)
-            gen = cinfo.get("generation", 1)
-            ep = cinfo.get("equity_price", 0)
-            rev = cinfo.get("revenue", 0)
-            total_rd = cinfo.get("total_rd_spend", 0)
-            rev_hist = cinfo.get("revenue_history_4q", []) or []
-            share_hist = cinfo.get("share_history_4q", []) or []
+            # Wave ν+14k: defensive float-coercion. Run-7-short evidence:
+            # firm prompt build crashed with TypeError "str / float" at this
+            # block from Q7 onwards on multiple firms. The peer info dict
+            # can leak strings into numeric fields when an LLM-derived
+            # update or a malformed JSON parse slips through. Coerce
+            # everything to float here so the rendering can't fault.
+            def _f(v, default=0.0):
+                try:
+                    return float(v) if v is not None else default
+                except (TypeError, ValueError):
+                    return default
+            def _i(v, default=0):
+                try:
+                    return int(float(v)) if v is not None else default
+                except (TypeError, ValueError):
+                    return default
+            price_c = _f(cinfo.get("price"))
+            share = _f(cinfo.get("market_share"))
+            gen = _i(cinfo.get("generation"), 1)
+            ep = _f(cinfo.get("equity_price"))
+            rev = _f(cinfo.get("revenue"))
+            total_rd = _f(cinfo.get("total_rd_spend"))
+            rev_hist = [_f(r) for r in (cinfo.get("revenue_history_4q") or [])]
+            share_hist = [_f(s) for s in (cinfo.get("share_history_4q") or [])]
             hist_str = ""
             if len(rev_hist) >= 2:
                 rev_str = " → ".join(f"${r/1e6:.0f}M" for r in rev_hist)
