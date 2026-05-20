@@ -1,0 +1,102 @@
+# Resume of run-8 from Q74 snapshot.
+#
+# Run-8 hit Q74 cleanly in 54h, then completeness gate halted at Q75
+# because firm_18 had no equity price update. Investigation showed the
+# equity panel had emitted absurd prices (firm_18: $60 → $60,000 between
+# Q72 and Q73, a 1000× spike) — completeness gate only checks PRESENCE
+# not VALUE, so Q73 and Q74 passed despite the corruption.
+#
+# Wave ν+14l adds a mild deterministic equity-price sanity guard in the
+# orchestrator's Phase 11: >20× single-Q change clamps to 5× move (still
+# allows big legitimate catalysts; rejects obvious LLM errors).
+#
+# This resume config picks up from Q74 to finish the last 6 quarters
+# (Q75-Q80) with the sanity guard active.
+
+n_firms_initial: 6
+n_firms_max: 20
+n_quarters: 6                # 80 - 74 = 6 more quarters to reach Q80
+seed: 8888
+
+scenario: well_capitalized
+
+default_llm:
+  backend: openrouter
+  model: meta-llama/llama-3.3-70b-instruct
+
+agents:
+  firm_0:  { model: "meta-llama/llama-3.3-70b-instruct", backend: openrouter, temperature: 0.30 }
+  firm_1:  { model: "qwen/qwen3-235b-a22b-2507",                backend: openrouter, temperature: 0.35 }
+  firm_2:  { model: "openai/gpt-4o-mini",              backend: openrouter, temperature: 0.40 }
+  firm_3:  { model: "z-ai/glm-4-32b",                           backend: openrouter, temperature: 0.45 }
+  firm_4:  { model: "google/gemma-3-12b-it",                    backend: openrouter, temperature: 0.50 }
+  firm_5:  { model: "meta-llama/llama-3.3-70b-instruct", backend: openrouter, temperature: 0.32 }
+  firm_6:  { model: "qwen/qwen3-235b-a22b-2507",                backend: openrouter, temperature: 0.38 }
+  firm_7:  { model: "openai/gpt-4o-mini",              backend: openrouter, temperature: 0.42 }
+  firm_8:  { model: "z-ai/glm-4-32b",                           backend: openrouter, temperature: 0.47 }
+  firm_9:  { model: "google/gemma-3-12b-it",                    backend: openrouter, temperature: 0.52 }
+  firm_10: { model: "meta-llama/llama-3.3-70b-instruct", backend: openrouter, temperature: 0.28 }
+  firm_11: { model: "qwen/qwen3-235b-a22b-2507",                backend: openrouter, temperature: 0.33 }
+  firm_12: { model: "openai/gpt-4o-mini",              backend: openrouter, temperature: 0.38 }
+  firm_13: { model: "z-ai/glm-4-32b",                           backend: openrouter, temperature: 0.43 }
+  firm_14: { model: "google/gemma-3-12b-it",                    backend: openrouter, temperature: 0.48 }
+  firm_15: { model: "meta-llama/llama-3.3-70b-instruct", backend: openrouter, temperature: 0.30 }
+  firm_16: { model: "qwen/qwen3-235b-a22b-2507",                backend: openrouter, temperature: 0.36 }
+  firm_17: { model: "openai/gpt-4o-mini",              backend: openrouter, temperature: 0.41 }
+  firm_18: { model: "z-ai/glm-4-32b",                           backend: openrouter, temperature: 0.46 }
+  firm_19: { model: "google/gemma-3-12b-it",                    backend: openrouter, temperature: 0.51 }
+
+# Same toggles as run-8 base
+earnings_management_enabled: true
+sec_enabled: true
+sellside_analysts_enabled: true
+earnings_announcement_enabled: true
+auditor_enabled: true
+governance_enabled: true
+restatements_enabled: true
+macro_expansion_enabled: true
+ma_enabled: true
+
+data_broker_enabled: true
+data_broker_mode: combo
+data_broker_max_queries_per_agent_per_quarter: 2
+
+debt_covenants_enabled: true
+convertible_debt_enabled: true
+working_capital_decisions: true
+bad_debt_enabled: true
+
+annual_reports_enabled: true
+env_verification_enabled: true
+env_validator_enabled: true
+investor_voice_enabled: true
+
+debriefs_enabled: true
+lt_memory_enabled: false
+
+restructuring_enabled: true
+env_decision_overrides_enabled: true
+
+stock_comp_enabled: true
+
+legal_reserves_enabled: true
+pension_enabled: true
+deferred_taxes_enabled: true
+activist_investors_enabled: true
+
+noisy_signals_enabled: true
+noisy_signals_sd: 0.15
+directors_enabled: true
+director_lifecycle_enabled: true
+three_llm_board_enabled: true
+cost_telemetry_enabled: true
+
+strategic_planning_enabled: true
+pe_lifecycle_enabled: true
+
+endogenous_entry_enabled: true
+
+snapshots_enabled: true
+parallel_firm_decisions: true
+
+heartbeat_min_interval_s: 3600.0

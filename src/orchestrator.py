@@ -1977,6 +1977,42 @@ def run_quarter(
             eq_decisions = (equity_market_fn(public_firms, state.macro, state.params)
                             if public_firms else {})
             if eq_decisions:
+                # Wave ν+14l: mild deterministic price-sanity guard.
+                # Catches obviously-broken values (e.g., run-8 firm_18 going
+                # \$60 → \$60,000 in one quarter — 1000× spike). Not heavy-
+                # handed: only fires on extreme single-Q moves, clamps to a
+                # still-substantial 5× change (so genuine catalysts still
+                # produce big moves), and logs for visibility. Per user
+                # direction: 'just have it review if numbers seem very odd'.
+                _MAX_Q_MOVE = 20.0  # >20× change triggers review
+                _CLAMP_Q_MOVE = 5.0  # clamp to 5× move (still big)
+                for fid, terms in list(eq_decisions.items()):
+                    firm = public_firms.get(fid)
+                    if firm is None or firm.equity_price <= 0:
+                        continue
+                    new_price = float(terms.get("equity_price", 0) or 0)
+                    if new_price <= 0:
+                        continue
+                    prior = float(firm.equity_price)
+                    ratio = new_price / prior
+                    if ratio > _MAX_Q_MOVE:
+                        capped = prior * _CLAMP_Q_MOVE
+                        msg = (f"  EQUITY SANITY: {fid} panel-proposed "
+                               f"${new_price:,.2f} is {ratio:.0f}× prior "
+                               f"${prior:.2f} — likely LLM error; clamping to "
+                               f"${capped:,.2f} ({_CLAMP_Q_MOVE:.0f}× still a "
+                               f"big move). Method was: "
+                               f"{terms.get('method', '')[:80]}")
+                        _log(state, msg)
+                        terms["equity_price"] = capped
+                    elif ratio < 1.0 / _MAX_Q_MOVE:
+                        capped = prior / _CLAMP_Q_MOVE
+                        msg = (f"  EQUITY SANITY: {fid} panel-proposed "
+                               f"${new_price:,.2f} is {1/ratio:.0f}× DROP from "
+                               f"prior ${prior:.2f} — likely LLM error; "
+                               f"clamping to ${capped:,.2f}")
+                        _log(state, msg)
+                        terms["equity_price"] = capped
                 # Wave θ+ (B-1 audit fix): log equity market pricing as a
                 # structured Action per firm so `proposals.jsonl` covers it.
                 from .engine import ActionLog as _AL_eq
